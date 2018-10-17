@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the Zero-Dechet project.
+ * This file is part of the Zero Dechet project.
  *
  * (c) Vincent Chalamon <vincentchalamon@gmail.com>
  *
@@ -15,8 +15,11 @@ use App\Entity\User;
 use Behat\Behat\Context\Context;
 use Behat\Gherkin\Node\PyStringNode;
 use Doctrine\Common\Persistence\ManagerRegistry;
-use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\BrowserKit\Client as BrowserKitClient;
+use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
+use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 
 /**
  * @author Vincent Chalamon <vincentchalamon@gmail.com>
@@ -25,13 +28,13 @@ final class AuthContext implements Context
 {
     use ContextTrait;
 
-    private $session;
     private $registry;
+    private $session;
 
     public function __construct(ManagerRegistry $registry, SessionInterface $session)
     {
-        $this->session = $session;
         $this->registry = $registry;
+        $this->session = $session;
     }
 
     /**
@@ -39,16 +42,19 @@ final class AuthContext implements Context
      */
     public function iAmAuthenticated(string $email): void
     {
-        $this->restContext->iAddHeaderEqualTo('Authorization', 'Bearer '.$this->jwtManager->create($this->registry->getRepository(User::class)->findOneBy(['email' => $email])));
-    }
+        /** @var User|null $user */
+        $user = $this->registry->getManagerForClass(User::class)->getRepository(User::class)->loadUserByUsername($email);
+        if (!$user) {
+            throw new UsernameNotFoundException(\sprintf('User %s is not valid.'));
+        }
 
-    /**
-     * @When I get a private resource
-     */
-    public function iGetAPrivateResource(): void
-    {
-        $this->restContext->iAddHeaderEqualTo('Accept', 'application/ld+json');
-        $this->restContext->iSendARequestTo(Request::METHOD_GET, '/users');
+        $token = new UsernamePasswordToken($email, null, 'main', $user->getRoles());
+        $this->session->set('_security_main', \serialize($token));
+        $this->session->save();
+
+        /** @var BrowserKitClient $client */
+        $client = $this->minkContext->getSession()->getDriver()->getClient();
+        $client->getCookieJar()->set(new Cookie($this->session->getName(), $this->session->getId()));
     }
 
     /**
@@ -74,20 +80,6 @@ JSON
     {
         $this->minkContext->assertResponseStatus(200);
         $this->jsonContext->theResponseShouldBeInJson();
-        $this->jsonContext->theJsonShouldBeValidAccordingToThisSchema(new PyStringNode([<<<'JSON'
-{
-    "type": "object",
-    "properties": {
-        "token": {
-            "type": "string"
-        },
-        "user": {
-            "type": "string"
-        }
-    },
-    "required": ["token", "user"]
-}
-JSON
-            ], 0));
+        $this->apiContext->validateItemJsonSchema('user');
     }
 }

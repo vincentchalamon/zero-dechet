@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the Zero-Dechet project.
+ * This file is part of the Zero Dechet project.
  *
  * (c) Vincent Chalamon <vincentchalamon@gmail.com>
  *
@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace App\Exception;
 
 /**
- * @author Vincent Chalamon <vincent@les-tilleuls.coop>
+ * @author Vincent Chalamon <vincentchalamon@gmail.com>
  */
 final class MissingArgumentException extends \LogicException
 {

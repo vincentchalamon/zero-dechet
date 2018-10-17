@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the Zero-Dechet project.
+ * This file is part of the Zero Dechet project.
  *
  * (c) Vincent Chalamon <vincentchalamon@gmail.com>
  *
@@ -29,9 +29,9 @@ use Symfony\Component\Validator\Constraints as Assert;
  *     "normalization_context"={"groups"={"user_quiz_output", "choice_output"}},
  *     "denormalization_context"={"groups"={"user_quiz_input"}},
  *     "access_control"="(is_granted('ROLE_ADMIN') or request.attributes.get('object') == user or (is_granted('ROLE_ADMIN_CITY') and is_in_the_same_city(request.attributes.get('object').getProfile()))) and is_feature_enabled('quiz')"
- *     }, collectionOperations={
+ * }, collectionOperations={
  *     "post"={"access_control"="is_granted('ROLE_USER') and is_feature_enabled('quiz')"}
- *     }, itemOperations={
+ * }, itemOperations={
  *     "get"={"access_control"="(is_granted('ROLE_ADMIN') or object.getUser() == user) and is_feature_enabled('quiz')"}
  * })
  */
@@ -39,9 +39,9 @@ class UserQuiz
 {
     /**
      * @ORM\Id
-     * @ORM\Column
+     * @ORM\Column(type="uuid")
      * @ORM\GeneratedValue(strategy="CUSTOM")
-     * @ORM\CustomIdGenerator(class="App\Doctrine\Generator\UuidGenerator")
+     * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidGenerator")
      */
     private $id;
 

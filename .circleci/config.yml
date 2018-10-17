@@ -160,9 +160,6 @@ jobs:
 
   deploy-api:
     executor: js-executor
-    branches:
-      only:
-        - master
     steps:
       - checkout-api-from-cache
       - run:
@@ -317,11 +314,20 @@ workflows:
             - php-cs-fixer
             - phpstan
             - behat
+          filters:
+            branches:
+              only: master
       - deploy-client:
           requires:
             - jest
             - nightwatch
             - deploy-api
+          filters:
+            branches:
+              only: master
       - deploy-admin:
           requires:
             - deploy-api
+          filters:
+            branches:
+              only: master

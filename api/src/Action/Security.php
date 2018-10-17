@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the Zero-Dechet project.
+ * This file is part of the Zero Dechet project.
  *
  * (c) Vincent Chalamon <vincentchalamon@gmail.com>
  *
@@ -20,7 +20,7 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
 use Symfony\Component\Serializer\SerializerInterface;
 
 /**
- * @author Vincent Chalamon <vincent@les-tilleuls.coop>
+ * @author Vincent Chalamon <vincentchalamon@gmail.com>
  */
 final class Security
 {

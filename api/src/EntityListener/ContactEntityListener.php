@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the Zero-Dechet project.
+ * This file is part of the Zero Dechet project.
  *
  * (c) Vincent Chalamon <vincentchalamon@gmail.com>
  *
@@ -16,7 +16,6 @@ namespace App\EntityListener;
 use App\Authorization\AuthorizationCheckerInterface;
 use App\Entity\Contact;
 use App\Entity\User;
-use App\Repository\UserRepository;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Twig\Environment;
 
@@ -37,7 +36,7 @@ final class ContactEntityListener
         $this->authorizationChecker = $authorizationChecker;
     }
 
-    public function prePersist(Contact $contact,  LifecycleEventArgs $event): void
+    public function prePersist(Contact $contact, LifecycleEventArgs $event): void
     {
         $swiftMessage = new \Swift_Message(
             'Nouveau message depuis l\'application Zéro Déchet',

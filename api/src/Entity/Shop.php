@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the Zero-Dechet project.
+ * This file is part of the Zero Dechet project.
  *
  * (c) Vincent Chalamon <vincentchalamon@gmail.com>
  *
@@ -34,7 +34,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *     "normalization_context"={"groups"={"shop_output", "tag_output"}},
  *     "denormalization_context"={"groups"={"shop_input"}},
  *     "access_control"="is_granted('ROLE_USER') and is_feature_enabled('shop')"
- *     }, itemOperations={
+ * }, itemOperations={
  *     "get",
  *     "put"={"access_control"="(is_granted('ROLE_ADMIN') or (is_granted('ROLE_ADMIN_CITY') and is_in_the_same_city(object))) and is_feature_enabled('shop')"},
  *     "delete"={"access_control"="(is_granted('ROLE_ADMIN') or (is_granted('ROLE_ADMIN_CITY') and is_in_the_same_city(object))) and is_feature_enabled('shop')"}
@@ -47,9 +47,9 @@ class Shop implements GeocoderInterface
 {
     /**
      * @ORM\Id
-     * @ORM\Column
+     * @ORM\Column(type="uuid")
      * @ORM\GeneratedValue(strategy="CUSTOM")
-     * @ORM\CustomIdGenerator(class="App\Doctrine\Generator\UuidGenerator")
+     * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidGenerator")
      */
     private $id;
 

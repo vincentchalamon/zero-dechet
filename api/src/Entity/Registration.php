@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the Zero-Dechet project.
+ * This file is part of the Zero Dechet project.
  *
  * (c) Vincent Chalamon <vincentchalamon@gmail.com>
  *
@@ -31,7 +31,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *     "normalization_context"={"groups"={"registration_output"}},
  *     "denormalization_context"={"groups"={"registration_input"}},
  *     "access_control"="is_granted('ROLE_USER') and is_feature_enabled('event')"
- *     }, collectionOperations={"post"}, itemOperations={
+ * }, collectionOperations={"post"}, itemOperations={
  *     "get",
  *     "delete",
  *     "put"={"access_control"="(is_granted('ROLE_ADMIN') or (is_granted('ROLE_USER') and object.getEvent().getOrganizer() == user)) and is_feature_enabled('event')"}
@@ -45,9 +45,9 @@ class Registration
 
     /**
      * @ORM\Id
-     * @ORM\Column
+     * @ORM\Column(type="uuid")
      * @ORM\GeneratedValue(strategy="CUSTOM")
-     * @ORM\CustomIdGenerator(class="App\Doctrine\Generator\UuidGenerator")
+     * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidGenerator")
      */
     private $id;
 

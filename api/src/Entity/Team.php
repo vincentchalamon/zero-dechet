@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the Zero-Dechet project.
+ * This file is part of the Zero Dechet project.
  *
  * (c) Vincent Chalamon <vincentchalamon@gmail.com>
  *
@@ -31,10 +31,10 @@ use Symfony\Component\Validator\Constraints as Assert;
  *     "denormalization_context"={"groups"={"team_input"}},
  *     "access_control"="is_granted('ROLE_USER') and is_feature_enabled('weighing')",
  *     "order"={"name"="ASC"}
- *     }, collectionOperations={
+ * }, collectionOperations={
  *     "get",
  *     "post"={"access_control"="is_granted('ROLE_ADMIN') and is_feature_enabled('weighing')"}
- *     }, itemOperations={
+ * }, itemOperations={
  *     "get",
  *     "put"={"access_control"="is_granted('ROLE_ADMIN') and is_feature_enabled('weighing')"},
  *     "delete"={"access_control"="is_granted('ROLE_ADMIN') and is_feature_enabled('weighing')"}
@@ -45,9 +45,9 @@ class Team
 {
     /**
      * @ORM\Id
-     * @ORM\Column
+     * @ORM\Column(type="uuid")
      * @ORM\GeneratedValue(strategy="CUSTOM")
-     * @ORM\CustomIdGenerator(class="App\Doctrine\Generator\UuidGenerator")
+     * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidGenerator")
      */
     private $id;
 

@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the Zero-Dechet project.
+ * This file is part of the Zero Dechet project.
  *
  * (c) Vincent Chalamon <vincentchalamon@gmail.com>
  *
@@ -28,10 +28,10 @@ use Symfony\Component\Validator\Constraints as Assert;
  *     "normalization_context"={"groups"={"page_output"}},
  *     "denormalization_context"={"groups"={"page_input"}},
  *     "access_control"="is_granted('ROLE_ADMIN')"
- *     }, collectionOperations={
+ * }, collectionOperations={
  *     "get"={"access_control"="is_granted('IS_AUTHENTICATED_ANONYMOUSLY')"},
  *     "post"
- *     }, itemOperations={
+ * }, itemOperations={
  *     "get"={"access_control"="is_granted('IS_AUTHENTICATED_ANONYMOUSLY')"},
  *     "put",
  *     "delete"
@@ -42,9 +42,9 @@ class Page
 {
     /**
      * @ORM\Id
-     * @ORM\Column
+     * @ORM\Column(type="uuid")
      * @ORM\GeneratedValue(strategy="CUSTOM")
-     * @ORM\CustomIdGenerator(class="App\Doctrine\Generator\UuidGenerator")
+     * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidGenerator")
      */
     private $id;
 

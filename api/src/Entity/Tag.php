@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the Zero-Dechet project.
+ * This file is part of the Zero Dechet project.
  *
  * (c) Vincent Chalamon <vincentchalamon@gmail.com>
  *
@@ -26,10 +26,10 @@ use Symfony\Component\Validator\Constraints as Assert;
  *     "normalization_context"={"groups"={"tag_output"}},
  *     "denormalization_context"={"groups"={"tag_input"}},
  *     "access_control"="is_granted('ROLE_ADMIN') and is_feature_enabled('shop')"
- *     }, collectionOperations={
+ * }, collectionOperations={
  *     "get"={"access_control"="is_granted('ROLE_USER') and is_feature_enabled('shop')"},
  *     "post"
- *     }, itemOperations={
+ * }, itemOperations={
  *     "get"={"access_control"="is_granted('ROLE_USER') and is_feature_enabled('shop')"},
  *     "put",
  *     "delete"
@@ -39,9 +39,9 @@ class Tag
 {
     /**
      * @ORM\Id
-     * @ORM\Column
+     * @ORM\Column(type="uuid")
      * @ORM\GeneratedValue(strategy="CUSTOM")
-     * @ORM\CustomIdGenerator(class="App\Doctrine\Generator\UuidGenerator")
+     * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidGenerator")
      */
     private $id;
 

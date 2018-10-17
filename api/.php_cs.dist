@@ -1,5 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
+$header = <<<'HEADER'
+This file is part of the Zero Dechet project.
+
+(c) Vincent Chalamon <vincentchalamon@gmail.com>
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+HEADER;
+
 $finder = PhpCsFixer\Finder::create()
     ->exclude(['bin', 'config', 'docker', 'helm', 'translations', 'var', 'vendor'])
     ->in(__DIR__)
@@ -16,6 +27,10 @@ return PhpCsFixer\Config::create()
         'doctrine_annotation_spaces' => [
             'after_array_assignments_equals' => false,
             'before_array_assignments_equals' => false,
+        ],
+        'header_comment' => [
+            'header' => $header,
+            'location' => 'after_open',
         ],
         'no_useless_else' => true,
         'no_useless_return' => true,

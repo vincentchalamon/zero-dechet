@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the Zero-Dechet project.
+ * This file is part of the Zero Dechet project.
  *
  * (c) Vincent Chalamon <vincentchalamon@gmail.com>
  *
@@ -48,7 +48,7 @@ final class FulltextSearchFilter implements FilterInterface
 
         $rootAlias = $queryBuilder->getRootAliases()[0];
         $dql = \implode(' OR ', \array_map(function (string $property) use ($rootAlias) {
-            return \sprintf('%s.%s LIKE :search', $rootAlias, $property, ':search');
+            return \sprintf('%s.%s LIKE :search', $rootAlias, $property);
         }, $this->properties));
         $queryBuilder->andWhere($dql)->setParameter('search', '%'.$request->query->get('search').'%');
     }

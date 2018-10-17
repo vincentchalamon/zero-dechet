@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the Zero-Dechet project.
+ * This file is part of the Zero Dechet project.
  *
  * (c) Vincent Chalamon <vincentchalamon@gmail.com>
  *
@@ -29,10 +29,10 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ApiResource(attributes={
  *     "normalization_context"={"groups"={"contact_output"}},
  *     "denormalization_context"={"groups"={"contact_input"}}
- *     }, collectionOperations={
+ * }, collectionOperations={
  *     "get"={"access_control"="(is_granted('ROLE_ADMIN') or is_granted('ROLE_ADMIN_CITY')) and is_feature_enabled('contact')"},
  *     "post"={"access_control"="is_granted('ROLE_USER') and is_feature_enabled('contact')"}
- *     }, itemOperations={
+ * }, itemOperations={
  *     "get"={"access_control"="(is_granted('ROLE_ADMIN') or (is_granted('ROLE_ADMIN_CITY') and is_in_the_same_city(object.getUser()->getProfile()))) and is_feature_enabled('contact')"}
  * })
  * @ApiFilter(SearchFilter::class, properties={"status"="exact", "user"})
@@ -44,9 +44,9 @@ class Contact
 
     /**
      * @ORM\Id
-     * @ORM\Column
+     * @ORM\Column(type="uuid")
      * @ORM\GeneratedValue(strategy="CUSTOM")
-     * @ORM\CustomIdGenerator(class="App\Doctrine\Generator\UuidGenerator")
+     * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidGenerator")
      */
     private $id;
 

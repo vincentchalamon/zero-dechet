@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the Zero-Dechet project.
+ * This file is part of the Zero Dechet project.
  *
  * (c) Vincent Chalamon <vincentchalamon@gmail.com>
  *
@@ -37,10 +37,10 @@ use Symfony\Component\Validator\Constraints as Assert;
  *     "denormalization_context"={"groups"={"event_input"}},
  *     "order"={"startAt"="ASC"},
  *     "access_control"="request.attributes.get('object').getSalt() == request.query.get('key') and is_feature_enabled('event')"
- *     }, collectionOperations={
+ * }, collectionOperations={
  *     "get"={"access_control"="is_granted('ROLE_USER') and is_feature_enabled('event')"},
  *     "post"={"access_control"="is_granted('ROLE_USER') and is_feature_enabled('event')"}
- *     }, itemOperations={
+ * }, itemOperations={
  *     "get"={"access_control"="(is_granted('ROLE_ADMIN') or (is_granted('ROLE_USER') and (user == object.getOrganizer() or object.isActive()))) and is_feature_enabled('event')"},
  *     "like"={"method"="PUT", "access_control"="is_granted('ROLE_USER') and object.isActive() and is_feature_enabled('event')", "path"="/events/{id}/like", "controller"="App\Action\UserLikeEvent"},
  *     "put"={"access_control"="(is_granted('ROLE_ADMIN') or (is_granted('ROLE_USER') and user == object.getOrganizer())) and is_feature_enabled('event')"},
@@ -54,9 +54,9 @@ class Event implements GeocoderInterface
 {
     /**
      * @ORM\Id
-     * @ORM\Column
+     * @ORM\Column(type="uuid")
      * @ORM\GeneratedValue(strategy="CUSTOM")
-     * @ORM\CustomIdGenerator(class="App\Doctrine\Generator\UuidGenerator")
+     * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidGenerator")
      */
     private $id;
 

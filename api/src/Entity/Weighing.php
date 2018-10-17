@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the Zero-Dechet project.
+ * This file is part of the Zero Dechet project.
  *
  * (c) Vincent Chalamon <vincentchalamon@gmail.com>
  *
@@ -32,10 +32,10 @@ use Symfony\Component\Validator\Constraints as Assert;
  *     "normalization_context"={"groups"={"weighing_output", "user_output"}},
  *     "denormalization_context"={"groups"={"weighing_input"}},
  *     "access_control"="(is_granted('ROLE_ADMIN') or request.attributes.get('object') == user or (is_granted('ROLE_ADMIN_CITY') and is_in_the_same_city(request.attributes.get('object').getProfile()))) and is_feature_enabled('weighing')"
- *     }, collectionOperations={
+ * }, collectionOperations={
  *     "post"={"access_control"="is_granted('ROLE_USER') and is_feature_enabled('weighing')"},
  *     "get"={"access_control"="is_granted('ROLE_USER') and is_feature_enabled('weighing')"}
- *     }, itemOperations={
+ * }, itemOperations={
  *     "get"={"access_control"="(is_granted('ROLE_ADMIN') or object.getUser() == user or (is_granted('ROLE_ADMIN_CITY') and is_in_the_same_city(object.getUser().getProfile()))) and is_feature_enabled('weighing')"},
  *     "put"={"access_control"="(is_granted('ROLE_ADMIN') or object.getUser() == user or (is_granted('ROLE_ADMIN_CITY') and is_in_the_same_city(object.getUser().getProfile()))) and is_feature_enabled('weighing')"},
  *     "delete"={"access_control"="(is_granted('ROLE_ADMIN') or object.getUser() == user or (is_granted('ROLE_ADMIN_CITY') and is_in_the_same_city(object.getUser().getProfile()))) and is_feature_enabled('weighing')"}
@@ -51,9 +51,9 @@ class Weighing
 
     /**
      * @ORM\Id
-     * @ORM\Column
+     * @ORM\Column(type="uuid")
      * @ORM\GeneratedValue(strategy="CUSTOM")
-     * @ORM\CustomIdGenerator(class="App\Doctrine\Generator\UuidGenerator")
+     * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidGenerator")
      */
     private $id;
 

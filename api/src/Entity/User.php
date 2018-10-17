@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the Zero-Dechet project.
+ * This file is part of the Zero Dechet project.
  *
  * (c) Vincent Chalamon <vincentchalamon@gmail.com>
  *
@@ -39,11 +39,11 @@ use Symfony\Component\Validator\Constraints as Assert;
  *     "normalization_context"={"groups"={"user_output", "place_output", "profile_output"}},
  *     "denormalization_context"={"groups"={"user_input", "profile_input"}},
  *     "access_control"="is_granted('ROLE_ADMIN') or (is_granted('ROLE_ADMIN_CITY') and is_in_the_same_city(object.getProfile())) or object == user"
- *     }, collectionOperations={
+ * }, collectionOperations={
  *     "post"={"validation_groups"={"Default", "registration"}, "access_control"="is_granted('ROLE_ADMIN') or (is_granted('IS_AUTHENTICATED_ANONYMOUSLY') and is_feature_enabled('register'))"},
  *     "get"={"access_control"="is_granted('ROLE_ADMIN') or is_granted('ROLE_ADMIN_CITY')"},
  *     "import"={"method"="POST", "access_control"="is_granted('ROLE_ADMIN')", "path"="/users/import"}
- *     }, itemOperations={
+ * }, itemOperations={
  *     "get",
  *     "put",
  *     "delete",
@@ -57,9 +57,9 @@ class User implements UserInterface
 {
     /**
      * @ORM\Id
-     * @ORM\Column
+     * @ORM\Column(type="uuid")
      * @ORM\GeneratedValue(strategy="CUSTOM")
-     * @ORM\CustomIdGenerator(class="App\Doctrine\Generator\UuidGenerator")
+     * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidGenerator")
      */
     private $id;
 
