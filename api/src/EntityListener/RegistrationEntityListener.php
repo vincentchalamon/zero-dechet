@@ -84,8 +84,6 @@ final class RegistrationEntityListener
 
     private function sendNotification(Event $event, User $user, string $message): void
     {
-        // Hack for Behat: do not send mail on fixtures load
-        // todo To remove: do not add code for tests
         if (!$this->requestStack->getCurrentRequest()) {
             return;
         }

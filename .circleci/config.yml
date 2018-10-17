@@ -295,6 +295,9 @@ workflows:
       - phpstan:
           requires:
             - build_api
+      - swagger-validator:
+          requires:
+            - build_api
       - behat:
           requires:
             - build_api
@@ -313,6 +316,7 @@ workflows:
             - doctrine-schema-validator
             - php-cs-fixer
             - phpstan
+            - swagger-validator
             - behat
           filters:
             branches:

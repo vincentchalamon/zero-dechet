@@ -20,7 +20,6 @@ use App\Entity\Profile;
 use App\Entity\Registration;
 use App\Entity\User;
 use App\Entity\UserQuiz;
-use App\Security\PasswordEncoder;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use Gedmo\Sluggable\Util\Urlizer;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -29,6 +28,7 @@ use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpKernel\Event\GetResponseForControllerResultEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 /**
  * @author Vincent Chalamon <vincentchalamon@gmail.com>
@@ -37,13 +37,13 @@ final class UserEventSubscriber implements EventSubscriberInterface
 {
     private $registry;
     private $tokenStorage;
-    private $passwordEncoder;
+    private $userPasswordEncoder;
 
-    public function __construct(ManagerRegistry $registry, TokenStorageInterface $tokenStorage, PasswordEncoder $passwordEncoder)
+    public function __construct(ManagerRegistry $registry, TokenStorageInterface $tokenStorage, UserPasswordEncoderInterface $userPasswordEncoder)
     {
         $this->registry = $registry;
         $this->tokenStorage = $tokenStorage;
-        $this->passwordEncoder = $passwordEncoder;
+        $this->userPasswordEncoder = $userPasswordEncoder;
     }
 
     public static function getSubscribedEvents(): array
@@ -67,8 +67,7 @@ final class UserEventSubscriber implements EventSubscriberInterface
         }
 
         $encoding = \mb_detect_encoding($user->getEmail(), \mb_detect_order(), true);
-        $result = \mb_convert_case($user->getEmail(), MB_CASE_LOWER, $encoding ?: \mb_internal_encoding());
-        $user->setEmailCanonical(Urlizer::unaccent($result));
+        $user->setEmailCanonical(Urlizer::unaccent(\mb_convert_case($user->getEmail(), MB_CASE_LOWER, $encoding ?: \mb_internal_encoding())));
     }
 
     public function importUsers(GetResponseForControllerResultEvent $event)
@@ -115,6 +114,7 @@ final class UserEventSubscriber implements EventSubscriberInterface
             return;
         }
 
-        $this->passwordEncoder->encodePassword($data);
+        $data->setPassword($this->userPasswordEncoder->encodePassword($data, $data->getPlainPassword()));
+        $data->eraseCredentials();
     }
 }

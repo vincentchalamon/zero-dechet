@@ -101,8 +101,6 @@ final class EventEntityListener
 
     private function sendNotifications(Event $event, array $users, string $message, string $organizerMessage = null): void
     {
-        // Hack for Behat: do not create notification on fixtures load
-        // todo To remove: do not add code for tests
         if (!$this->requestStack->getCurrentRequest()) {
             return;
         }

@@ -13,15 +13,19 @@ declare(strict_types=1);
 
 namespace App\EventSubscriber;
 
-use App\Security\PasswordEncoder;
+use ApiPlatform\Core\Hydra\Serializer\ConstraintViolationListNormalizer;
 use CoopTilleuls\ForgotPasswordBundle\Event\ForgotPasswordEvent;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\KernelEvents;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Twig\Environment;
 
 /**
@@ -32,14 +36,18 @@ final class ForgotPasswordEventSubscriber implements EventSubscriberInterface
     private $mailer;
     private $templating;
     private $registry;
-    private $passwordEncoder;
+    private $validator;
+    private $userPasswordEncoder;
+    private $serializer;
 
-    public function __construct(\Swift_Mailer $mailer, Environment $templating, ManagerRegistry $registry, PasswordEncoder $passwordEncoder)
+    public function __construct(\Swift_Mailer $mailer, Environment $templating, ManagerRegistry $registry, ValidatorInterface $validator, UserPasswordEncoderInterface $userPasswordEncoder, SerializerInterface $serializer)
     {
         $this->mailer = $mailer;
         $this->templating = $templating;
         $this->registry = $registry;
-        $this->passwordEncoder = $passwordEncoder;
+        $this->validator = $validator;
+        $this->userPasswordEncoder = $userPasswordEncoder;
+        $this->serializer = $serializer;
     }
 
     public static function getSubscribedEvents(): array
@@ -69,7 +77,18 @@ final class ForgotPasswordEventSubscriber implements EventSubscriberInterface
         $passwordToken = $event->getPasswordToken();
         $user = $passwordToken->getUser();
         $user->setPlainPassword($event->getPassword());
-        $this->passwordEncoder->encodePassword($user);
+
+        $violations = $this->validator->validateProperty($user, 'plainPassword');
+        if ($violations->count()) {
+            throw new BadRequestHttpException(
+                $this->serializer->serialize($violations, ConstraintViolationListNormalizer::FORMAT),
+                null,
+                0,
+                ['Content-Type' => 'application/json']
+            );
+        }
+        $user->setPassword($this->userPasswordEncoder->encodePassword($user, $user->getPlainPassword()));
+        $user->eraseCredentials();
 
         $entityManager = $this->registry->getManagerForClass(\get_class($user));
         $entityManager->persist($user);

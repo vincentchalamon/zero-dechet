@@ -14,9 +14,9 @@ declare(strict_types=1);
 namespace App\EntityListener;
 
 use App\Entity\User;
-use App\Security\PasswordEncoder;
 use Gedmo\Sluggable\Util\Urlizer;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationCredentialsNotFoundException;
 use Twig\Environment;
 
@@ -25,14 +25,14 @@ use Twig\Environment;
  */
 final class UserEntityListener
 {
-    private $passwordEncoder;
+    private $userPasswordEncoder;
     private $authorizationChecker;
     private $mailer;
     private $templating;
 
-    public function __construct(PasswordEncoder $passwordEncoder, AuthorizationCheckerInterface $authorizationChecker, \Swift_Mailer $mailer, Environment $templating)
+    public function __construct(UserPasswordEncoderInterface $userPasswordEncoder, AuthorizationCheckerInterface $authorizationChecker, \Swift_Mailer $mailer, Environment $templating)
     {
-        $this->passwordEncoder = $passwordEncoder;
+        $this->userPasswordEncoder = $userPasswordEncoder;
         $this->authorizationChecker = $authorizationChecker;
         $this->mailer = $mailer;
         $this->templating = $templating;
@@ -71,6 +71,7 @@ final class UserEntityListener
         $encoding = \mb_detect_encoding($user->getEmail(), \mb_detect_order(), true);
         $user->setEmailCanonical(Urlizer::unaccent(\mb_convert_case($user->getEmail(), MB_CASE_LOWER, $encoding ?: \mb_internal_encoding())));
 
-        $this->passwordEncoder->encodePassword($user);
+        $user->setPassword($this->userPasswordEncoder->encodePassword($user, $user->getPlainPassword()));
+        $user->eraseCredentials();
     }
 }
