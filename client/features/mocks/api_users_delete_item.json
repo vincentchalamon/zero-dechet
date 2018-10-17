@@ -1,0 +1,11 @@
+{
+  "method": "DELETE",
+  "path": "\/users\/[\\w-;=]+",
+  "regexp": true,
+  "status": 204,
+  "headers": {
+    "Content-Type": "application/ld+json; charset=utf-8",
+    "Link": "<http://localhost:7001/docs.jsonld>; rel=\"http://www.w3.org/ns/hydra/core#apiDocumentation\""
+  },
+  "body": null
+}

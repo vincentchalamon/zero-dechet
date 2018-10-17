@@ -1,0 +1,122 @@
+{
+  "method": "GET",
+  "path": "/users",
+  "status": 200,
+  "headers": {
+    "Content-Type": "application/ld+json; charset=utf-8",
+    "Link": "<http://localhost:7001/docs.jsonld>; rel=\"http://www.w3.org/ns/hydra/core#apiDocumentation\""
+  },
+  "body": {
+    "@context": "/contexts/User",
+    "@id": "/users",
+    "@type": "hydra:Collection",
+    "hydra:member": [
+      {
+        "@id": "/users/IP",
+        "@type": "User",
+        "email": "Earnest86@gmail.com"
+      },
+      {
+        "@id": "/users/Y7wNqoOz",
+        "@type": "User",
+        "email": "Cora.Mitchell@yahoo.com"
+      },
+      {
+        "@id": "/users/zTp",
+        "@type": "User",
+        "email": "Markus_Powlowski@gmail.com"
+      },
+      {
+        "@id": "/users/Rh_s=p7YH",
+        "@type": "User",
+        "email": "Noemi.Kunde@hotmail.com"
+      },
+      {
+        "@id": "/users/lLowvK",
+        "@type": "User",
+        "email": "Virginie_Daniel@hotmail.com"
+      },
+      {
+        "@id": "/users/19J0FOP1",
+        "@type": "User",
+        "email": "Jimmie_Baumbach36@yahoo.com"
+      },
+      {
+        "@id": "/users/J2Wztvk2xW",
+        "@type": "User",
+        "email": "Lynn40@gmail.com"
+      },
+      {
+        "@id": "/users/qutLqaYeXm",
+        "@type": "User",
+        "email": "Mark16@yahoo.com"
+      },
+      {
+        "@id": "/users/I6g7",
+        "@type": "User",
+        "email": "Carli94@hotmail.com"
+      },
+      {
+        "@id": "/users/08H83liwA5",
+        "@type": "User",
+        "email": "Ulices.Veum@hotmail.com"
+      },
+      {
+        "@id": "/users/Gbi",
+        "@type": "User",
+        "email": "Jarret_Runolfsdottir53@yahoo.com"
+      },
+      {
+        "@id": "/users/tS5pir",
+        "@type": "User",
+        "email": "Eudora_Hammes@gmail.com"
+      },
+      {
+        "@id": "/users/7d5ZC2",
+        "@type": "User",
+        "email": "Myrtis_Predovic@yahoo.com"
+      },
+      {
+        "@id": "/users/2I",
+        "@type": "User",
+        "email": "Brook39@hotmail.com"
+      },
+      {
+        "@id": "/users/WDn8KD9uaz",
+        "@type": "User",
+        "email": "Wilfredo26@gmail.com"
+      },
+      {
+        "@id": "/users/kIlSvgVvRws",
+        "@type": "User",
+        "email": "Abraham_Nienow@yahoo.com"
+      },
+      {
+        "@id": "/users/Xh2",
+        "@type": "User",
+        "email": "Tate_Gottlieb@yahoo.com"
+      },
+      {
+        "@id": "/users/wR7ehoz71",
+        "@type": "User",
+        "email": "Geo.Armstrong66@yahoo.com"
+      },
+      {
+        "@id": "/users/ubYux2rIjvs",
+        "@type": "User",
+        "email": "Irma.Leannon81@yahoo.com"
+      },
+      {
+        "@id": "/users/yVS5H",
+        "@type": "User",
+        "email": "Chaya_Rogahn@gmail.com"
+      },
+      {
+        "@id": "/users/EW",
+        "@type": "User",
+        "email": "Helga15@yahoo.com"
+      }
+    ],
+    "hydra:totalItems": 120
+  }
+}

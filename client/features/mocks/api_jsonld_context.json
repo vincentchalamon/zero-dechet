@@ -1,0 +1,19 @@
+{
+  "method": "GET",
+  "path": "/contexts/Entrypoint",
+  "status": 200,
+  "headers": {
+    "Content-Type": "application/ld+json; charset=utf-8",
+    "Link": "<http://localhost:7001/docs.jsonld>; rel=\"http://www.w3.org/ns/hydra/core#apiDocumentation\""
+  },
+  "body": {
+    "@context": {
+      "@vocab": "http://localhost:7001/docs.jsonld#",
+      "hydra": "http://www.w3.org/ns/hydra/core#",
+      "user": {
+        "@id": "Entrypoint/user",
+        "@type": "@id"
+      }
+    }
+  }
+}

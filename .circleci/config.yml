@@ -1,0 +1,327 @@
+# PHP CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-php/ for more details
+#
+# Configuration reference: https://circleci.com/docs/2.0/configuration-reference/
+#
+version: 2.1
+
+commands:
+  checkout-api-from-cache:
+    description: Checkout API from cache
+    steps:
+      - restore_cache:
+          keys:
+            - api-{{ .Environment.CIRCLE_SHA1 }}
+
+  checkout-client-from-cache:
+    description: Checkout client from cache
+    steps:
+      - run:
+          command: apk add ca-certificates
+      - restore_cache:
+          keys:
+            - client-{{ .Environment.CIRCLE_SHA1 }}
+
+executors:
+  php-executor:
+    docker:
+      - image: vincentchalamon/php:7.2-dev
+        environment:
+          APP_ENV: test
+          APP_SECRET: eabf75cc6220f8768903571f92a6d254248dba59
+          APP_VERSION: 1.0.0
+
+  js-executor:
+    docker:
+      - image: mhart/alpine-node:10.12.0
+        environment:
+          JEST_JUNIT_OUTPUT: coverage/junit.xml
+
+jobs:
+  # API
+  build-api:
+    docker:
+      - image: composer
+        environment:
+          APP_ENV: test
+          APP_DEBUG: 1
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - vendor-{{ checksum "api/composer.lock" }}
+            # fallback to using the latest cache if no exact match is found
+            - vendor-
+      - run:
+          name: Install dependencies
+          working_directory: api
+          command: composer install --prefer-dist --no-progress --no-suggest --no-interaction
+      - save_cache:
+          paths:
+            - api/vendor
+          key: vendor-{{ checksum "api/composer.lock" }}
+      - save_cache:
+          paths:
+            - ./api
+          key: api-{{ .Environment.CIRCLE_SHA1 }}
+
+  phpunit:
+    executor: php-executor
+    steps:
+      - checkout-api-from-cache
+      - run:
+          name: PHPUnit
+          working_directory: api
+          command: bin/phpunit --log-junit coverage/junit.xml
+      - store_test_results:
+          path: api/coverage
+
+  security-checker:
+    executor: php-executor
+    steps:
+      - checkout-api-from-cache
+      - run:
+          name: Security checker
+          working_directory: api
+          command: bin/security-checker security:check
+
+  monitor-health:
+    executor: php-executor
+    steps:
+      - checkout-api-from-cache
+      - run:
+          name: Monitor health
+          working_directory: api
+          command: bin/console monitor:health
+
+  doctrine-schema-validator:
+    executor: php-executor
+    steps:
+      - checkout-api-from-cache
+      - run:
+          name: Doctrine schema validator
+          working_directory: api
+          command: bin/console doctrine:schema:validate --skip-sync
+
+  php-cs-fixer:
+    executor: php-executor
+    steps:
+      - checkout-api-from-cache
+      - run:
+          name: PHP CS fixer
+          working_directory: api
+          command: bin/php-cs-fixer fix --dry-run --ansi --verbose
+
+  phpstan:
+    executor: php-executor
+    steps:
+      - checkout-api-from-cache
+      - run:
+          name: PHPStan
+          working_directory: api
+          command: bin/phpstan analyse -l 0 src
+
+  swagger-validator:
+    executor: js-executor
+    steps:
+      - checkout-api-from-cache
+      - run:
+          command: yarn global add swagger-cli
+      - run:
+          name: Swagger validator
+          working_directory: api
+          command: swagger-cli validate swagger.json
+
+  behat:
+    docker:
+      - image: vincentchalamon/php:7.2-dev
+        environment:
+          APP_ENV: test
+          APP_DEBUG: 1
+          DATABASE_URL: pgsql://root@localhost/zero-dechet
+      - image: postgres:9.6-alpine
+        environment:
+          POSTGRES_DB: zero-dechet
+          POSTGRES_USER: root
+    steps:
+      - checkout-api-from-cache
+      - run:
+          name: Wait for db
+          command: dockerize -wait tcp://localhost:5432 -timeout 1m
+      - run:
+          name: Execute migrations
+          working_directory: api
+          command: bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration
+      - run:
+          name: Behat
+          working_directory: api
+          command: bin/behat
+
+  deploy-api:
+    executor: js-executor
+    branches:
+      only:
+        - master
+    steps:
+      - checkout-api-from-cache
+      - run:
+          name: Build API
+          command: docker build --pull -t zero-dechet/php -t zero-dechet/php:latest api --target api_platform_php
+
+  # Client
+  build-client:
+    executor: js-executor
+    steps:
+      - checkout
+      - run:
+          command: apk add ca-certificates
+      - restore_cache:
+          keys:
+            - node_modules-{{ checksum "client/yarn.lock" }}
+            # fallback to using the latest cache if no exact match is found
+            - node_modules-
+      - run:
+          name: Install dependencies
+          working_directory: client
+          command: yarn install --pure-lockfile
+      - save_cache:
+          paths:
+            - client/node_modules
+          key: node_modules-{{ checksum "client/yarn.lock" }}
+      - save_cache:
+          paths:
+            - ./client
+          key: client-{{ .Environment.CIRCLE_SHA1 }}
+
+  jest:
+    executor: js-executor
+    steps:
+      - checkout-client-from-cache
+      - run:
+          name: Jest
+          working_directory: client
+          command: yarn jest --ci --reporters=default --reporters=jest-junit --passWithNoTests
+      - store_test_results:
+          path: client/coverage
+
+  eslint:
+    executor: js-executor
+    steps:
+      - checkout-client-from-cache
+      - run:
+          name: ESLint
+          working_directory: client
+          command: yarn eslint src
+
+  nightwatch:
+    docker:
+      - image: mhart/alpine-node:10.12.0
+      - image: selenium/standalone-chrome:3.14
+    steps:
+      - checkout-client-from-cache
+      - run:
+          name: Start mocks server
+          working_directory: client
+          command: yarn simulado -d features/mocks
+          background: true
+      - run:
+          name: Start server
+          working_directory: client
+          command: yarn start
+          background: true
+          environment:
+            REACT_APP_API_ENTRYPOINT: http://localhost:7001
+      - run:
+          name: Nightwatch
+          working_directory: client
+          command: yarn nightwatch -e ci
+
+  deploy-client:
+    executor: js-executor
+    steps:
+      - checkout-client-from-cache
+      - run:
+          name: Build client
+          working_directory: client
+          command: yarn build
+          environment:
+            REACT_APP_API_ENTRYPOINT: https://api.zero-dechet.fr
+
+  # Admin
+  deploy-admin:
+    executor: js-executor
+    steps:
+      - checkout
+      - run:
+          command: apk add ca-certificates
+      - restore_cache:
+          keys:
+            - node_modules-{{ checksum "admin/yarn.lock" }}
+            # fallback to using the latest cache if no exact match is found
+            - node_modules-
+      - run:
+          name: Install dependencies
+          working_directory: admin
+          command: yarn install --pure-lockfile
+      - save_cache:
+          paths:
+            - admin/node_modules
+          key: node_modules-{{ checksum "admin/yarn.lock" }}
+      - run:
+          name: Build admin
+          working_directory: admin
+          command: yarn build
+          environment:
+            REACT_APP_API_ENTRYPOINT: https://api.zero-dechet.fr
+
+workflows:
+  version: 2
+  build-and-deploy:
+    jobs:
+      - build-api
+      - phpunit:
+          requires:
+            - build-api
+      - security-checker:
+          requires:
+            - build-api
+      - monitor-health:
+          requires:
+            - build-api
+      - doctrine-schema-validator:
+          requires:
+            - build-api
+      - php-cs-fixer:
+          requires:
+            - build-api
+      - phpstan:
+          requires:
+            - build-api
+      - behat:
+          requires:
+            - build-api
+      - build-client
+      - jest:
+          requires:
+            - build-client
+      - nightwatch:
+          requires:
+            - build-client
+      - deploy-api:
+          requires:
+            - phpunit
+            - security-checker
+            - monitor-health
+            - doctrine-schema-validator
+            - php-cs-fixer
+            - phpstan
+            - behat
+      - deploy-client:
+          requires:
+            - jest
+            - nightwatch
+            - deploy-api
+      - deploy-admin:
+          requires:
+            - deploy-api

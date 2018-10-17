@@ -1,0 +1,14 @@
+{
+  "method": "POST",
+  "path": "/users",
+  "status": 201,
+  "headers": {
+    "Content-Type": "application/ld+json; charset=utf-8",
+    "Link": "<http://localhost:7001/docs.jsonld>; rel=\"http://www.w3.org/ns/hydra/core#apiDocumentation\""
+  },
+  "body": {
+    "@id": "/users/82bf4d71-ccdc-4b8d-8e41-245d0c0ca1c3",
+    "@type": "User",
+    "email": "jane.doe@example.com"
+  }
+}

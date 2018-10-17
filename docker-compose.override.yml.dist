@@ -1,0 +1,38 @@
+version: '3.4'
+
+services:
+  api:
+    ports:
+      - 8080:80
+
+  cache-proxy:
+    ports:
+      - 8081:80
+
+  db:
+    ports:
+      - 5432:5432
+
+  client:
+    ports:
+      - 80:3000
+
+  admin:
+    ports:
+      - 81:3000
+
+  h2-proxy:
+    ports:
+      - 443:443
+      - 444:444
+      - 8443:8443
+      - 8444:8444
+
+  selenium:
+    ports:
+      - 4444:4444
+
+  mailcatcher:
+    ports:
+      - 1080:80
+      - 1025:25

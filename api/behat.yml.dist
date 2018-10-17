@@ -1,0 +1,30 @@
+default:
+    calls:
+        error_reporting: 16383 # E_ALL & ~E_USER_DREPRECATED
+    suites:
+        default:
+            filters:
+                tags: ~@ko
+            contexts:
+                - ApiExtension\Context\ApiContext
+                - ApiExtension\Context\FixturesContext
+                - Behat\MinkExtension\Context\MinkContext
+                - Behatch\Context\JsonContext
+                - Behatch\Context\RestContext
+                - AuthContext:
+                    registry: '@doctrine'
+                    session: '@session'
+                - DatabaseContext:
+                    registry: '@doctrine'
+    extensions:
+        Behat\Symfony2Extension:
+            kernel:
+                bootstrap: features/bootstrap/bootstrap.php
+                class: App\Kernel
+        Behat\MinkExtension:
+            base_url: http://localhost/
+            sessions:
+                default:
+                    symfony2: ~
+        Behatch\Extension: ~
+        ApiExtension: ~

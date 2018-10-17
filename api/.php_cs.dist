@@ -1,0 +1,37 @@
+<?php
+
+$finder = PhpCsFixer\Finder::create()
+    ->exclude(['bin', 'config', 'docker', 'helm', 'translations', 'var', 'vendor'])
+    ->in(__DIR__)
+;
+
+return PhpCsFixer\Config::create()
+    ->setRiskyAllowed(true)
+    ->setRules([
+        '@DoctrineAnnotation' => true,
+        '@Symfony' => true,
+        'array_syntax' => ['syntax' => 'short'],
+        'declare_strict_types' => true,
+        'doctrine_annotation_array_assignment' => ['operator' => '='],
+        'doctrine_annotation_spaces' => [
+            'after_array_assignments_equals' => false,
+            'before_array_assignments_equals' => false,
+        ],
+        'no_useless_else' => true,
+        'no_useless_return' => true,
+        'ordered_imports' => [
+            'importsOrder' => [
+                'class',
+                'function',
+                'const',
+            ],
+            'sortAlgorithm' => 'alpha',
+        ],
+        'phpdoc_order' => true,
+        'strict_comparison' => true,
+        'strict_param' => true,
+        'ternary_to_null_coalescing' => true,
+        'native_function_invocation' => true,
+    ])
+    ->setFinder($finder)
+;

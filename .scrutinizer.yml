@@ -1,0 +1,98 @@
+# Documentation available at https://scrutinizer-ci.com/docs/configuration
+build_failure_conditions:
+    - 'issues.severity(>= MAJOR).new.exists'
+    - 'project.metric_change("scrutinizer.quality", < -0.10)'
+    - 'project.metric_change("scrutinizer.test_coverage", < -0.10)'
+
+build:
+    nodes:
+        api-analysis:
+            root_path: api
+            environment:
+                php: 7.2
+                variables:
+                    APP_ENV: test
+            project_setup:
+                override:
+                    - 'true'
+            tests:
+                override:
+                    - php-scrutinizer-run --sub-project-dir=api
+                    - command: phpcs-run ./
+                      use_website_config: false
+        api-tests:
+            root_path: api
+            environment:
+                php: 7.2
+                variables:
+                    APP_ENV: test
+            tests:
+                override:
+                    - command: bin/phpunit --coverage-clover=coverage.xml
+                      coverage:
+                          file: coverage.xml
+                          format: clover
+        client-analysis:
+            root_path: client
+            environment:
+                node: v8.12
+            project_setup:
+                override:
+                    - 'true'
+            tests:
+                override:
+                    - js-scrutinizer-run --sub-project-dir=client
+        client-tests:
+            root_path: client
+            environment:
+                node: v8.12
+            tests:
+                override:
+                    - command: yarn jest --ci --coverage --passWithNoTests
+                      coverage:
+                          file: coverage/clover.xml
+                          format: clover
+
+filter:
+    excluded_paths:
+        - api/docker/
+        - api/features/
+        - api/fixtures/
+        - api/helm/
+        - api/tests/
+        - api/var/
+    dependency_paths:
+        - api/vendor/
+        - client/node_modules/
+
+tools:
+    external_code_coverage: false
+    php_code_coverage: true
+    php_code_sniffer:
+        config:
+            standard: 'symfony'
+    php_changetracking: true
+    php_cpd: false
+    php_sim: true
+    php_cs_fixer:
+        config:
+            level: 'all'
+checks:
+    php:
+        fix_php_opening_tag: false
+        remove_php_closing_tag: false
+        no_mixed_inline_html: false
+        require_braces_around_control_structures: false
+        psr2_control_structure_declaration: false
+        avoid_superglobals: false
+        security_vulnerabilities: false
+        no_exit: false
+    javascript: true
+
+coding_style:
+    php:
+        spaces:
+            before_parentheses:
+                closure_definition: true
+            around_operators:
+                concatenation: false
