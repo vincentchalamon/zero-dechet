@@ -1,5 +1,5 @@
 parameters:
-    env(MAILER_URL): ''
+    env(MAILER_URL): 'null://localhost'
     env(APP_MAILER_SENDER): '{"no-reply@zero-dechet.fr": "Zéro Déchet"}'
 
 swiftmailer:

@@ -12,18 +12,13 @@
 declare(strict_types=1);
 
 use Behat\Behat\Context\Context;
-use Doctrine\Common\DataFixtures\Purger\ORMPurger;
 use Doctrine\Common\Persistence\ManagerRegistry;
-use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * @author Vincent Chalamon <vincentchalamon@gmail.com>
  */
 final class DatabaseContext implements Context
 {
-    /**
-     * @var ManagerRegistry
-     */
     private $registry;
 
     public function __construct(ManagerRegistry $registry)
@@ -34,13 +29,16 @@ final class DatabaseContext implements Context
     /**
      * @BeforeScenario
      */
-    public function createDatabase()
+    public function beginTransaction()
     {
-        /** @var EntityManagerInterface $manager */
-        $manager = $this->registry->getManager();
-        $purger = new ORMPurger($manager);
-        $purger->setPurgeMode(ORMPurger::PURGE_MODE_TRUNCATE);
-        $purger->purge();
-        $manager->clear();
+        $this->registry->getConnection()->setAutoCommit(false);
+    }
+
+    /**
+     * @AfterScenario
+     */
+    public function rollbackTransaction()
+    {
+        $this->registry->getConnection()->rollBack();
     }
 }
