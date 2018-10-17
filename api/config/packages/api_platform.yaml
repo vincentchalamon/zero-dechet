@@ -1,10 +1,9 @@
+parameters:
+    env(APP_VERSION): '%env(APP_ENV)%'
+
 api_platform:
-    title: API Platform's demo
-    version: 1.0.0
-    description: |
-      This is a demo application of the [API Platform](https://api-platform.com) framework.
-      [Its source code](https://github.com/api-platform/demo) includes various examples, check it out!
-      You may also be insterested by [the GraphQL entrypoint](/graphql).
+    title: Zero Déchet
+    version: '%env(APP_VERSION)%'
     formats:
         jsonld: ['application/ld+json']
         jsonhal: ['application/hal+json']
@@ -14,6 +13,7 @@ api_platform:
         yaml: ['application/x-yaml']
         csv: ['text/csv']
         html: ['text/html']
+        ics: ['text/calendar']
     mapping:
         paths: ['%kernel.project_dir%/src/Entity']
     http_cache:
@@ -24,3 +24,51 @@ api_platform:
     collection:
         pagination:
             items_per_page: 30
+    exception_to_status:
+        Symfony\Component\Security\Core\Exception\InsufficientAuthenticationException: HTTP_UNAUTHORIZED
+
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
+
+    App\Doctrine\ORM\Extension\PublishableExtension:
+        autoconfigure: false
+        tags:
+            - { name: api_platform.doctrine.orm.query_extension.collection, priority: 9 }
+            - { name: api_platform.doctrine.orm.query_extension.item }
+
+    App\Doctrine\ORM\Extension\EventExtension:
+        autoconfigure: false
+        tags:
+            - { name: api_platform.doctrine.orm.query_extension.collection, priority: 9 }
+
+    App\Doctrine\ORM\Extension\RegistrationExtension:
+        autoconfigure: false
+        tags:
+            - { name: api_platform.doctrine.orm.query_extension.collection, priority: 9 }
+
+    App\Doctrine\ORM\Extension\NewsletterExtension:
+        autoconfigure: false
+        tags:
+            - { name: api_platform.doctrine.orm.query_extension.collection, priority: 9 }
+            - { name: api_platform.doctrine.orm.query_extension.item }
+
+    App\Doctrine\ORM\Extension\SecurityExtension:
+        autoconfigure: false
+        tags:
+            - { name: api_platform.doctrine.orm.query_extension.collection, priority: 9 }
+
+    App\Doctrine\ORM\Extension\UserExtension:
+        autoconfigure: false
+        tags:
+            - { name: api_platform.doctrine.orm.query_extension.collection, priority: 9 }
+
+    App\Serializer\ContextBuilder:
+        decorates: api_platform.serializer.context_builder
+        arguments:
+            $decorated: '@App\Serializer\ContextBuilder.inner'
+
+    api_platform.security.expression_language:
+        class: App\Security\ExpressionLanguage

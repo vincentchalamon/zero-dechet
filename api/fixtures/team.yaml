@@ -1,0 +1,4 @@
+App\Entity\Team:
+    team.{1..10}:
+        name: <name()>
+        users: '<numberBetween(2, 10)>x @user.*'

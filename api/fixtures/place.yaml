@@ -1,0 +1,13 @@
+App\Entity\Place:
+    place.cuisine:
+        name: Cuisine
+    place.salle-de-bain:
+        name: Salle de bain
+    place.chambre:
+        name: Chambre
+    place.jardin:
+        name: Jardin
+    place.maison:
+        name: Maison
+    place.travail:
+        name: Travail

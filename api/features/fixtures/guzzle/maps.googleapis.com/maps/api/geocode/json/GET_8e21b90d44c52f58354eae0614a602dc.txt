@@ -1,0 +1,77 @@
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=UTF-8
+Date: Wed, 27 Dec 2017 16:40:36 GMT
+Expires: Thu, 28 Dec 2017 16:40:36 GMT
+Cache-Control: public, max-age=86400
+Access-Control-Allow-Origin: *
+Server: mafe
+X-XSS-Protection: 1; mode=block
+X-Frame-Options: SAMEORIGIN
+Accept-Ranges: none
+Vary: Accept-Language,Accept-Encoding
+Transfer-Encoding: chunked
+
+{
+   "results" : [
+      {
+         "address_components" : [
+            {
+               "long_name" : "22",
+               "short_name" : "22",
+               "types" : [ "street_number" ]
+            },
+            {
+               "long_name" : "Place Nouvelle Aventure",
+               "short_name" : "Place Nouvelle Aventure",
+               "types" : [ "route" ]
+            },
+            {
+               "long_name" : "Lille",
+               "short_name" : "Lille",
+               "types" : [ "locality", "political" ]
+            },
+            {
+               "long_name" : "Nord",
+               "short_name" : "Nord",
+               "types" : [ "administrative_area_level_2", "political" ]
+            },
+            {
+               "long_name" : "Hauts-de-France",
+               "short_name" : "Hauts-de-France",
+               "types" : [ "administrative_area_level_1", "political" ]
+            },
+            {
+               "long_name" : "France",
+               "short_name" : "FR",
+               "types" : [ "country", "political" ]
+            },
+            {
+               "long_name" : "59000",
+               "short_name" : "59000",
+               "types" : [ "postal_code" ]
+            }
+         ],
+         "formatted_address" : "22 Place Nouvelle Aventure, 59000 Lille, France",
+         "geometry" : {
+            "location" : {
+               "lat" : 50.6261559,
+               "lng" : 3.0488861
+            },
+            "location_type" : "ROOFTOP",
+            "viewport" : {
+               "northeast" : {
+                  "lat" : 50.6275048802915,
+                  "lng" : 3.050235080291502
+               },
+               "southwest" : {
+                  "lat" : 50.6248069197085,
+                  "lng" : 3.047537119708499
+               }
+            }
+         },
+         "place_id" : "ChIJV6MPMnbVwkcRyxdJXS1bK_8",
+         "types" : [ "street_address" ]
+      }
+   ],
+   "status" : "OK"
+}

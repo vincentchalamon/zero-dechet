@@ -1,0 +1,7 @@
+App\Entity\Registration:
+    registration.{1..10}:
+        user: '@user.*'
+        event: '@event.*'
+        status: <randomElement(['pending', 'validated', 'refused'])>
+        attendees: <numberBetween(1, 5)>
+        present: <boolean(80)>

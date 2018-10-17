@@ -1,0 +1,9 @@
+App\Entity\User:
+    user.admin:
+        email: admin@example.com
+        plainPassword: p4ssw0rd
+        active: true
+    user.{1..10}:
+        email: <safeEmail()>
+        plainPassword: <password()>
+        active: <boolean()>

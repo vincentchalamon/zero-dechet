@@ -1,0 +1,77 @@
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=UTF-8
+Date: Wed, 27 Dec 2017 16:40:36 GMT
+Expires: Thu, 28 Dec 2017 16:40:36 GMT
+Cache-Control: public, max-age=86400
+Access-Control-Allow-Origin: *
+Server: mafe
+X-XSS-Protection: 1; mode=block
+X-Frame-Options: SAMEORIGIN
+Accept-Ranges: none
+Vary: Accept-Language,Accept-Encoding
+Transfer-Encoding: chunked
+
+{
+   "results" : [
+      {
+         "address_components" : [
+            {
+               "long_name" : "384",
+               "short_name" : "384",
+               "types" : [ "street_number" ]
+            },
+            {
+               "long_name" : "Rue Léon Gambetta",
+               "short_name" : "Rue Léon Gambetta",
+               "types" : [ "route" ]
+            },
+            {
+               "long_name" : "Lille",
+               "short_name" : "Lille",
+               "types" : [ "locality", "political" ]
+            },
+            {
+               "long_name" : "Nord",
+               "short_name" : "Nord",
+               "types" : [ "administrative_area_level_2", "political" ]
+            },
+            {
+               "long_name" : "Hauts-de-France",
+               "short_name" : "Hauts-de-France",
+               "types" : [ "administrative_area_level_1", "political" ]
+            },
+            {
+               "long_name" : "France",
+               "short_name" : "FR",
+               "types" : [ "country", "political" ]
+            },
+            {
+               "long_name" : "59000",
+               "short_name" : "59000",
+               "types" : [ "postal_code" ]
+            }
+         ],
+         "formatted_address" : "384 Rue Léon Gambetta, 59000 Lille, France",
+         "geometry" : {
+            "location" : {
+               "lat" : 50.6267193,
+               "lng" : 3.0477812
+            },
+            "location_type" : "RANGE_INTERPOLATED",
+            "viewport" : {
+               "northeast" : {
+                  "lat" : 50.62806828029149,
+                  "lng" : 3.049130180291502
+               },
+               "southwest" : {
+                  "lat" : 50.62537031970849,
+                  "lng" : 3.046432219708498
+               }
+            }
+         },
+         "place_id" : "EiszODQgUnVlIEzDqW9uIEdhbWJldHRhLCA1OTAwMCBMaWxsZSwgRnJhbmNl",
+         "types" : [ "street_address" ]
+      }
+   ],
+   "status" : "OK"
+}

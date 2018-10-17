@@ -40,7 +40,7 @@ executors:
 
 jobs:
   # API
-  build-api:
+  build_api:
     docker:
       - image: composer
         environment:
@@ -170,7 +170,7 @@ jobs:
           command: docker build --pull -t zero-dechet/php -t zero-dechet/php:latest api --target api_platform_php
 
   # Client
-  build-client:
+  build_client:
     executor: js-executor
     steps:
       - checkout
@@ -277,37 +277,37 @@ jobs:
 
 workflows:
   version: 2
-  build-and-deploy:
+  build_and_deploy:
     jobs:
-      - build-api
+      - build_api
       - phpunit:
           requires:
-            - build-api
+            - build_api
       - security-checker:
           requires:
-            - build-api
+            - build_api
       - monitor-health:
           requires:
-            - build-api
+            - build_api
       - doctrine-schema-validator:
           requires:
-            - build-api
+            - build_api
       - php-cs-fixer:
           requires:
-            - build-api
+            - build_api
       - phpstan:
           requires:
-            - build-api
+            - build_api
       - behat:
           requires:
-            - build-api
-      - build-client
+            - build_api
+      - build_client
       - jest:
           requires:
-            - build-client
+            - build_client
       - nightwatch:
           requires:
-            - build-client
+            - build_client
       - deploy-api:
           requires:
             - phpunit

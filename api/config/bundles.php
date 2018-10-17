@@ -16,4 +16,7 @@ return [
     Stof\DoctrineExtensionsBundle\StofDoctrineExtensionsBundle::class => ['all' => true],
     Symfony\Bundle\MonologBundle\MonologBundle::class => ['all' => true],
     Liip\MonitorBundle\LiipMonitorBundle::class => ['all' => true],
+    Csa\Bundle\GuzzleBundle\CsaGuzzleBundle::class => ['all' => true],
+    CoopTilleuls\ForgotPasswordBundle\CoopTilleulsForgotPasswordBundle::class => ['all' => true],
+    Symfony\Bundle\SwiftmailerBundle\SwiftmailerBundle::class => ['all' => true],
 ];

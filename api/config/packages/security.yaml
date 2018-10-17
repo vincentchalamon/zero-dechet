@@ -1,21 +1,38 @@
 security:
+    encoders:
+        App\Entity\User: bcrypt
+
     # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
     providers:
-        in_memory: { memory: ~ }
+        api_user_provider:
+            entity:
+                class: App\Entity\User
+
+    role_hierarchy:
+        ROLE_ADMIN_CITY: [ROLE_USER, ROLE_ALLOWED_TO_SWITCH]
+        ROLE_ADMIN: [ROLE_USER, ROLE_ALLOWED_TO_SWITCH]
+
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
         main:
-            anonymous: ~
-
-            # activate different ways to authenticate
-
-            # http_basic: ~
-            # https://symfony.com/doc/current/security.html#a-configuring-how-your-users-will-authenticate
-
-            # form_login: ~
-            # https://symfony.com/doc/current/security/form_login_setup.html
+            anonymous: true
+            json_login:
+                check_path: /login
+                require_previous_session: true
 
     access_control:
         - { path: ^/, roles: IS_AUTHENTICATED_ANONYMOUSLY, requires_channel: https }
+
+parameters:
+    env(APP_FEATURES): '["quiz", "content", "shop", "event", "register", "weighing", "newsletter", "contact"]'
+
+services:
+    App\Authorization\AuthorizationChecker:
+        decorates: security.authorization_checker
+        autoconfigure: true
+        autowire: true
+        arguments:
+            $decorated: '@App\Authorization\AuthorizationChecker.inner'
+            $features: '%env(json:APP_FEATURES)%'

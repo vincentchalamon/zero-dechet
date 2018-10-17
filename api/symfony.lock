@@ -1,4 +1,7 @@
 {
+    "alexandresalome/mailcatcher": {
+        "version": "v1.2.1"
+    },
     "api-platform/api-pack": {
         "version": "v1.0.1"
     },
@@ -52,6 +55,24 @@
     },
     "container-interop/container-interop": {
         "version": "1.2.0"
+    },
+    "csa/guzzle-bundle": {
+        "version": "3.0",
+        "recipe": {
+            "repo": "github.com/symfony/recipes-contrib",
+            "branch": "master",
+            "version": "3.0",
+            "ref": "36a5a2e81228674d88ebc1d9774445210a0d0d06"
+        }
+    },
+    "csa/guzzle-cache-middleware": {
+        "version": "v1.0.0"
+    },
+    "csa/guzzle-history-middleware": {
+        "version": "v1.0.0"
+    },
+    "csa/guzzle-stopwatch-middleware": {
+        "version": "v1.0.0"
     },
     "doctrine/annotations": {
         "version": "1.0",
@@ -113,6 +134,12 @@
     "doctrine/orm": {
         "version": "v2.6.0"
     },
+    "egulias/email-validator": {
+        "version": "2.1.6"
+    },
+    "finesse/swiftmailer-defaults-plugin": {
+        "version": "v2.0.3"
+    },
     "friendsofphp/php-cs-fixer": {
         "version": "2.2",
         "recipe": {
@@ -146,11 +173,20 @@
             "ref": "3447d538661064626c782b1122a14defa48dc0b1"
         }
     },
+    "ircmaxell/random-lib": {
+        "version": "v1.2.0"
+    },
+    "ircmaxell/security-lib": {
+        "version": "v1.1.0"
+    },
     "jdorn/sql-formatter": {
         "version": "v1.2.17"
     },
     "jean85/pretty-package-versions": {
         "version": "1.2"
+    },
+    "jsor/doctrine-postgis": {
+        "version": "v1.7.0"
     },
     "justinrainbow/json-schema": {
         "version": "5.2.6"
@@ -278,6 +314,9 @@
             "ref": "6c1ceb662f8997085f739cd089bfbef67f245983"
         }
     },
+    "swiftmailer/swiftmailer": {
+        "version": "v6.1.3"
+    },
     "symfony/asset": {
         "version": "v4.0.3"
     },
@@ -359,9 +398,6 @@
     "symfony/inflector": {
         "version": "v4.0.3"
     },
-    "symfony/lts": {
-        "version": "4-dev"
-    },
     "symfony/monolog-bridge": {
         "version": "v4.1.6"
     },
@@ -434,6 +470,15 @@
     "symfony/stopwatch": {
         "version": "v4.1.1"
     },
+    "symfony/swiftmailer-bundle": {
+        "version": "2.5",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "master",
+            "version": "2.5",
+            "ref": "3db029c03e452b4a23f7fc45cec7c922c2247eb8"
+        }
+    },
     "symfony/translation": {
         "version": "3.3",
         "recipe": {
@@ -475,6 +520,15 @@
     },
     "theofidry/alice-data-fixtures": {
         "version": "v1.0.1"
+    },
+    "tilleuls/forgot-password-bundle": {
+        "version": "1.0",
+        "recipe": {
+            "repo": "github.com/symfony/recipes-contrib",
+            "branch": "master",
+            "version": "1.0",
+            "ref": "48ab9b5581997a68245b79ac21e355152e29fcde"
+        }
     },
     "twig/twig": {
         "version": "v2.4.4"

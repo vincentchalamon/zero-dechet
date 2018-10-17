@@ -1,0 +1,80 @@
+App\Entity\Quiz:
+    quiz.cuisine.niveau-1:
+        place: '@place.cuisine'
+#    quiz.cuisine.niveau-2:
+#        place: '@place.cuisine'
+#    quiz.salle-de-bain.niveau-1:
+#        place: '@place.salle-de-bain'
+#    quiz.chambre.niveau-1:
+#        place: '@place.chambre'
+#    quiz.jardin.niveau-1:
+#        place: '@place.jardin'
+#    quiz.salle-de-bain.nivea2-1:
+#        place: '@place.salle-de-bain'
+#    quiz.chambre.niveau-1:
+#        place: '@place.chambre'
+#    quiz.jardin.niveau-1:
+#        place: '@place.jardin'
+#    quiz.maison.niveau-1:
+#        place: '@place.maison'
+#    quiz.maison.niveau-2:
+#        place: '@place.maison'
+#    quiz.travail.niveau-1:
+#        place: '@place.travail'
+#    quiz.travail.niveau-2:
+#        place: '@place.travail'
+
+App\Entity\Question:
+    question.cuisine.niveau-1.courses:
+        title (unique): Sous quelle forme achetez-vous vos denrées alimentaires (pâtes, riz, céréales) ?
+        quiz: '@quiz.cuisine.niveau-1'
+    question.cuisine.niveau-1.legumes:
+        title (unique): Quels légumes consommez-vous ?
+        quiz: '@quiz.cuisine.niveau-1'
+    question.cuisine.niveau-1.sac:
+        title (unique): Comment emballez-vous vos courses ?
+        quiz: '@quiz.cuisine.niveau-1'
+    question.cuisine.niveau-1.pelures:
+        title (unique): Que faites-vous de vos pelures de légumes ?
+        quiz: '@quiz.cuisine.niveau-1'
+    question.cuisine.niveau-1.bar:
+        title (unique): Comment achetez-vous ?
+        quiz: '@quiz.cuisine.niveau-1'
+
+App\Entity\Choice:
+    choice.cuisine.niveau-1.courses.vrac:
+        name (unique): En vrac
+        valid: true
+        question: '@question.cuisine.niveau-1.courses'
+    choice.cuisine.niveau-1.courses.emballage-plastique:
+        name (unique): Sous emballage plastique
+        valid: false
+        question: '@question.cuisine.niveau-1.courses'
+    choice.cuisine.niveau-1.legumes.non-bio:
+        name (unique): Non bios et/ou importés
+        valid: false
+        question: '@question.cuisine.niveau-1.legumes'
+    choice.cuisine.niveau-1.legumes.bio-local:
+        name (unique): Bios & locaux
+        valid: true
+        question: '@question.cuisine.niveau-1.legumes'
+    choice.cuisine.niveau-1.sac.jetable:
+        name (unique): Sac plastique non réutilisable
+        valid: false
+        question: '@question.cuisine.niveau-1.sac'
+    choice.cuisine.niveau-1.sac.cabas:
+        name (unique): Sac réutilisable
+        valid: true
+        question: '@question.cuisine.niveau-1.sac'
+    choice.cuisine.niveau-1.pelures.poubelle:
+        name (unique): Je les jette
+        valid: false
+        question: '@question.cuisine.niveau-1.pelures'
+    choice.cuisine.niveau-1.pelures.composte:
+        name (unique): Je les composte
+        valid: true
+        question: '@question.cuisine.niveau-1.pelures'
+    choice.cuisine.niveau-1.pelures.cuisine:
+        name (unique): Je les cuisine
+        valid: true
+        question: '@question.cuisine.niveau-1.pelures'

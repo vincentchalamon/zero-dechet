@@ -8,6 +8,9 @@ framework:
     # Remove or comment this section to explicitly disable session support.
     session:
         handler_id: ~
+        save_path: '%kernel.sessions_dir%'
+        cookie_httponly: true
+        name: DATABSESSID
 
     #esi: ~
     #fragments: ~
@@ -23,3 +26,9 @@ framework:
 
         # APCu (not recommended with heavy random-write workloads as memory fragmentation can cause perf issues)
         #app: cache.adapter.apcu
+
+    #validation:
+        #enable_annotations: true
+
+    #serializer:
+        #enable_annotations: true

@@ -1,0 +1,11 @@
+App\Entity\Tag:
+    tag.epicerie:
+        name: Épicerie
+    tag.animalerie:
+        name: Animalerie
+    tag.bocaux-acceptes:
+        name: Bocaux acceptés
+    tag.bio:
+        name: Bio
+    tag.cosmetique:
+        name: Cosmétique

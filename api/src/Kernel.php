@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\DependencyInjection\CompilerPass\DoctrineEntityListenerCompilerPass;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -22,6 +23,11 @@ class Kernel extends BaseKernel
     public function getLogDir()
     {
         return $this->getProjectDir().'/var/log';
+    }
+
+    public function getSessionDir()
+    {
+        return $this->getProjectDir().'/var/sessions';
     }
 
     public function registerBundles()
@@ -57,5 +63,17 @@ class Kernel extends BaseKernel
             $routes->import($confDir.'/routes/'.$this->environment.'/**/*'.self::CONFIG_EXTS, '/', 'glob');
         }
         $routes->import($confDir.'/routes'.self::CONFIG_EXTS, '/', 'glob');
+    }
+
+    protected function getKernelParameters()
+    {
+        return \array_merge([
+            'kernel.sessions_dir' => \realpath($this->getSessionDir()) ?: $this->getSessionDir(),
+        ], parent::getKernelParameters());
+    }
+
+    protected function build(ContainerBuilder $container)
+    {
+        $container->addCompilerPass(new DoctrineEntityListenerCompilerPass());
     }
 }

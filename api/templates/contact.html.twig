@@ -1,0 +1,21 @@
+{% extends 'mail.html.twig' %}
+
+{% block title %}
+{% spaceless %}
+    Nouveau message depuis l'application Zéro Déchet
+{% endspaceless %}
+{% endblock %}
+
+{% block content %}
+{% spaceless %}
+    <h1>Bonjour,</h1>
+    <p>Vous venez de recevoir le message suivant depuis votre application Zéro Déchet :</p>
+    <table class="body-sub">
+        <tr>
+            <td>
+                <p class="sub">{{ message }}</p>
+            </td>
+        </tr>
+    </table>
+{% endspaceless %}
+{% endblock %}

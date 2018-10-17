@@ -1,5 +1,13 @@
 hautelook_alice:
-    fixtures_path: 'Resources/fixtures/orm' # Path to which to look for fixtures relative to the project directory or the bundle path.
+    fixtures_path: fixtures
     root_dirs:
         - '%kernel.root_dir%'
         - '%kernel.project_dir%'
+
+services:
+    App\Faker\Provider\:
+        resource: '%kernel.project_dir%/fixtures/Faker/Provider'
+        autowire: true
+        autoconfigure: true
+        public: false
+        tags: ['nelmio_alice.faker.provider']

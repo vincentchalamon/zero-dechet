@@ -11,20 +11,29 @@ default:
                 - Behat\MinkExtension\Context\MinkContext
                 - Behatch\Context\JsonContext
                 - Behatch\Context\RestContext
+                - Alex\MailCatcher\Behat\MailCatcherContext
                 - AuthContext:
                     registry: '@doctrine'
                     session: '@session'
                 - DatabaseContext:
                     registry: '@doctrine'
+                - FeatureContext:
+                    registry: '@doctrine'
+                - ForgotPasswordContext:
+                    registry: '@doctrine'
+                    passwordTokenManager: '@test.coop_tilleuls_forgot_password.manager.password_token'
     extensions:
         Behat\Symfony2Extension:
             kernel:
                 bootstrap: features/bootstrap/bootstrap.php
                 class: App\Kernel
         Behat\MinkExtension:
-            base_url: http://localhost/
+            base_url: 'http://example.com/'
             sessions:
                 default:
                     symfony2: ~
         Behatch\Extension: ~
+        Alex\MailCatcher\Behat\MailCatcherExtension\Extension:
+            url: http://mailcatcher
+            purge_before_scenario: true
         ApiExtension: ~

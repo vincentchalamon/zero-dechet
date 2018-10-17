@@ -75,7 +75,7 @@ RUN set -eux; \
 COPY . ./
 
 RUN set -eux; \
-	mkdir -p var/cache var/log; \
+	mkdir -p var/cache var/log var/sessions; \
 	composer dump-autoload --classmap-authoritative --no-dev; \
 	composer run-script --no-dev post-install-cmd; \
 	chmod +x bin/console; sync

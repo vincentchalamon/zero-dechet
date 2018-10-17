@@ -1,0 +1,5 @@
+App\Entity\Content:
+    content.{1..10}:
+        title: <fr_FR:sentence()>
+        content: <fr_FR:paragraphs(3, true)>
+        published: <boolean(80)>

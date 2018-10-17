@@ -1,0 +1,9 @@
+parameters:
+    env(APP_DOMAIN): 'https://www.zero-dechet.fr'
+
+twig:
+    paths: ['%kernel.project_dir%/templates']
+    debug: '%kernel.debug%'
+    strict_variables: '%kernel.debug%'
+    globals:
+        domain: '%env(APP_DOMAIN)%'

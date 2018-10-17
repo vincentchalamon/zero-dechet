@@ -1,0 +1,11 @@
+App\Entity\Weighing:
+    weighing.{1..10}:
+        user: '@user.admin'
+        createdAt: <dateTimeBetween('-10 days', 'yesterday')>
+        total: <randomFloat(2, 100, 1000)>
+        type: <randomElement(['recyclable', 'non-recyclable', 'biodegradable'])>
+    weighing.{11..20}:
+        user: '@user.*'
+        createdAt: <dateTimeBetween('-10 days', 'yesterday')>
+        total: <randomFloat(2, 100, 1000)>
+        type: <randomElement(['recyclable', 'non-recyclable', 'biodegradable'])>

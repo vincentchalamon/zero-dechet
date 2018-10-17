@@ -1,0 +1,37 @@
+App\Entity\Shop:
+    shop.day-by-day:
+        name: Day By Day
+        address: 384 Rue Léon Gambetta
+        postcode: 59000
+        city: Lille
+        coordinates: POINT(3.0477986 50.6266922)
+        longitude: 3.0477986
+        latitude: 50.6266922
+        tags: '<numberBetween(2, 10)>x @tag.*'
+    shop.epicerie-equitable:
+        name: L'Epicerie Equitable
+        address: 22 Place Nouvelle Aventure
+        postcode: 59000
+        city: Lille
+        coordinates: POINT(3.0488861 50.6261559)
+        longitude: 3.0488861
+        latitude: 50.6261559
+        tags: '<numberBetween(2, 10)>x @tag.*'
+    shop.biocoop:
+        name: Biocoop Vert'Tige Wazemmes
+        address: 9 Place Nouvelle Aventure
+        postcode: 59000
+        city: Lille
+        coordinates: POINT(3.049558 50.626873)
+        longitude: 3.049558
+        latitude: 50.626873
+        tags: '<numberBetween(2, 10)>x @tag.*'
+    shop.{1..10}:
+        name: <fr_FR:company()>
+        address: <fr_FR:streetAddress()>
+        postcode: <fr_FR:postcode()>
+        city: <fr_FR:city()>
+        coordinates: <coordinates()>
+        latitude: <latitude(3, 3)>
+        longitude: <longitude(50, 50)>
+        tags: '<numberBetween(2, 10)>x @tag.*'

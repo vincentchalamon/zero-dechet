@@ -9,11 +9,19 @@ doctrine:
     dbal:
         # configure these for your database server
         driver: 'pdo_pgsql'
-        server_version: '9.6'
+        server_version: '11'
 
         # With Symfony 3.3, remove the `resolve:` prefix
         url: '%env(resolve:DATABASE_URL)%'
+
+        mapping_types:
+            _text: string
+        types:
+            geometry:
+                class: Jsor\Doctrine\PostGIS\Types\GeometryType
+                commented: false
     orm:
+        entity_listener_resolver: App\Doctrine\EntityListenerResolver
         auto_generate_proxy_classes: '%kernel.debug%'
         naming_strategy: doctrine.orm.naming_strategy.underscore
         auto_mapping: true
@@ -24,3 +32,14 @@ doctrine:
                 dir: '%kernel.project_dir%/src/Entity'
                 prefix: 'App\Entity'
                 alias: App
+        dql:
+            string_functions:
+                ST_Distance_Sphere: Jsor\Doctrine\PostGIS\Functions\ST_Distance_Sphere
+                ST_GeomFromText: Jsor\Doctrine\PostGIS\Functions\ST_GeomFromText
+        filters:
+            softdeleteable:
+                class: Gedmo\SoftDeleteable\Filter\SoftDeleteableFilter
+                enabled: true
+
+services:
+    Jsor\Doctrine\PostGIS\Event\ORMSchemaEventSubscriber: ~

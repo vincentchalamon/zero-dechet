@@ -1,0 +1,2 @@
+parameters:
+    cors_allow_origin: '*'

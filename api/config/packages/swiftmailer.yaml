@@ -1,0 +1,14 @@
+parameters:
+    env(MAILER_URL): ''
+    env(APP_MAILER_SENDER): '{"no-reply@zero-dechet.fr": "Zéro Déchet"}'
+
+swiftmailer:
+    url: '%env(MAILER_URL)%'
+    spool: { type: 'memory' }
+
+services:
+    Finesse\SwiftMailerDefaultsPlugin\SwiftMailerDefaultsPlugin:
+        arguments:
+            $defaults:
+                from: '%env(json:APP_MAILER_SENDER)%'
+        tags: ['swiftmailer.default.plugin']

@@ -1,0 +1,16 @@
+App\Entity\Event:
+    event.{1..10}:
+        title: <fr_FR:sentence()>
+        description: <fr_FR:paragraph()>
+        startAt: <dateTimeBetween('now', '1 week')>
+        endAt: <dateTimeBetween('now', '1 month')>
+        address: <fr_FR:streetAddress()>
+        postcode: <fr_FR:postcode()>
+        city: <fr_FR:city()>
+        coordinates: <coordinates()>
+        latitude: <latitude(3, 3)>
+        longitude: <longitude(50, 50)>
+        organizer: '@user.*'
+        active: <boolean(80)>
+        autoValidateRegistrations: <boolean(80)>
+        likes: '<numberBetween(2, 10)>x @user.*'

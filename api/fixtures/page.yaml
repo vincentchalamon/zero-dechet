@@ -1,0 +1,17 @@
+App\Entity\Page:
+    page.aide:
+        title: Aide
+        content: <fr_FR:paragraphs(3, true)>
+        url: /aide
+    page.cgu:
+        title: CGU
+        content: <fr_FR:paragraphs(3, true)>
+        url: /cgu
+    page.mentions-legales:
+        title: Mentions Légales
+        content: <fr_FR:paragraphs(3, true)>
+        url: /mentions-legales
+    page.le-zero-dechet:
+        title: Le Zéro Déchet
+        content: <fr_FR:paragraphs(3, true)>
+        url: /le-zero-dechet

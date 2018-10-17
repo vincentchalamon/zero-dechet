@@ -1,0 +1,5 @@
+App\Entity\Contact:
+    contact.{1..10}:
+        user: '@user.*'
+        body: <fr_FR:paragraph()>
+        status: <randomElement(['read', 'unread'])>
