@@ -15,8 +15,6 @@ default:
                 - AuthContext:
                     registry: '@doctrine'
                     session: '@session'
-                - DatabaseContext:
-                    registry: '@doctrine'
                 - FeatureContext:
                     registry: '@doctrine'
                 - ForgotPasswordContext:
@@ -37,3 +35,4 @@ default:
             url: http://mailcatcher
             purge_before_scenario: true
         ApiExtension: ~
+        DatabaseExtension: ~
