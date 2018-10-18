@@ -1,7 +1,7 @@
 Feature: As a user, I can login to get resources
 
   Scenario: As anonymous, I cannot access any private resource
-    When I get a private resource
+    When I get a list of users
     Then I am unauthorized to access this resource
 
   Scenario Outline: As anonymous, I can access API doc
@@ -16,8 +16,9 @@ Feature: As a user, I can login to get resources
 
   Scenario: I cannot access any private resource using fake authorization headers
     Given I add "Authorization" header equal to "Bearer foo"
-    When I get a private resource
+    When I get a list of users
     Then I am unauthorized to access this resource
+    Then print user item JSON schema
 
   Scenario: As a user, I can log in
     Given the following user:

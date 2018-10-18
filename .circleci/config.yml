@@ -146,7 +146,7 @@ jobs:
           APP_ENV: test
           APP_DEBUG: 1
           DATABASE_URL: pgsql://root@localhost/zero-dechet
-      - image: postgres:9.6-alpine
+      - image: mdillon/postgis:11-alpine
         environment:
           POSTGRES_DB: zero-dechet
           POSTGRES_USER: root
@@ -155,6 +155,9 @@ jobs:
       - run:
           name: Wait for db
           command: dockerize -wait tcp://localhost:5432 -timeout 1m
+      - run:
+          name: Add UUID Postgres extension
+          command: psql -h localhost -d zero-dechet -c 'CREATE EXTENSION IF NOT EXISTS "uuid-ossp";'
       - run:
           name: Execute migrations
           working_directory: api

@@ -49,6 +49,7 @@ final class UserRepository extends ServiceEntityRepository implements UserLoader
         return $this->createQueryBuilder('u')
             ->where('u.emailCanonical = :email')
             ->andWhere('u.deletedAt IS NULL')
+            ->andWhere('u.active = true')
             ->setParameter('email', $email)
             ->getQuery()
             ->getOneOrNullResult();
