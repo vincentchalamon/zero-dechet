@@ -42,9 +42,8 @@ class Page
 {
     /**
      * @ORM\Id
-     * @ORM\Column(type="uuid")
-     * @ORM\GeneratedValue(strategy="CUSTOM")
-     * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidGenerator")
+     * @ORM\Column(type="guid")
+     * @ORM\GeneratedValue(strategy="UUID")
      */
     private $id;
 

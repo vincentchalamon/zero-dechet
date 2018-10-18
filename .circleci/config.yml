@@ -57,6 +57,10 @@ jobs:
           name: Install dependencies
           working_directory: api
           command: composer install --prefer-dist --no-progress --no-suggest --no-interaction
+      - run:
+          name: Build swagger documentation
+          working_directory: api
+          command: bin/console api:swagger:export > swagger.json
       - save_cache:
           paths:
             - api/vendor
@@ -125,6 +129,8 @@ jobs:
   swagger-validator:
     executor: js-executor
     steps:
+      - run:
+          command: apk add ca-certificates
       - checkout-api-from-cache
       - run:
           command: yarn global add swagger-cli

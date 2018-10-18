@@ -1,18 +1,27 @@
 <?php
 
+/*
+ * This file is part of the Zero Dechet project.
+ *
+ * (c) Vincent Chalamon <vincentchalamon@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 declare(strict_types=1);
 
 namespace DatabaseExtension\ServiceContainer;
 
-use DatabaseExtension\EventSubscriber\DatabaseEventSubscriber;
 use Behat\Behat\EventDispatcher\ServiceContainer\EventDispatcherExtension;
 use Behat\Testwork\ServiceContainer\Extension as ExtensionInterface;
 use Behat\Testwork\ServiceContainer\ExtensionManager;
+use DatabaseExtension\EventSubscriber\DatabaseEventSubscriber;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 /**
- * @author Vincent Chalamon <vincent@les-tilleuls.coop>
+ * @author Vincent Chalamon <vincentchalamon@gmail.com>
  */
 final class DatabaseExtension implements ExtensionInterface
 {
