@@ -48,7 +48,7 @@ final class AuthContext implements Context
             throw new UsernameNotFoundException(\sprintf('User %s is not valid.'));
         }
 
-        $token = new UsernamePasswordToken($email, null, 'main', $user->getRoles());
+        $token = new UsernamePasswordToken($user, null, 'main', $user->getRoles());
         $this->session->set('_security_main', \serialize($token));
         $this->session->save();
 

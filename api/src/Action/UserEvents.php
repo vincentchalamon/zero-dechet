@@ -38,8 +38,8 @@ final class UserEvents
      *     "_format"=null
      * })
      */
-    public function __invoke(User $user): array
+    public function __invoke(User $data): array
     {
-        return $user->getEvents();
+        return $data->getEvents();
     }
 }

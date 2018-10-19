@@ -56,12 +56,14 @@ class Kernel extends BaseKernel
         $container->setParameter('container.autowiring.strict_mode', true);
         $container->setParameter('container.dumper.inline_class_loader', true);
         $confDir = $this->getProjectDir().'/config';
+        // app/config/services.yml must be loaded before packages
+        // otherwise packages overridden services are not loaded
+        $loader->load($confDir.'/services'.self::CONFIG_EXTS, 'glob');
+        $loader->load($confDir.'/services_'.$this->environment.self::CONFIG_EXTS, 'glob');
         $loader->load($confDir.'/packages/*'.self::CONFIG_EXTS, 'glob');
         if (\is_dir($confDir.'/packages/'.$this->environment)) {
             $loader->load($confDir.'/packages/'.$this->environment.'/**/*'.self::CONFIG_EXTS, 'glob');
         }
-        $loader->load($confDir.'/services'.self::CONFIG_EXTS, 'glob');
-        $loader->load($confDir.'/services_'.$this->environment.self::CONFIG_EXTS, 'glob');
     }
 
     protected function configureRoutes(RouteCollectionBuilder $routes)

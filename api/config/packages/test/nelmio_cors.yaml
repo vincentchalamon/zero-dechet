@@ -1,3 +1,4 @@
 nelmio_cors:
     defaults:
+        origin_regex: false
         allow_origin: ['https://www.zero-dechet.fr']

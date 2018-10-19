@@ -46,12 +46,10 @@ final class UserRepository extends ServiceEntityRepository implements UserLoader
         $encoding = \mb_detect_encoding($username, \mb_detect_order(), true);
         $email = Urlizer::unaccent(\mb_convert_case($username, MB_CASE_LOWER, $encoding ?: \mb_internal_encoding()));
 
-        return $this->createQueryBuilder('u')
-            ->where('u.emailCanonical = :email')
-            ->andWhere('u.deletedAt IS NULL')
-            ->andWhere('u.active = true')
-            ->setParameter('email', $email)
-            ->getQuery()
-            ->getOneOrNullResult();
+        return $this->findOneBy([
+            'emailCanonical' => $email,
+            'active' => true,
+            'deletedAt' => null,
+        ]);
     }
 }

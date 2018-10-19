@@ -15,6 +15,7 @@ default:
                 - AuthContext:
                     registry: '@doctrine'
                     session: '@session'
+                - DatabaseContext
                 - FeatureContext:
                     registry: '@doctrine'
                 - ForgotPasswordContext:
@@ -26,13 +27,17 @@ default:
                 bootstrap: features/bootstrap/bootstrap.php
                 class: App\Kernel
         Behat\MinkExtension:
-            base_url: 'https://www.zero-dechet.fr'
+            base_url: https://api.zero-dechet.fr
             sessions:
                 default:
                     symfony2: ~
         Behatch\Extension: ~
         Alex\MailCatcher\Behat\MailCatcherExtension\Extension:
-            url: http://mailcatcher
+            url: http://localhost:1080
             purge_before_scenario: true
         ApiExtension: ~
-        DatabaseExtension: ~
+
+ci:
+    extensions:
+        Alex\MailCatcher\Behat\MailCatcherExtension\Extension:
+            url: http://localhost

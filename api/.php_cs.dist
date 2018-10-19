@@ -47,6 +47,7 @@ return PhpCsFixer\Config::create()
         'strict_param' => true,
         'ternary_to_null_coalescing' => true,
         'native_function_invocation' => true,
+        'phpdoc_types_order' => ['null_adjustment'=> 'always_last'],
     ])
     ->setFinder($finder)
 ;

@@ -29,15 +29,15 @@ final class UserValidation
      *     "_api_receive"=false
      * })
      */
-    public function __invoke(User $user, ManagerRegistry $registry): User
+    public function __invoke(User $data, ManagerRegistry $registry): User
     {
-        if (!$user->isActive()) {
-            $user->setActive(true);
+        if (!$data->isActive()) {
+            $data->setActive(true);
             $em = $registry->getManagerForClass(User::class);
-            $em->persist($user);
+            $em->persist($data);
             $em->flush();
         }
 
-        return $user;
+        return $data;
     }
 }

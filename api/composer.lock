@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "35cf814f2db332522f4b0faeab752fcd",
+    "content-hash": "aa899c9f2ed7336746dc1643da0dec74",
     "packages": [
         {
             "name": "api-platform/api-pack",
@@ -8387,16 +8387,16 @@
         },
         {
             "name": "vincentchalamon/api-extension",
-            "version": "1.0.0-beta.3",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/vincentchalamon/api-extension.git",
-                "reference": "e86b543dd9ac5a1109f34ad9457c294f23a073a1"
+                "reference": "def256dddc24681df237fe2174509dafde5ad8cd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vincentchalamon/api-extension/zipball/e86b543dd9ac5a1109f34ad9457c294f23a073a1",
-                "reference": "e86b543dd9ac5a1109f34ad9457c294f23a073a1",
+                "url": "https://api.github.com/repos/vincentchalamon/api-extension/zipball/def256dddc24681df237fe2174509dafde5ad8cd",
+                "reference": "def256dddc24681df237fe2174509dafde5ad8cd",
                 "shasum": ""
             },
             "require": {
@@ -8447,14 +8447,14 @@
                 }
             ],
             "description": "Behat extension for API Platform",
-            "time": "2018-10-11T07:18:02+00:00"
+            "time": "2018-10-21T15:04:58+00:00"
         }
     ],
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
         "api-platform/core": 20,
-        "vincentchalamon/api-extension": 10
+        "vincentchalamon/api-extension": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,

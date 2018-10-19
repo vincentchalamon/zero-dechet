@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the Zero Dechet project.
+ *
+ * (c) Vincent Chalamon <vincentchalamon@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 declare(strict_types=1);
 
 namespace DoctrineMigrations;
@@ -16,7 +25,11 @@ final class Version20181019075654 extends AbstractMigration
     {
         $this->abortIf('postgresql' !== $this->connection->getDatabasePlatform()->getName(), 'Migration can only be executed safely on \'postgresql\'.');
 
-        $this->addSql('CREATE EXTENSION IF NOT EXISTS "uuid-ossp";');
+        $this->addSql('CREATE EXTENSION IF NOT EXISTS "uuid-ossp"');
+        $this->addSql('CREATE EXTENSION IF NOT EXISTS postgis');
+        $this->addSql('CREATE EXTENSION IF NOT EXISTS postgis_topology');
+        $this->addSql('CREATE EXTENSION IF NOT EXISTS fuzzystrmatch');
+        $this->addSql('CREATE EXTENSION IF NOT EXISTS postgis_tiger_geocoder');
     }
 
     public function down(Schema $schema): void

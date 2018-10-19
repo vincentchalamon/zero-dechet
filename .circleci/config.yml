@@ -146,26 +146,29 @@ jobs:
           APP_ENV: test
           APP_DEBUG: 1
           DATABASE_URL: pgsql://root@localhost/zero-dechet
+          MAILER_URL: smtp://localhost
       - image: mdillon/postgis:11-alpine
         environment:
           POSTGRES_DB: zero-dechet
           POSTGRES_USER: root
+      - image: tophfr/mailcatcher:0.6.5
     steps:
       - checkout-api-from-cache
       - run:
           name: Wait for db
           command: dockerize -wait tcp://localhost:5432 -timeout 1m
       - run:
-          name: Add UUID Postgres extension
-          command: psql -h localhost -d zero-dechet -c 'CREATE EXTENSION IF NOT EXISTS "uuid-ossp";'
-      - run:
           name: Execute migrations
           working_directory: api
           command: bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration
       - run:
+          name: Update schema
+          working_directory: api
+          command: bin/console doctrine:schema:update --force
+      - run:
           name: Behat
           working_directory: api
-          command: bin/behat
+          command: bin/behat -p ci
 
   deploy-api:
     executor: js-executor

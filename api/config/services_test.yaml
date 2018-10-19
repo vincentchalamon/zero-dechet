@@ -1,7 +1,4 @@
 services:
-    test.App\Security\UserProvider:
-        parent: App\Security\UserProvider
-        public: true
     test.coop_tilleuls_forgot_password.manager.password_token:
         parent: coop_tilleuls_forgot_password.manager.password_token
         public: true

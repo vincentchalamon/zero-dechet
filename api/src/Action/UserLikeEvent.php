@@ -25,17 +25,17 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
  */
 final class UserLikeEvent
 {
-    public function __invoke(Event $event, TokenStorageInterface $tokenStorage, ManagerRegistry $registry): Event
+    public function __invoke(Event $data, TokenStorageInterface $tokenStorage, ManagerRegistry $registry): Event
     {
         $user = $tokenStorage->getToken()->getUser();
-        if (\in_array($user, $event->getLikes(), true)) {
+        if (\in_array($user, $data->getLikes(), true)) {
             throw new BadRequestHttpException();
         }
-        $event->addLike($user);
+        $data->addLike($user);
         $em = $registry->getManagerForClass(Event::class);
-        $em->persist($event);
+        $em->persist($data);
         $em->flush();
 
-        return $event;
+        return $data;
     }
 }

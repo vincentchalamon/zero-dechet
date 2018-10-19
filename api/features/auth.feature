@@ -18,7 +18,6 @@ Feature: As a user, I can login to get resources
     Given I add "Authorization" header equal to "Bearer foo"
     When I get a list of users
     Then I am unauthorized to access this resource
-    Then print user item JSON schema
 
   Scenario: As a user, I can log in
     Given the following user:

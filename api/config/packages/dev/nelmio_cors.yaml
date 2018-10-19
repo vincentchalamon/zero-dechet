@@ -1,2 +1,3 @@
-parameters:
-    cors_allow_origin: ['*']
+nelmio_cors:
+    defaults:
+        allow_origin: ['*']
