@@ -38,6 +38,10 @@ executors:
         environment:
           JEST_JUNIT_OUTPUT: coverage/junit.xml
 
+  deploy-executor:
+    docker:
+      - image: docker:18.06.1
+
 jobs:
   # API
   build_api:
@@ -171,12 +175,16 @@ jobs:
           command: bin/behat -p ci
 
   deploy-api:
-    executor: js-executor
+    executor: deploy-executor
     steps:
       - checkout-api-from-cache
+      - setup_remote_docker
       - run:
           name: Build API
-          command: docker build --pull -t zero-dechet/php -t zero-dechet/php:latest api --target api_platform_php
+          command: |
+            docker build --pull -t zero-dechet/php -t zero-dechet/php:latest api --target zero_dechet_php
+            docker build --pull -t zero-dechet/nginx -t zero-dechet/nginx:latest api --target zero_dechet_nginx
+            docker build --pull -t zero-dechet/varnish -t zero-dechet/varnish:latest api --target zero_dechet_varnish
 
   # Client
   build_client:
