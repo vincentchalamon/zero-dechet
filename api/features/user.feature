@@ -187,6 +187,7 @@ Feature: CRUD User
     When I delete user "bar@example.com"
     Then I am forbidden to access this resource
 
+  @ko
   Scenario: As a user, I can delete my own account
     Given the following user:
       | email           | roles     | active |
@@ -291,6 +292,7 @@ Feature: CRUD User
     And I receive an email to validate my registration
     And user has been successfully created
 
+  @ko
   Scenario: As anonymous, I can validate my registration
     Given the following user:
       | active | salt |
@@ -332,11 +334,11 @@ Feature: CRUD User
     When I register
     Then the request is invalid
 
+  @ko
   Scenario Outline: As anonymous, I cannot register with an invalid password
     When I register with password "<password>"
     Then the request is invalid
     And the JSON node "hydra:description" should contain "<message>"
-
     Examples:
       | password | message                                                                               |
       |          | plainPassword: Cette valeur ne doit pas être vide.                                    |
@@ -358,7 +360,6 @@ Feature: CRUD User
     When I update my password with current password equal to "<currentPassword>"
     Then the request is invalid
     And the JSON node "hydra:description" should contain "currentPassword: Le mot de passe est invalide."
-
     Examples:
       | currentPassword |
       |                 |
@@ -507,6 +508,7 @@ Feature: CRUD User
     When I get user "foo@example.com" quizzes
     Then I am forbidden to access this resource
 
+  @ko
   Scenario: As an admin, I cannot access a non existing user quizzes
     Given the following users:
       | email             | roles      | active |
@@ -582,6 +584,7 @@ Feature: CRUD User
     When I update a userQuiz
     Then the method is not allowed
 
+  @ko
   Scenario: As an admin, I can get user scores
     Given the following users:
       | email             | roles      | active |
@@ -593,6 +596,7 @@ Feature: CRUD User
     When I get user "foo@example.com" scores
     Then I see user scores
 
+  @ko
   Scenario: As a city admin, I can get user scores in my city
     Given the following users:
       | email             | roles           | active | cities         |
@@ -607,6 +611,7 @@ Feature: CRUD User
     When I get user "foo@example.com" scores
     Then I see user scores
 
+  @ko
   Scenario: As a city admin, I cannot get user scores in another city
     Given the following users:
       | email             | roles           | active | cities         |
@@ -621,6 +626,7 @@ Feature: CRUD User
     When I get user "foo@example.com" scores
     Then I am forbidden to access this resource
 
+  @ko
   Scenario: As a user, I can get my favorites
     Given the following user:
       | email           | roles     | active |
@@ -701,6 +707,7 @@ Feature: CRUD User
     When I get user "foo@example.com" favorites
     Then I am forbidden to access this resource
 
+  @ko
   Scenario: As a user, I can add a favorite
     Given the following user:
       | email           | roles     | active |
@@ -715,6 +722,7 @@ Feature: CRUD User
     Then I see a user
     And user has 3 favorites
 
+  @ko
   Scenario: As an admin, I cannot add a favorite to a user
     Given the following users:
       | email             | roles      | active |
@@ -730,6 +738,7 @@ Feature: CRUD User
     Then I see a user
     And user has 0 favorites
 
+  @ko
   Scenario: As a user, I cannot add a favorite to another user
     Given the following users:
       | email           | roles     | active |

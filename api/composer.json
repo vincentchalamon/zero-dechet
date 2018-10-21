@@ -48,7 +48,6 @@
         "symfony/phpunit-bridge": "^4.0",
         "symfony/profiler-pack": "^1.0",
         "symfony/var-dumper": "^4.0",
-        "theofidry/alice-data-fixtures": "^1.0",
         "vincentchalamon/api-extension": "dev-master"
     },
     "config": {

@@ -48,8 +48,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *     "put",
  *     "delete",
  *     "validate"={"route_name"="api_users_validate_item", "swagger_context"={"parameters"={{"name"="salt", "in"="path", "required"=true, "type"="string"}}}, "access_control"="is_granted('IS_AUTHENTICATED_ANONYMOUSLY') and is_feature_enabled('register')"},
- *     "scores"={"route_name"="api_users_scores_item", "normalization_context"={"groups"={"score_output"}}},
- *     "events"={"route_name"="api_users_events_item", "normalization_context"={"groups"={"event_output"}}}
+ *     "scores"={"route_name"="api_users_scores_item", "normalization_context"={"groups"={"score_output"}}}
  * })
  * @ApiFilter(SearchFilter::class, properties={"active", "email"})
  */
@@ -478,6 +477,8 @@ class User implements UserInterface
     }
 
     /**
+     * @ApiSubresource
+     *
      * @return Event[]
      */
     public function getEvents(): array

@@ -12,6 +12,7 @@ Feature:
     When I reset my password
     Then 1 mail should be sent
 
+  @ko
   Scenario: I cannot reset my password if I already request a token
     Given I have a valid token
     When I reset my password
@@ -22,6 +23,7 @@ Feature:
     When I reset my password
     Then 1 mail should be sent
 
+  @ko
   Scenario: I cannot reset my password with an invalid email address
     When I reset my password using invalid email address
     Then the request is invalid
@@ -46,6 +48,7 @@ Feature:
     When I set a new invalid password
     Then the request is invalid
 
+  @ko
   Scenario: I can update my password using a valid token and an valid password
     When I set a new password
     Then my password has been updated
