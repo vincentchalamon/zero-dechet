@@ -11,6 +11,7 @@ if [ "$1" = 'php-fpm' ] || [ "$1" = 'bin/console' ]; then
 	setfacl -R -m u:www-data:rwX -m u:"$(whoami)":rwX var
 	setfacl -dR -m u:www-data:rwX -m u:"$(whoami)":rwX var
 
+	bin/console doctrine:migrations:migrate --no-interaction
 	if [ "$APP_ENV" != 'prod' ]; then
 		composer install --prefer-dist --no-progress --no-suggest --no-interaction
 		>&2 echo "Waiting for Postgres to be ready..."

@@ -29,6 +29,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * @author Vincent Chalamon <vincentchalamon@gmail.com>
  *
+ * todo Add route requirement (id) globally: "requirements"={"id"=User::UUID_REQUIREMENT}
+ *
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
  * @ORM\Table(name="`user`")
  * @ORM\EntityListeners({"App\EntityListener\UserEntityListener"})
@@ -42,18 +44,39 @@ use Symfony\Component\Validator\Constraints as Assert;
  * }, collectionOperations={
  *     "post"={"validation_groups"={"Default", "registration"}, "access_control"="is_granted('ROLE_ADMIN') or (is_granted('IS_AUTHENTICATED_ANONYMOUSLY') and is_feature_enabled('register'))"},
  *     "get"={"access_control"="is_granted('ROLE_ADMIN') or is_granted('ROLE_ADMIN_CITY')"},
- *     "import"={"method"="POST", "access_control"="is_granted('ROLE_ADMIN')", "path"="/users/import"}
+ *     "import"={"method"="POST", "access_control"="is_granted('ROLE_ADMIN')", "path"="/users/import.{_format}"}
  * }, itemOperations={
  *     "get",
  *     "put",
  *     "delete",
- *     "validate"={"route_name"="api_users_validate_item", "swagger_context"={"parameters"={{"name"="salt", "in"="path", "required"=true, "type"="string"}}}, "access_control"="is_granted('IS_AUTHENTICATED_ANONYMOUSLY') and is_feature_enabled('register')"},
- *     "scores"={"route_name"="api_users_scores_item", "normalization_context"={"groups"={"score_output"}}}
+ *     "validate"={"path"="/users/{id}/validate.{_format}", "method"="GET", "controller"="App\Action\UserValidation", "swagger_context"={"parameters"={{"name"="token", "in"="query", "required"=true, "type"="string"}}}, "access_control"="is_granted('IS_AUTHENTICATED_ANONYMOUSLY') and is_feature_enabled('register')"},
+ *     "scores"={"path"="/users/{id}/scores.{_format}", "method"="GET", "controller"="App\Action\UserScore", "normalization_context"={"groups"={"score_output"}}, "access_control"="(is_granted('ROLE_ADMIN') or object == user or (is_granted('ROLE_ADMIN_CITY') and is_in_the_same_city(object.getProfile()))) and is_feature_enabled('quiz')"}
+ * }, subresourceOperations={
+ *     "quizzes_get_subresource"={
+ *         "requirements"={"id"=User::UUID_REQUIREMENT},
+ *         "access_control"="(is_granted('ROLE_ADMIN') or object == user or (is_granted('ROLE_ADMIN_CITY') and is_in_the_same_city(object.getProfile()))) and is_feature_enabled('quiz')"
+ *     },
+ *     "favorites_get_subresource"={
+ *         "requirements"={"id"=User::UUID_REQUIREMENT},
+ *         "access_control"="(is_granted('ROLE_ADMIN') or object == user or (is_granted('ROLE_ADMIN_CITY') and is_in_the_same_city(object.getProfile()))) and is_feature_enabled('content')"
+ *     },
+ *     "weighings_get_subresource"={
+ *         "requirements"={"id"=User::UUID_REQUIREMENT},
+ *         "access_control"="(is_granted('ROLE_ADMIN') or object == user or (is_granted('ROLE_ADMIN_CITY') and is_in_the_same_city(object.getProfile()))) and is_feature_enabled('weighing')"
+ *     },
+ *     "events_get_subresource"={
+ *         "requirements"={"id"=User::UUID_REQUIREMENT},
+ *         "normalization_context"={"groups"={"event_output"}},
+ *         "access_control"="((request.query.has('token') and object.getToken() == request.query.get('token')) or object == user) and is_feature_enabled('event')"
+ *     }
  * })
  * @ApiFilter(SearchFilter::class, properties={"active", "email"})
  */
 class User implements UserInterface
 {
+    // todo Move to a better place
+    public const UUID_REQUIREMENT = '^[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}$';
+
     /**
      * @ORM\Id
      * @ORM\Column(type="guid")
@@ -80,15 +103,15 @@ class User implements UserInterface
     private $deletedAt;
 
     /**
-     * @ORM\Column
-     */
-    private $salt;
-
-    /**
      * @ORM\Column(type="boolean", name="is_active")
      * @Groups({"admin_output", "admin_input", "user_export"})
      */
     private $active = false;
+
+    /**
+     * @ORM\Column(length=200)
+     */
+    private $token;
 
     /**
      * @ORM\Column(length=200)
@@ -208,17 +231,11 @@ class User implements UserInterface
         $this->teams = new ArrayCollection();
         $this->weighings = new ArrayCollection();
         $this->registrations = new ArrayCollection();
-        $this->salt = \bin2hex(\random_bytes(25));
+        $this->token = \bin2hex(\random_bytes(25));
     }
 
-    public function getSalt(): string
+    public function getSalt(): void
     {
-        return $this->salt;
-    }
-
-    public function setSalt(string $salt): void
-    {
-        $this->salt = $salt;
     }
 
     public function getUsername(): string
@@ -274,6 +291,11 @@ class User implements UserInterface
     public function setActive(bool $active): void
     {
         $this->active = $active;
+    }
+
+    public function getToken(): string
+    {
+        return $this->token;
     }
 
     public function getEmail(): string

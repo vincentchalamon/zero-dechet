@@ -29,8 +29,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=true)
  * @ApiResource(attributes={
  *     "normalization_context"={"groups"={"registration_output"}},
- *     "denormalization_context"={"groups"={"registration_input"}},
- *     "access_control"="is_granted('ROLE_USER') and is_feature_enabled('event')"
+ *     "denormalization_context"={"groups"={"registration_input"}}
  * }, collectionOperations={"post"}, itemOperations={
  *     "get",
  *     "delete",

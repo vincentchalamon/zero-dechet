@@ -45,7 +45,7 @@ final class AuthContext implements Context
         /** @var User|null $user */
         $user = $this->registry->getManagerForClass(User::class)->getRepository(User::class)->loadUserByUsername($email);
         if (!$user) {
-            throw new UsernameNotFoundException(\sprintf('User %s is not valid.'));
+            throw new UsernameNotFoundException(\sprintf('User %s is not valid.', $email));
         }
 
         $token = new UsernamePasswordToken($user, null, 'main', $user->getRoles());

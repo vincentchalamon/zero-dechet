@@ -169,7 +169,7 @@ final class FeatureContext extends BaseContext
     public function sendPostRequestToQuiz(): void
     {
         $this->apiContext->sendPostRequestToCollection('quiz', [
-            'place' => $this->registry->getRepository(Place::class)->findOneBy([])->getId(),
+            'place' => $this->registry->getRepository(Place::class)->findOneBy([])->getName(),
             'questions' => [
                 [
                     'title' => 'Quelle est la couleur du cheval blanc d\'Henri IV ?',
@@ -780,22 +780,36 @@ final class FeatureContext extends BaseContext
 
     /**
      * @When I validate my account
+     * @When I validate my account with token :token
      */
-    public function iValidaMyAccount()
+    public function iValidateMyAccount(string $token = null)
     {
         $this->restContext->iAddHeaderEqualTo('Accept', ApiContext::FORMAT);
-        $this->restContext->iSendARequestTo(Request::METHOD_GET, '/users/'.$this->userRepository->findOneBy([])->getSalt().'/validate');
+        $user = $this->userRepository->findOneBy([]);
+        $this->restContext->iSendARequestTo(Request::METHOD_GET, '/users/'.$user->getId().'/validate?token='.($token ?: $user->getToken()));
     }
 
     /**
      * @Then user has been validated
      */
-    public function userHaveBeenValidated()
+    public function userHasBeenValidated()
     {
         $user = $this->userRepository->findOneBy([]);
         $this->registry->getManagerForClass(User::class)->refresh($user);
         if (!$user->isActive()) {
             throw new \Exception('User has not been successfully validated.');
+        }
+    }
+
+    /**
+     * @Then user has not been validated
+     */
+    public function userHasNotBeenValidated()
+    {
+        $user = $this->userRepository->findOneBy([]);
+        $this->registry->getManagerForClass(User::class)->refresh($user);
+        if ($user->isActive()) {
+            throw new \Exception('User has been successfully validated.');
         }
     }
 
@@ -807,7 +821,7 @@ final class FeatureContext extends BaseContext
     {
         $this->restContext->iAddHeaderEqualTo('Accept', 'text/calendar');
         $user = $this->userRepository->findOneBy([]);
-        $this->restContext->iSendARequestTo(Request::METHOD_GET, '/users/'.$user->getId().'/events.ics?key='.$user->getSalt());
+        $this->restContext->iSendARequestTo(Request::METHOD_GET, '/users/'.$user->getId().'/events.ics?token='.$user->getToken());
     }
 
     /**
@@ -943,7 +957,7 @@ final class FeatureContext extends BaseContext
         $contents = $this->registry->getRepository(Content::class)->findBy([]);
         $this->apiContext->sendPutRequestToItem('user', [
             'favorites' => \array_map(function (Content $content) {
-                return $content->getId();
+                return $content->getTitle();
             }, $contents),
         ], ['id' => $user->getId()]);
     }

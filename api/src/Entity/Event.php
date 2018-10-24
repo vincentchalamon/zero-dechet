@@ -28,23 +28,26 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * @author Vincent Chalamon <vincentchalamon@gmail.com>
  *
- * todo Replace request.attributes.get('object') by object
  * @ORM\Entity
  * @ORM\EntityListeners({"App\EntityListener\GeocoderEntityListener", "App\EntityListener\EventEntityListener"})
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=true)
  * @ApiResource(attributes={
  *     "normalization_context"={"groups"={"event_output"}},
  *     "denormalization_context"={"groups"={"event_input"}},
- *     "order"={"startAt"="ASC"},
- *     "access_control"="request.attributes.get('object').getSalt() == request.query.get('key') and is_feature_enabled('event')"
+ *     "order"={"startAt"="ASC"}
  * }, collectionOperations={
  *     "get"={"access_control"="is_granted('ROLE_USER') and is_feature_enabled('event')"},
  *     "post"={"access_control"="is_granted('ROLE_USER') and is_feature_enabled('event')"}
  * }, itemOperations={
  *     "get"={"access_control"="(is_granted('ROLE_ADMIN') or (is_granted('ROLE_USER') and (user == object.getOrganizer() or object.isActive()))) and is_feature_enabled('event')"},
- *     "like"={"method"="PUT", "access_control"="is_granted('ROLE_USER') and object.isActive() and is_feature_enabled('event')", "path"="/events/{id}/like", "controller"="App\Action\UserLikeEvent"},
+ *     "like"={"method"="PUT", "access_control"="is_granted('ROLE_USER') and object.isActive() and is_feature_enabled('event')", "path"="/events/{id}/like.{_format}", "controller"="App\Action\UserLikeEvent"},
  *     "put"={"access_control"="(is_granted('ROLE_ADMIN') or (is_granted('ROLE_USER') and user == object.getOrganizer())) and is_feature_enabled('event')"},
  *     "delete"={"access_control"="(is_granted('ROLE_ADMIN') or (is_granted('ROLE_USER') and user == object.getOrganizer())) and is_feature_enabled('event')"}
+ * }, subresourceOperations={
+ *     "registrations_get_subresource"={
+ *         "requirements"={"id"=User::UUID_REQUIREMENT},
+ *         "access_control"="is_granted('ROLE_USER') and is_feature_enabled('event')"
+ *     }
  * })
  * @ApiFilter(GeocodingFilter::class)
  * @ApiFilter(SearchFilter::class, properties={"title"="ipartial", "startAt", "endAt"})

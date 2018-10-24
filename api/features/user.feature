@@ -187,16 +187,14 @@ Feature: CRUD User
     When I delete user "bar@example.com"
     Then I am forbidden to access this resource
 
-  @ko
   Scenario: As a user, I can delete my own account
     Given the following user:
-      | email           | roles     | active |
-      | foo@example.com | ROLE_USER | true   |
+      | email           | roles     | active | plainPassword |
+      | foo@example.com | ROLE_USER | true   | p4ssw0rd      |
     And I am authenticated as "foo@example.com"
     When I delete user "foo@example.com"
     Then the user "foo@example.com" has been successfully deleted
-    And I am authenticated as "foo@example.com"
-    When I get user "foo@example.com"
+    And I log in with "foo@example.com" p4ssw0rd
     Then I am unauthorized to access this resource
 
   Scenario: As an admin, I can access a list of users
@@ -292,14 +290,21 @@ Feature: CRUD User
     And I receive an email to validate my registration
     And user has been successfully created
 
-  @ko
   Scenario: As anonymous, I can validate my registration
     Given the following user:
-      | active | salt |
-      | false  | foo  |
+      | active | token |
+      | false  | foo   |
     When I validate my account
     Then I see a user
     And user has been validated
+
+  Scenario: As anonymous, I can't validate my registration using an invalid token
+    Given the following user:
+      | active | token |
+      | false  | foo   |
+    When I validate my account with token bar
+    Then I am unauthorized to access this resource
+    And user has not been validated
 
   Scenario: As an admin, I can create a user
     Given the following user:
@@ -334,7 +339,6 @@ Feature: CRUD User
     When I register
     Then the request is invalid
 
-  @ko
   Scenario Outline: As anonymous, I cannot register with an invalid password
     When I register with password "<password>"
     Then the request is invalid
@@ -494,6 +498,7 @@ Feature: CRUD User
       | Lille   | 3     |
       | Roubaix | 3     |
 
+  @debug
   Scenario: As a city admin, I cannot access a user quizzes in another city
     Given the following users:
       | email             | roles           | active | cities         |
@@ -508,7 +513,6 @@ Feature: CRUD User
     When I get user "foo@example.com" quizzes
     Then I am forbidden to access this resource
 
-  @ko
   Scenario: As an admin, I cannot access a non existing user quizzes
     Given the following users:
       | email             | roles      | active |
@@ -518,6 +522,7 @@ Feature: CRUD User
     When I send a GET request to "/users/12345/quizzes"
     Then the user is not found
 
+  @debug
   Scenario: As a user, I cannot access another user quizzes
     Given the following users:
       | email           | roles     | active |
@@ -584,7 +589,6 @@ Feature: CRUD User
     When I update a userQuiz
     Then the method is not allowed
 
-  @ko
   Scenario: As an admin, I can get user scores
     Given the following users:
       | email             | roles      | active |
@@ -596,7 +600,6 @@ Feature: CRUD User
     When I get user "foo@example.com" scores
     Then I see user scores
 
-  @ko
   Scenario: As a city admin, I can get user scores in my city
     Given the following users:
       | email             | roles           | active | cities         |
@@ -611,7 +614,6 @@ Feature: CRUD User
     When I get user "foo@example.com" scores
     Then I see user scores
 
-  @ko
   Scenario: As a city admin, I cannot get user scores in another city
     Given the following users:
       | email             | roles           | active | cities         |
@@ -626,7 +628,6 @@ Feature: CRUD User
     When I get user "foo@example.com" scores
     Then I am forbidden to access this resource
 
-  @ko
   Scenario: As a user, I can get my favorites
     Given the following user:
       | email           | roles     | active |
@@ -641,6 +642,7 @@ Feature: CRUD User
     When I get user "foo@example.com" favorites
     Then I see the user's favorites
 
+  @debug
   Scenario: As a user, I cannot get another user favorites
     Given the following users:
       | email           | roles     | active |
@@ -689,6 +691,7 @@ Feature: CRUD User
     When I get user "foo@example.com" favorites
     Then I see the user's favorites
 
+  @debug
   Scenario: As a city admin, I cannot get a user favorites in another city
     Given the following user:
       | email             | roles           | active | cities         |
@@ -707,7 +710,6 @@ Feature: CRUD User
     When I get user "foo@example.com" favorites
     Then I am forbidden to access this resource
 
-  @ko
   Scenario: As a user, I can add a favorite
     Given the following user:
       | email           | roles     | active |
@@ -722,7 +724,6 @@ Feature: CRUD User
     Then I see a user
     And user has 3 favorites
 
-  @ko
   Scenario: As an admin, I cannot add a favorite to a user
     Given the following users:
       | email             | roles      | active |
@@ -738,7 +739,6 @@ Feature: CRUD User
     Then I see a user
     And user has 0 favorites
 
-  @ko
   Scenario: As a user, I cannot add a favorite to another user
     Given the following users:
       | email           | roles     | active |

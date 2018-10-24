@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace App\Serializer;
 
 use App\Entity\Event;
+use Symfony\Component\Serializer\Encoder\ContextAwareEncoderInterface;
 use Symfony\Component\Serializer\Encoder\EncoderInterface;
 
 /**
@@ -21,7 +22,7 @@ use Symfony\Component\Serializer\Encoder\EncoderInterface;
  *
  * @author Vincent Chalamon <vincentchalamon@gmail.com>
  */
-final class IcsEncoder implements EncoderInterface
+final class IcsEncoder implements EncoderInterface, ContextAwareEncoderInterface
 {
     public const FORMAT = 'ics';
     public const CONTENT_TYPE = 'text/calendar';
@@ -65,7 +66,7 @@ ICS;
         return $ics;
     }
 
-    public function supportsEncoding($format): bool
+    public function supportsEncoding($format, array $context = []): bool
     {
         return self::FORMAT === $format;
     }

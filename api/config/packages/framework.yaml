@@ -3,7 +3,7 @@ parameters:
 
 framework:
     secret: '%env(APP_SECRET)%'
-    #default_locale: en
+    default_locale: '%locale%'
     #csrf_protection: ~
     #http_method_override: true
 
@@ -13,7 +13,7 @@ framework:
         handler_id: ~
         save_path: '%kernel.sessions_dir%'
         cookie_httponly: true
-        name: DATABSESSID
+        name: ZERODECHETSESSID
 
     #esi: ~
     #fragments: ~

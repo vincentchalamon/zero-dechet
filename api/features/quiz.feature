@@ -49,7 +49,6 @@ Feature: CRUD Quiz
     When I get a quiz
     Then I am unauthorized to access this resource
 
-  @ko
   Scenario: As an admin, I can create a quiz
     Given the following user:
       | email             | roles      | active |

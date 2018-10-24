@@ -25,12 +25,10 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * @author Vincent Chalamon <vincentchalamon@gmail.com>
  *
- * todo Replace request.attributes.get('object') by object
  * @ORM\Entity
  * @ApiResource(attributes={
  *     "normalization_context"={"groups"={"content_output"}},
- *     "denormalization_context"={"groups"={"content_input"}},
- *     "access_control"="(is_granted('ROLE_ADMIN') or request.attributes.get('object') == user or (is_granted('ROLE_ADMIN_CITY') and is_in_the_same_city(request.attributes.get('object').getProfile()))) and is_feature_enabled('content')"
+ *     "denormalization_context"={"groups"={"content_input"}}
  * }, collectionOperations={
  *     "get"={"access_control"="is_granted('ROLE_USER') and is_feature_enabled('content')"},
  *     "post"={"access_control"="is_granted('ROLE_ADMIN') and is_feature_enabled('content')"}
