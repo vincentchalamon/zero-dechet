@@ -25,9 +25,10 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Entity
  * @ApiResource(attributes={
  *     "normalization_context"={"groups"={"question_output", "choice_output"}},
- *     "denormalization_context"={"groups"={"question_input", "choice_input"}},
- *     "access_control"="is_granted('ROLE_ADMIN') and is_feature_enabled('quiz')"
- * }, collectionOperations={}, itemOperations={"get"})
+ *     "denormalization_context"={"groups"={"question_input", "choice_input"}}
+ * }, collectionOperations={}, itemOperations={
+ *     "get"={"access_control"="is_granted('ROLE_ADMIN') and is_feature_enabled('quiz')"}
+ * })
  */
 class Question
 {

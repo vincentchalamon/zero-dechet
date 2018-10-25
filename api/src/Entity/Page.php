@@ -26,15 +26,14 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Entity
  * @ApiResource(attributes={
  *     "normalization_context"={"groups"={"page_output"}},
- *     "denormalization_context"={"groups"={"page_input"}},
- *     "access_control"="is_granted('ROLE_ADMIN')"
+ *     "denormalization_context"={"groups"={"page_input"}}
  * }, collectionOperations={
  *     "get"={"access_control"="is_granted('IS_AUTHENTICATED_ANONYMOUSLY')"},
- *     "post"
+ *     "post"={"access_control"="is_granted('ROLE_ADMIN')"}
  * }, itemOperations={
  *     "get"={"access_control"="is_granted('IS_AUTHENTICATED_ANONYMOUSLY')"},
- *     "put",
- *     "delete"
+ *     "put"={"access_control"="is_granted('ROLE_ADMIN')"},
+ *     "delete"={"access_control"="is_granted('ROLE_ADMIN')"}
  * })
  * @ApiFilter(SearchFilter::class, properties={"title"="ipartial"})
  */

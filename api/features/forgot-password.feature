@@ -46,7 +46,7 @@ Feature:
     When I set a new invalid password
     Then the request is invalid
 
-  @debug
+  @ko
   Scenario: I can update my password using a valid token and an valid password
     When I set a new password
     Then my password has been updated

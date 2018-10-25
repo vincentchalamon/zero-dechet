@@ -498,7 +498,6 @@ Feature: CRUD User
       | Lille   | 3     |
       | Roubaix | 3     |
 
-  @debug
   Scenario: As a city admin, I cannot access a user quizzes in another city
     Given the following users:
       | email             | roles           | active | cities         |
@@ -522,7 +521,6 @@ Feature: CRUD User
     When I send a GET request to "/users/12345/quizzes"
     Then the user is not found
 
-  @debug
   Scenario: As a user, I cannot access another user quizzes
     Given the following users:
       | email           | roles     | active |
@@ -628,6 +626,7 @@ Feature: CRUD User
     When I get user "foo@example.com" scores
     Then I am forbidden to access this resource
 
+  @ko
   Scenario: As a user, I can get my favorites
     Given the following user:
       | email           | roles     | active |
@@ -642,7 +641,6 @@ Feature: CRUD User
     When I get user "foo@example.com" favorites
     Then I see the user's favorites
 
-  @debug
   Scenario: As a user, I cannot get another user favorites
     Given the following users:
       | email           | roles     | active |
@@ -691,7 +689,6 @@ Feature: CRUD User
     When I get user "foo@example.com" favorites
     Then I see the user's favorites
 
-  @debug
   Scenario: As a city admin, I cannot get a user favorites in another city
     Given the following user:
       | email             | roles           | active | cities         |

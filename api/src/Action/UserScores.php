@@ -22,7 +22,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 /**
  * @author Vincent Chalamon <vincentchalamon@gmail.com>
  */
-final class UserScore
+final class UserScores
 {
     public function __invoke(User $data, ScoreManager $manager, SerializerInterface $serializer): JsonResponse
     {

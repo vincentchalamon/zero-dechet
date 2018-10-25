@@ -30,9 +30,15 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ApiResource(attributes={
  *     "normalization_context"={"groups"={"registration_output"}},
  *     "denormalization_context"={"groups"={"registration_input"}}
- * }, collectionOperations={"post"}, itemOperations={
- *     "get",
- *     "delete",
+ * }, subresourceOperations={
+ *     "foo"={
+ *         "access_control"="is_granted('ROLE_USER') and is_feature_enabled('event')"
+ *     }
+ * }, collectionOperations={
+ *     "post"={"access_control"="is_granted('ROLE_USER') and is_feature_enabled('event')"}
+ * }, itemOperations={
+ *     "get"={"access_control"="is_granted('ROLE_USER') and is_feature_enabled('event')"},
+ *     "delete"={"access_control"="is_granted('ROLE_USER') and is_feature_enabled('event')"},
  *     "put"={"access_control"="(is_granted('ROLE_ADMIN') or (is_granted('ROLE_USER') and object.getEvent().getOrganizer() == user)) and is_feature_enabled('event')"}
  * })
  */

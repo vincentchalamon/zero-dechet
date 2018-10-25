@@ -25,10 +25,16 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * @author Vincent Chalamon <vincentchalamon@gmail.com>
  *
+ * todo How to replace request.attributes.get('object')?
+ *
  * @ORM\Entity
  * @ApiResource(attributes={
  *     "normalization_context"={"groups"={"content_output"}},
  *     "denormalization_context"={"groups"={"content_input"}}
+ * }, subresourceOperations={
+ *     "api_users_favorites_get_subresource"={
+ *         "access_control"="(is_granted('ROLE_ADMIN') or request.attributes.get('object') == user or (is_granted('ROLE_ADMIN_CITY') and is_in_the_same_city(request.attributes.get('object').getProfile()))) and is_feature_enabled('content')"
+ *     }
  * }, collectionOperations={
  *     "get"={"access_control"="is_granted('ROLE_USER') and is_feature_enabled('content')"},
  *     "post"={"access_control"="is_granted('ROLE_ADMIN') and is_feature_enabled('content')"}

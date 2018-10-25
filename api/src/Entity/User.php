@@ -29,8 +29,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * @author Vincent Chalamon <vincentchalamon@gmail.com>
  *
- * todo Add route requirement (id) globally: "requirements"={"id"=User::UUID_REQUIREMENT}
- *
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
  * @ORM\Table(name="`user`")
  * @ORM\EntityListeners({"App\EntityListener\UserEntityListener"})
@@ -39,35 +37,68 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=true)
  * @ApiResource(attributes={
  *     "normalization_context"={"groups"={"user_output", "place_output", "profile_output"}},
- *     "denormalization_context"={"groups"={"user_input", "profile_input"}},
- *     "access_control"="is_granted('ROLE_ADMIN') or (is_granted('ROLE_ADMIN_CITY') and is_in_the_same_city(object.getProfile())) or object == user"
+ *     "denormalization_context"={"groups"={"user_input", "profile_input"}}
  * }, collectionOperations={
- *     "post"={"validation_groups"={"Default", "registration"}, "access_control"="is_granted('ROLE_ADMIN') or (is_granted('IS_AUTHENTICATED_ANONYMOUSLY') and is_feature_enabled('register'))"},
+ *     "post"={
+ *         "validation_groups"={"Default", "registration"},
+ *         "access_control"="is_granted('ROLE_ADMIN') or (is_granted('IS_AUTHENTICATED_ANONYMOUSLY') and is_feature_enabled('register'))"
+ *     },
  *     "get"={"access_control"="is_granted('ROLE_ADMIN') or is_granted('ROLE_ADMIN_CITY')"},
- *     "import"={"method"="POST", "access_control"="is_granted('ROLE_ADMIN')", "path"="/users/import.{_format}"}
+ *     "import"={
+ *         "method"="POST",
+ *         "access_control"="is_granted('ROLE_ADMIN')",
+ *         "path"="/users/import.{_format}"
+ *     }
  * }, itemOperations={
- *     "get",
- *     "put",
- *     "delete",
- *     "validate"={"path"="/users/{id}/validate.{_format}", "method"="GET", "controller"="App\Action\UserValidation", "swagger_context"={"parameters"={{"name"="token", "in"="query", "required"=true, "type"="string"}}}, "access_control"="is_granted('IS_AUTHENTICATED_ANONYMOUSLY') and is_feature_enabled('register')"},
- *     "scores"={"path"="/users/{id}/scores.{_format}", "method"="GET", "controller"="App\Action\UserScore", "normalization_context"={"groups"={"score_output"}}, "access_control"="(is_granted('ROLE_ADMIN') or object == user or (is_granted('ROLE_ADMIN_CITY') and is_in_the_same_city(object.getProfile()))) and is_feature_enabled('quiz')"}
- * }, subresourceOperations={
- *     "quizzes_get_subresource"={
- *         "requirements"={"id"=User::UUID_REQUIREMENT},
+ *     "get"={"access_control"="is_granted('ROLE_ADMIN') or (is_granted('ROLE_ADMIN_CITY') and is_in_the_same_city(object.getProfile())) or object == user"},
+ *     "put"={"access_control"="is_granted('ROLE_ADMIN') or (is_granted('ROLE_ADMIN_CITY') and is_in_the_same_city(object.getProfile())) or object == user"},
+ *     "delete"={"access_control"="is_granted('ROLE_ADMIN') or (is_granted('ROLE_ADMIN_CITY') and is_in_the_same_city(object.getProfile())) or object == user"},
+ *     "validate"={
+ *         "path"="/users/{id}/validate.{_format}",
+ *         "method"="GET",
+ *         "controller"="App\Action\UserValidation",
+ *         "swagger_context"={
+ *             "parameters"={
+ *                 {"name"="token", "in"="query", "required"=true, "type"="string"},
+ *                 {"name"="id", "in"="path", "required"=true, "type"="string"}
+ *             }
+ *         },
+ *         "access_control"="is_granted('IS_AUTHENTICATED_ANONYMOUSLY') and is_feature_enabled('register')"
+ *     },
+ *     "scores"={
+ *         "path"="/users/{id}/scores.{_format}",
+ *         "method"="GET",
+ *         "controller"="App\Action\UserScores",
+ *         "swagger_context"={
+ *             "parameters"={
+ *                 {"name"="id", "in"="path", "required"=true, "type"="string"}
+ *             }
+ *         },
+ *         "normalization_context"={"groups"={"score_output"}},
  *         "access_control"="(is_granted('ROLE_ADMIN') or object == user or (is_granted('ROLE_ADMIN_CITY') and is_in_the_same_city(object.getProfile()))) and is_feature_enabled('quiz')"
  *     },
- *     "favorites_get_subresource"={
+ *     "events"={
+ *         "path"="/users/{id}/events.{_format}",
+ *         "method"="GET",
+ *         "controller"="App\Action\UserEvents",
  *         "requirements"={"id"=User::UUID_REQUIREMENT},
- *         "access_control"="(is_granted('ROLE_ADMIN') or object == user or (is_granted('ROLE_ADMIN_CITY') and is_in_the_same_city(object.getProfile()))) and is_feature_enabled('content')"
- *     },
- *     "weighings_get_subresource"={
- *         "requirements"={"id"=User::UUID_REQUIREMENT},
- *         "access_control"="(is_granted('ROLE_ADMIN') or object == user or (is_granted('ROLE_ADMIN_CITY') and is_in_the_same_city(object.getProfile()))) and is_feature_enabled('weighing')"
- *     },
- *     "events_get_subresource"={
- *         "requirements"={"id"=User::UUID_REQUIREMENT},
+ *         "swagger_context"={
+ *             "parameters"={
+ *                 {"name"="id", "in"="path", "required"=true, "type"="string"}
+ *             }
+ *         },
  *         "normalization_context"={"groups"={"event_output"}},
  *         "access_control"="((request.query.has('token') and object.getToken() == request.query.get('token')) or object == user) and is_feature_enabled('event')"
+ *     }
+ * }, subresourceOperations={
+ *     "quizzes_get_subresource"={
+ *         "requirements"={"id"=User::UUID_REQUIREMENT}
+ *     },
+ *     "favorites_get_subresource"={
+ *         "requirements"={"id"=User::UUID_REQUIREMENT}
+ *     },
+ *     "weighings_get_subresource"={
+ *         "requirements"={"id"=User::UUID_REQUIREMENT}
  *     }
  * })
  * @ApiFilter(SearchFilter::class, properties={"active", "email"})
@@ -171,7 +202,7 @@ class User implements UserInterface
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\UserQuiz", mappedBy="user", fetch="EXTRA_LAZY")
      * @ORM\OrderBy({"createdAt"="DESC"})
-     * @ApiSubresource
+     * @ApiSubresource(maxDepth=1)
      */
     private $quizzes;
 
@@ -499,8 +530,6 @@ class User implements UserInterface
     }
 
     /**
-     * @ApiSubresource
-     *
      * @return Event[]
      */
     public function getEvents(): array

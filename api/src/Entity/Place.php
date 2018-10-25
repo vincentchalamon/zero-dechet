@@ -24,13 +24,12 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Entity
  * @ApiResource(attributes={
  *     "normalization_context"={"groups"={"place_output"}},
- *     "denormalization_context"={"groups"={"place_input"}},
- *     "access_control"="is_granted('ROLE_USER') and is_feature_enabled('quiz')"
+ *     "denormalization_context"={"groups"={"place_input"}}
  * }, collectionOperations={
- *     "get",
+ *     "get"={"access_control"="is_granted('ROLE_USER') and is_feature_enabled('quiz')"},
  *     "post"={"access_control"="is_granted('ROLE_ADMIN') and is_feature_enabled('quiz')"}
  * }, itemOperations={
- *     "get",
+ *     "get"={"access_control"="is_granted('ROLE_USER') and is_feature_enabled('quiz')"},
  *     "put"={"access_control"="is_granted('ROLE_ADMIN') and is_feature_enabled('quiz')"},
  *     "delete"={"access_control"="is_granted('ROLE_ADMIN') and is_feature_enabled('quiz')"}
  * })

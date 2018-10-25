@@ -29,13 +29,12 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ApiResource(attributes={
  *     "normalization_context"={"groups"={"team_output", "user_output"}},
  *     "denormalization_context"={"groups"={"team_input"}},
- *     "access_control"="is_granted('ROLE_USER') and is_feature_enabled('weighing')",
  *     "order"={"name"="ASC"}
  * }, collectionOperations={
- *     "get",
+ *     "get"={"access_control"="is_granted('ROLE_USER') and is_feature_enabled('weighing')"},
  *     "post"={"access_control"="is_granted('ROLE_ADMIN') and is_feature_enabled('weighing')"}
  * }, itemOperations={
- *     "get",
+ *     "get"={"access_control"="is_granted('ROLE_USER') and is_feature_enabled('weighing')"},
  *     "put"={"access_control"="is_granted('ROLE_ADMIN') and is_feature_enabled('weighing')"},
  *     "delete"={"access_control"="is_granted('ROLE_ADMIN') and is_feature_enabled('weighing')"}
  * })

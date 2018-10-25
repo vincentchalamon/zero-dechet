@@ -26,9 +26,10 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ApiResource(attributes={
  *     "normalization_context"={"groups"={"choice_output"}},
  *     "denormalization_context"={"groups"={"choice_input"}},
- *     "access_control"="is_granted('ROLE_ADMIN') and is_feature_enabled('quiz')",
  *     "order"={"position"="ASC"}
- * }, collectionOperations={}, itemOperations={"get"})
+ * }, collectionOperations={}, itemOperations={
+ *     "get"={"access_control"="is_granted('ROLE_ADMIN') and is_feature_enabled('quiz')"}
+ * })
  */
 class Choice
 {

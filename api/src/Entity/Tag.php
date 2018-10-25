@@ -24,15 +24,14 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Entity
  * @ApiResource(attributes={
  *     "normalization_context"={"groups"={"tag_output"}},
- *     "denormalization_context"={"groups"={"tag_input"}},
- *     "access_control"="is_granted('ROLE_ADMIN') and is_feature_enabled('shop')"
+ *     "denormalization_context"={"groups"={"tag_input"}}
  * }, collectionOperations={
  *     "get"={"access_control"="is_granted('ROLE_USER') and is_feature_enabled('shop')"},
- *     "post"
+ *     "post"={"access_control"="is_granted('ROLE_ADMIN') and is_feature_enabled('shop')"}
  * }, itemOperations={
  *     "get"={"access_control"="is_granted('ROLE_USER') and is_feature_enabled('shop')"},
- *     "put",
- *     "delete"
+ *     "put"={"access_control"="is_granted('ROLE_ADMIN') and is_feature_enabled('shop')"},
+ *     "delete"={"access_control"="is_granted('ROLE_ADMIN') and is_feature_enabled('shop')"}
  * })
  */
 class Tag

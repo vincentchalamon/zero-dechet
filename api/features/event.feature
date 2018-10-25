@@ -793,7 +793,6 @@ Feature: CRUD Event
     Then I see a list of event registrations
     And the JSON node "hydra:totalItems" should be equal to 1
 
-  @debug
   Scenario: As a user, I can export my events in webcal format
     Given the following user:
       | email           | roles     | active |
@@ -810,7 +809,6 @@ Feature: CRUD Event
     When I export my events in webcal
     Then I see the event webcal
 
-  @debug
   Scenario: As anonymous, I can export a user events in webcal format with a valid key (required for sync.)
     Given the following user:
       | email           | roles     | active |
@@ -826,7 +824,6 @@ Feature: CRUD Event
     When I export a user events in webcal
     Then I see the event webcal
 
-  @debug
   Scenario: As anonymous, I cannot export a user events in webcal format without the key
     Given the following user:
       | email           | roles     | active |
@@ -842,7 +839,6 @@ Feature: CRUD Event
     When I export a user events in webcal without the key
     Then I am unauthorized to access this resource
 
-  @debug
   Scenario: As anonymous, I cannot export an invalid user events in webcal format
     Given the following user:
       | email           | roles     | active |

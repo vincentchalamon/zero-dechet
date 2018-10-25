@@ -24,9 +24,12 @@ use Symfony\Component\Serializer\Annotation\Groups;
  * @ORM\Entity
  * @ORM\EntityListeners({"App\EntityListener\NotificationEntityListener"})
  * @ApiResource(attributes={
- *     "normalization_context"={"groups"={"notification_output"}},
- *     "access_control"="is_granted('ROLE_USER')"
- * }, collectionOperations={"get"}, itemOperations={"get"})
+ *     "normalization_context"={"groups"={"notification_output"}}
+ * }, collectionOperations={
+ *     "get"={"access_control"="is_granted('ROLE_USER')"}
+ * }, itemOperations={
+ *     "get"={"access_control"="is_granted('ROLE_USER')"}
+ * })
  */
 class Notification
 {

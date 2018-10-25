@@ -27,6 +27,10 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ApiResource(attributes={
  *     "normalization_context"={"groups"={"user_quiz_output", "choice_output"}},
  *     "denormalization_context"={"groups"={"user_quiz_input"}}
+ * }, subresourceOperations={
+ *     "api_users_quizzes_get_subresource"={
+ *         "access_control"="(is_granted('ROLE_ADMIN') or request.attributes.get('object') == user or (is_granted('ROLE_ADMIN_CITY') and is_in_the_same_city(request.attributes.get('object').getProfile()))) and is_feature_enabled('quiz')"
+ *     }
  * }, collectionOperations={
  *     "post"={"access_control"="is_granted('ROLE_USER') and is_feature_enabled('quiz')"}
  * }, itemOperations={

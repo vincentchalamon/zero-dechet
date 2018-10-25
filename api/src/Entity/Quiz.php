@@ -29,13 +29,12 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ApiResource(attributes={
  *     "normalization_context"={"groups"={"quiz_output", "place_output", "question_output", "choice_output"}},
  *     "denormalization_context"={"groups"={"quiz_input", "question_input", "choice_input"}},
- *     "access_control"="is_granted('ROLE_USER') and is_feature_enabled('quiz')",
  *     "order"={"position"="ASC"}
  * }, collectionOperations={
- *     "get",
+ *     "get"={"access_control"="is_granted('ROLE_USER') and is_feature_enabled('quiz')"},
  *     "post"={"access_control"="is_granted('ROLE_ADMIN') and is_feature_enabled('quiz')"}
  * }, itemOperations={
- *     "get",
+ *     "get"={"access_control"="is_granted('ROLE_USER') and is_feature_enabled('quiz')"},
  *     "put"={"access_control"="is_granted('ROLE_ADMIN') and is_feature_enabled('quiz') and 0 == object.countQuizzes()"},
  *     "delete"={"access_control"="is_granted('ROLE_ADMIN') and is_feature_enabled('quiz') and 0 == object.countQuizzes()"}
  * })

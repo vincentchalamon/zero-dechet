@@ -30,6 +30,10 @@ use Symfony\Component\Validator\Constraints as Assert;
  *     "order"={"createdAt"="ASC"},
  *     "normalization_context"={"groups"={"weighing_output", "user_output"}},
  *     "denormalization_context"={"groups"={"weighing_input"}}
+ * }, subresourceOperations={
+ *     "api_users_weighings_get_subresource"={
+ *         "access_control"="(is_granted('ROLE_ADMIN') or request.attributes.get('object') == user or (is_granted('ROLE_ADMIN_CITY') and is_in_the_same_city(request.attributes.get('object').getProfile()))) and is_feature_enabled('weighing')"
+ *     }
  * }, collectionOperations={
  *     "post"={"access_control"="is_granted('ROLE_USER') and is_feature_enabled('weighing')"},
  *     "get"={"access_control"="is_granted('ROLE_USER') and is_feature_enabled('weighing')"}

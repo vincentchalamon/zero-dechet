@@ -40,13 +40,22 @@ use Symfony\Component\Validator\Constraints as Assert;
  *     "post"={"access_control"="is_granted('ROLE_USER') and is_feature_enabled('event')"}
  * }, itemOperations={
  *     "get"={"access_control"="(is_granted('ROLE_ADMIN') or (is_granted('ROLE_USER') and (user == object.getOrganizer() or object.isActive()))) and is_feature_enabled('event')"},
- *     "like"={"method"="PUT", "access_control"="is_granted('ROLE_USER') and object.isActive() and is_feature_enabled('event')", "path"="/events/{id}/like.{_format}", "controller"="App\Action\UserLikeEvent"},
  *     "put"={"access_control"="(is_granted('ROLE_ADMIN') or (is_granted('ROLE_USER') and user == object.getOrganizer())) and is_feature_enabled('event')"},
- *     "delete"={"access_control"="(is_granted('ROLE_ADMIN') or (is_granted('ROLE_USER') and user == object.getOrganizer())) and is_feature_enabled('event')"}
+ *     "delete"={"access_control"="(is_granted('ROLE_ADMIN') or (is_granted('ROLE_USER') and user == object.getOrganizer())) and is_feature_enabled('event')"},
+ *     "like"={
+ *         "path"="/events/{id}/like.{_format}",
+ *         "controller"="App\Action\UserLikeEvent",
+ *         "method"="PUT",
+ *         "swagger_context"={
+ *             "parameters"={
+ *                 {"name"="id", "in"="path", "required"=true, "type"="string"}
+ *             }
+ *         },
+ *         "access_control"="is_granted('ROLE_USER') and object.isActive() and is_feature_enabled('event')"
+ *     }
  * }, subresourceOperations={
  *     "registrations_get_subresource"={
- *         "requirements"={"id"=User::UUID_REQUIREMENT},
- *         "access_control"="is_granted('ROLE_USER') and is_feature_enabled('event')"
+ *         "requirements"={"id"=User::UUID_REQUIREMENT}
  *     }
  * })
  * @ApiFilter(GeocodingFilter::class)

@@ -25,13 +25,12 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\EntityListeners("App\EntityListener\NewsletterEntityListener")
  * @ApiResource(attributes={
  *     "normalization_context"={"groups"={"newsletter_output"}},
- *     "denormalization_context"={"groups"={"newsletter_input"}},
- *     "access_control"="(is_granted('ROLE_ADMIN') or 'sent' == object.getStatus()) and is_feature_enabled('newsletter')"
+ *     "denormalization_context"={"groups"={"newsletter_input"}}
  * }, collectionOperations={
  *     "post"={"access_control"="is_granted('ROLE_ADMIN') and is_feature_enabled('newsletter')"},
  *     "get"={"access_control"="is_granted('ROLE_USER') and is_feature_enabled('newsletter')"}
  * }, itemOperations={
- *     "get",
+ *     "get"={"access_control"="(is_granted('ROLE_ADMIN') or 'sent' == object.getStatus()) and is_feature_enabled('newsletter')"},
  *     "put"={"access_control"="is_granted('ROLE_ADMIN') and is_feature_enabled('newsletter')"},
  *     "delete"={"access_control"="is_granted('ROLE_ADMIN') and is_feature_enabled('newsletter')"}
  * })
