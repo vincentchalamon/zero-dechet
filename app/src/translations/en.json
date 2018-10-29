@@ -1,0 +1,17 @@
+{
+  "title": "Zero Waste",
+  "email": {
+    "label": "Email",
+    "required": "Email address required.",
+    "invalid": "A valid email address is required."
+  },
+  "password": {
+    "label": "Password",
+    "required": "Password required."
+  },
+  "forgotPassword": "Forgot password?",
+  "login": {
+    "label": "Log in",
+    "error": "Invalid email or password."
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "title": "Zéro Déchet",
+  "email": {
+    "label": "Email",
+    "required": "Adresse email requise.",
+    "invalid": "Une adresse email valide est requise."
+  },
+  "password": {
+    "label": "Mot de passe",
+    "required": "Mot de passe requis."
+  },
+  "forgotPassword": "Mot de passe oublié ?",
+  "login": {
+    "label": "Se connecter",
+    "error": "Email ou mot de passe invalide."
+  }
+}
