@@ -21,6 +21,8 @@ security:
             json_login:
                 check_path: /login
                 require_previous_session: true
+            logout:
+                path: logout
 
     access_control:
         - { path: ^/, roles: IS_AUTHENTICATED_ANONYMOUSLY, requires_channel: https }

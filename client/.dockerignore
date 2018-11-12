@@ -12,3 +12,5 @@
 .env*
 build/
 node_modules/
+cert.crt
+cert.key

@@ -21,11 +21,6 @@ api_platform:
         shared_max_age: 3600
         vary: ['Content-Type', 'Authorization']
         public: true
-    collection:
-        pagination:
-            items_per_page: 30
-    exception_to_status:
-        Symfony\Component\Security\Core\Exception\InsufficientAuthenticationException: HTTP_UNAUTHORIZED
 
 services:
     _defaults:

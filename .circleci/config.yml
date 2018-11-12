@@ -7,49 +7,100 @@
 version: 2.1
 
 commands:
-  checkout-api-from-cache:
-    description: Checkout API from cache
+  init_spa:
+    description: Build SPA
+    parameters:
+      path:
+        type: string
     steps:
+      - checkout
       - restore_cache:
           keys:
-            - api-{{ .Environment.CIRCLE_SHA1 }}
-
-  checkout-client-from-cache:
-    description: Checkout client from cache
-    steps:
+            - node_modules-{{ checksum "<< parameters.path >>/yarn.lock" }}
+            # fallback to using the latest cache if no exact match is found
+            - node_modules-
       - run:
-          command: apk add ca-certificates
+          name: Install dependencies
+          working_directory: << parameters.path >>
+          command: yarn install --pure-lockfile
+      - save_cache:
+          paths:
+            - << parameters.path >>/node_modules
+          key: node_modules-{{ checksum "<< parameters.path >>/yarn.lock" }}
+      - save_cache:
+          paths:
+            - ./<< parameters.path >>
+          key: << parameters.path >>-{{ .Environment.CIRCLE_SHA1 }}
+
+  build_spa:
+    description: Build SPA
+    parameters:
+      path:
+        type: string
+    steps:
       - restore_cache:
           keys:
-            - client-{{ .Environment.CIRCLE_SHA1 }}
+            - << parameters.path >>-{{ .Environment.CIRCLE_SHA1 }}
+#      - restore_cache:
+#          keys:
+#            - circle-{{ .Environment.CIRCLE_SHA1 }}
+      - run:
+          name: Build app
+          working_directory: << parameters.path >>
+          command: yarn build
+          environment:
+            REACT_APP_API_ENTRYPOINT: https://api.zero-dechet.fr
+      - save_cache:
+          paths:
+            - << parameters.path >>/build
+          key: << parameters.path >>-build-{{ .Environment.CIRCLE_SHA1 }}
+
+#  deploy_spa:
+#    description: Deploy SPA
+#    parameters:
+#      path:
+#        type: string
+#    steps:
+#      - restore_cache:
+#          keys:
+#            - << parameters.path >>-build-{{ .Environment.CIRCLE_SHA1 }}
+#      - restore_cache:
+#          keys:
+#            - circle-{{ .Environment.CIRCLE_SHA1 }}
+#      - run: |
+#            source .circleci/scripts/before_deploy.sh
+#            .circleci/scripts/deploy_spa.sh << parameters.path >>
 
 executors:
   php-executor:
     docker:
-      - image: vincentchalamon/php:7.2-dev
+      - image: eu.gcr.io/zero-dechet/php
+        auth:
+          username: _json_key
+          password: $GCR_API_KEY
         environment:
           APP_ENV: test
-          APP_SECRET: eabf75cc6220f8768903571f92a6d254248dba59
-          APP_VERSION: 1.0.0
 
-  js-executor:
+  client-executor:
     docker:
-      - image: mhart/alpine-node:10.12.0
+      - image: eu.gcr.io/zero-dechet/node
+        auth:
+          username: _json_key
+          password: $GCR_API_KEY
         environment:
           JEST_JUNIT_OUTPUT: coverage/junit.xml
 
   deploy-executor:
     docker:
-      - image: docker:18.06.1
+      - image: eu.gcr.io/zero-dechet/deploy
+        auth:
+          username: _json_key
+          password: $GCR_API_KEY
 
 jobs:
   # API
-  build_api:
-    docker:
-      - image: composer
-        environment:
-          APP_ENV: test
-          APP_DEBUG: 1
+  init-api:
+    executor: php-executor
     steps:
       - checkout
       - restore_cache:
@@ -73,11 +124,17 @@ jobs:
           paths:
             - ./api
           key: api-{{ .Environment.CIRCLE_SHA1 }}
+#      - save_cache:
+#          paths:
+#            - ./.circleci
+#          key: circle-{{ .Environment.CIRCLE_SHA1 }}
 
   phpunit:
     executor: php-executor
     steps:
-      - checkout-api-from-cache
+      - restore_cache:
+          keys:
+            - api-{{ .Environment.CIRCLE_SHA1 }}
       - run:
           name: PHPUnit
           working_directory: api
@@ -85,37 +142,45 @@ jobs:
       - store_test_results:
           path: api/coverage
 
-  security-checker:
+  security_checker:
     executor: php-executor
     steps:
-      - checkout-api-from-cache
+      - restore_cache:
+          keys:
+            - api-{{ .Environment.CIRCLE_SHA1 }}
       - run:
           name: Security checker
           working_directory: api
           command: bin/security-checker security:check
 
-  monitor-health:
+  monitor_health:
     executor: php-executor
     steps:
-      - checkout-api-from-cache
+      - restore_cache:
+          keys:
+            - api-{{ .Environment.CIRCLE_SHA1 }}
       - run:
           name: Monitor health
           working_directory: api
           command: bin/console monitor:health
 
-  doctrine-schema-validator:
+  doctrine_schema_validator:
     executor: php-executor
     steps:
-      - checkout-api-from-cache
+      - restore_cache:
+          keys:
+            - api-{{ .Environment.CIRCLE_SHA1 }}
       - run:
           name: Doctrine schema validator
           working_directory: api
           command: bin/console doctrine:schema:validate --skip-sync
 
-  php-cs-fixer:
+  php_cs_fixer:
     executor: php-executor
     steps:
-      - checkout-api-from-cache
+      - restore_cache:
+          keys:
+            - api-{{ .Environment.CIRCLE_SHA1 }}
       - run:
           name: PHP CS fixer
           working_directory: api
@@ -124,97 +189,96 @@ jobs:
   phpstan:
     executor: php-executor
     steps:
-      - checkout-api-from-cache
+      - restore_cache:
+          keys:
+            - api-{{ .Environment.CIRCLE_SHA1 }}
       - run:
           name: PHPStan
           working_directory: api
           command: bin/phpstan analyse -l 0 src
 
-  swagger-validator:
-    executor: js-executor
-    steps:
-      - run:
-          command: apk add ca-certificates
-      - checkout-api-from-cache
-      - run:
-          command: yarn global add swagger-cli
-      - run:
-          name: Swagger validator
-          working_directory: api
-          command: swagger-cli validate swagger.json
-
   behat:
     docker:
-      - image: vincentchalamon/php:7.2-dev
+      - image: eu.gcr.io/zero-dechet/php
+        auth:
+          username: _json_key
+          password: $GCR_API_KEY
         environment:
           APP_ENV: test
-          APP_DEBUG: 1
           DATABASE_URL: pgsql://root@localhost/zero-dechet
-          MAILER_URL: smtp://localhost
+          MAILER_URL: smtp://localhost:25
+          REDIS_HOST: localhost
+          REDIS_PORT: 6379
       - image: mdillon/postgis:11-alpine
         environment:
           POSTGRES_DB: zero-dechet
           POSTGRES_USER: root
+      - image: redis:4-alpine
       - image: tophfr/mailcatcher:0.6.5
     steps:
-      - checkout-api-from-cache
-      - run:
-          name: Wait for db
-          command: dockerize -wait tcp://localhost:5432 -timeout 1m
+      - restore_cache:
+          keys:
+            - api-{{ .Environment.CIRCLE_SHA1 }}
       - run:
           name: Execute migrations
           working_directory: api
-          command: bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration
-      - run:
-          name: Update schema
-          working_directory: api
-          command: bin/console doctrine:schema:update --force
+          command: |
+            wget https://github.com/jwilder/dockerize/releases/download/v0.3.0/dockerize-linux-amd64-v0.3.0.tar.gz
+            tar -C /usr/local/bin -xzvf dockerize-linux-amd64-v0.3.0.tar.gz
+            rm dockerize-linux-amd64-v0.3.0.tar.gz
+            echo "Waiting for PostgreSQL to be ready..."
+            dockerize -wait tcp://localhost:5432 -timeout 1m
+            bin/console doctrine:migrations:migrate --no-interaction
       - run:
           name: Behat
           working_directory: api
           command: bin/behat -p ci
 
-  deploy-api:
-    executor: deploy-executor
+  swagger_validator:
+    executor: client-executor
     steps:
-      - checkout-api-from-cache
-      - setup_remote_docker
-      - run:
-          name: Build API
-          command: |
-            docker build --pull -t zero-dechet/php -t zero-dechet/php:latest api --target zero_dechet_php
-            docker build --pull -t zero-dechet/nginx -t zero-dechet/nginx:latest api --target zero_dechet_nginx
-            docker build --pull -t zero-dechet/varnish -t zero-dechet/varnish:latest api --target zero_dechet_varnish
-
-  # Client
-  build_client:
-    executor: js-executor
-    steps:
-      - checkout
-      - run:
-          command: apk add ca-certificates
       - restore_cache:
           keys:
-            - node_modules-{{ checksum "client/yarn.lock" }}
-            # fallback to using the latest cache if no exact match is found
-            - node_modules-
+            - api-{{ .Environment.CIRCLE_SHA1 }}
       - run:
-          name: Install dependencies
-          working_directory: client
-          command: yarn install --pure-lockfile
-      - save_cache:
-          paths:
-            - client/node_modules
-          key: node_modules-{{ checksum "client/yarn.lock" }}
+          name: Swagger validator
+          working_directory: api
+          command: swagger-cli validate swagger.json
+
+#  deploy-api:
+#    executor: deploy-executor
+#    steps:
+#      - setup_remote_docker
+#      - restore_cache:
+#          keys:
+#            - api-{{ .Environment.CIRCLE_SHA1 }}
+#      - restore_cache:
+#          keys:
+#            - circle-{{ .Environment.CIRCLE_SHA1 }}
+#      - run:
+#          name: Deploy API
+#          command: |
+#            helm lint api/helm/api/
+#            source .circleci/scripts/before_deploy.sh
+#            source .circleci/scripts/deploy_api.sh
+
+  # Client
+  init-client:
+    executor: client-executor
+    steps:
+      - init_spa:
+          path: client
       - save_cache:
           paths:
             - ./client
           key: client-{{ .Environment.CIRCLE_SHA1 }}
 
   jest:
-    executor: js-executor
+    executor: client-executor
     steps:
-      - checkout-client-from-cache
+      - restore_cache:
+          keys:
+            - client-{{ .Environment.CIRCLE_SHA1 }}
       - run:
           name: Jest
           working_directory: client
@@ -223,135 +287,175 @@ jobs:
           path: client/coverage
 
   eslint:
-    executor: js-executor
+    executor: client-executor
     steps:
-      - checkout-client-from-cache
+      - restore_cache:
+          keys: 
+            - client-{{ .Environment.CIRCLE_SHA1 }}
       - run:
           name: ESLint
           working_directory: client
-          command: yarn eslint src
+          command: yarn eslint src features
 
-  nightwatch:
+  e2e:
     docker:
-      - image: mhart/alpine-node:10.12.0
-      - image: selenium/standalone-chrome:3.14
+      - image: eu.gcr.io/zero-dechet/docker
+        auth:
+          username: _json_key
+          password: $GCR_API_KEY
     steps:
-      - checkout-client-from-cache
-      - run:
-          name: Start mocks server
-          working_directory: client
-          command: yarn simulado -d features/mocks
-          background: true
-      - run:
-          name: Start server
-          working_directory: client
-          command: yarn start
-          background: true
-          environment:
-            REACT_APP_API_ENTRYPOINT: http://localhost:7001
-      - run:
-          name: Nightwatch
-          working_directory: client
-          command: yarn nightwatch -e ci
-
-  deploy-client:
-    executor: js-executor
-    steps:
-      - checkout-client-from-cache
-      - run:
-          name: Build client
-          working_directory: client
-          command: yarn build
-          environment:
-            REACT_APP_API_ENTRYPOINT: https://api.zero-dechet.fr
-
-  # Admin
-  deploy-admin:
-    executor: js-executor
-    steps:
+      - setup_remote_docker:
+          docker_layer_caching: true
       - checkout
-      - run:
-          command: apk add ca-certificates
       - restore_cache:
           keys:
-            - node_modules-{{ checksum "admin/yarn.lock" }}
+            - vendor-{{ checksum "api/composer.lock" }}
             # fallback to using the latest cache if no exact match is found
-            - node_modules-
+            - vendor-
       - run:
-          name: Install dependencies
-          working_directory: admin
-          command: yarn install --pure-lockfile
-      - save_cache:
-          paths:
-            - admin/node_modules
-          key: node_modules-{{ checksum "admin/yarn.lock" }}
+          name: Start services
+          command: |
+            cp api/.env.dist api/.env
+            docker-compose up -d
+            echo "Waiting for PHP container to be up and ready..."
+            until [[ $(docker-compose logs --tail 1 php) = *"ready to handle connections"* ]]; do
+              sleep 1
+            done
       - run:
-          name: Build admin
-          working_directory: admin
-          command: yarn build
+          name: Build client
+          command: docker-compose exec -e REACT_APP_API_ENTRYPOINT=https://h2-proxy:8443 client yarn build
+      - run:
+          name: Run tests
+          command: docker-compose exec client yarn cucumber-js
+
+#  build-client:
+#    executor: client-executor
+#    steps:
+#      - build_spa:
+#          path: client
+
+#  deploy-client:
+#    executor: deploy-executor
+#    steps:
+#      - deploy_spa:
+#          path: client
+
+  # Admin
+#  init-admin:
+#    executor: client-executor
+#    steps:
+#      - init_spa:
+#          path: admin
+#      - save_cache:
+#          paths:
+#            - ./admin
+#          key: admin-{{ .Environment.CIRCLE_SHA1 }}
+
+#  build-admin:
+#    executor: client-executor
+#    steps:
+#      - build_spa:
+#          path: admin
+
+#  deploy-admin:
+#    executor: deploy-executor
+#    steps:
+#      - deploy_spa:
+#          path: admin
+
+  # APP
+  detox:
+    macos:
+      xcode: 10.1
+    steps:
+      - run:
+          name: Init environment
           environment:
-            REACT_APP_API_ENTRYPOINT: https://api.zero-dechet.fr
+            NODE_VERSION: stable
+          command: |
+            brew tap wix/brew
+            brew install applesimutils
+            curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.2/install.sh | bash
+            export NVM_DIR="$HOME/.nvm" && [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+            nvm install $NODE_VERSION
+            nvm use $NODE_VERSION
+            npm install -g react-native-cli
+            npm install -g detox-cli
+      - checkout
+      - run:
+          name: Build APP
+          command: detox build
+      - run:
+          name: Run Detox
+          command: detox test
 
 workflows:
   version: 2
-  build_and_deploy:
+  init-and-deploy:
     jobs:
-      - build_api
+      # API
+      - init-api
       - phpunit:
           requires:
-            - build_api
-      - security-checker:
+            - init-api
+      - security_checker:
           requires:
-            - build_api
-      - monitor-health:
+            - init-api
+      - monitor_health:
           requires:
-            - build_api
-      - doctrine-schema-validator:
+            - init-api
+      - doctrine_schema_validator:
           requires:
-            - build_api
-      - php-cs-fixer:
+            - init-api
+      - php_cs_fixer:
           requires:
-            - build_api
+            - init-api
       - phpstan:
           requires:
-            - build_api
-      - swagger-validator:
+            - init-api
+      - swagger_validator:
           requires:
-            - build_api
+            - init-api
       - behat:
           requires:
-            - build_api
-      - build_client
+            - init-api
+#      - deploy-api:
+#          requires:
+#            - phpunit
+#            - security_checker
+#            - monitor_health
+#            - doctrine_schema_validator
+#            - php_cs_fixer
+#            - phpstan
+#            - behat
+#            - swagger_validator
+      # Client
+      - init-client
       - jest:
           requires:
-            - build_client
-      - nightwatch:
+            - init-client
+      - e2e:
           requires:
-            - build_client
-      - deploy-api:
+            - init-client
+      - eslint:
           requires:
-            - phpunit
-            - security-checker
-            - monitor-health
-            - doctrine-schema-validator
-            - php-cs-fixer
-            - phpstan
-            - swagger-validator
-            - behat
-          filters:
-            branches:
-              only: master
-      - deploy-client:
-          requires:
-            - jest
-            - nightwatch
-            - deploy-api
-          filters:
-            branches:
-              only: master
-      - deploy-admin:
-          requires:
-            - deploy-api
-          filters:
-            branches:
-              only: master
+            - init-client
+#      - build-client:
+#          requires:
+#            - deploy-api
+#            - eslint
+#            - jest
+#            - e2e
+#      - deploy-client:
+#          requires:
+#            - build-client
+      # Admin
+#      - init-admin:
+#          requires:
+#            - deploy-api
+#      - build-admin:
+#          requires:
+#            - init-admin
+#      - deploy-admin:
+#          requires:
+#            - build-admin

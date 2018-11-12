@@ -4,7 +4,6 @@
 ARG PHP_VERSION=7.2
 ARG NGINX_VERSION=1.15
 ARG VARNISH_VERSION=6.0
-ARG POSTGRES_VERSION=11
 
 FROM php:${PHP_VERSION}-fpm-alpine AS zero_dechet_php
 
@@ -18,6 +17,8 @@ RUN apk add --no-cache \
 	;
 
 ARG APCU_VERSION=5.1.12
+ARG POSTGRES_VERSION=11
+ARG REDIS_VERSION=4.1.1
 RUN set -eux; \
 	apk add --no-cache --virtual .build-deps \
 		$PHPIZE_DEPS \
@@ -35,11 +36,13 @@ RUN set -eux; \
 	; \
 	pecl install \
 		apcu-${APCU_VERSION} \
+		redis-${REDIS_VERSION} \
 	; \
 	pecl clear-cache; \
 	docker-php-ext-enable \
 		apcu \
 		opcache \
+		redis \
 	; \
 	\
 	runDeps="$( \
@@ -76,7 +79,7 @@ RUN set -eux; \
 COPY . ./
 
 RUN set -eux; \
-	mkdir -p var/cache var/log var/sessions; \
+	mkdir -p var/cache var/log; \
 	composer dump-autoload --classmap-authoritative --no-dev; \
 	composer run-script --no-dev post-install-cmd; \
 	chmod +x bin/console; sync
@@ -89,8 +92,6 @@ ENTRYPOINT ["docker-entrypoint"]
 CMD ["php-fpm"]
 
 FROM nginx:${NGINX_VERSION}-alpine AS zero_dechet_nginx
-
-COPY docker/nginx/conf.d/default.conf /etc/nginx/conf.d/default.conf
 
 COPY docker/nginx/conf.d/default.conf /etc/nginx/conf.d/default.conf
 

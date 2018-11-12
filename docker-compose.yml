@@ -2,45 +2,47 @@ version: '3.4'
 
 services:
   php:
-    image: zero-dechet/php
+    image: ${CONTAINER_REGISTRY_BASE}/php
     build:
       context: ./api
       target: zero_dechet_php
       cache_from:
-        - zero-dechet/php
+        - ${CONTAINER_REGISTRY_BASE}/php
+        - ${CONTAINER_REGISTRY_BASE}/nginx
+        - ${CONTAINER_REGISTRY_BASE}/varnish
     depends_on:
       - db
+      - mailcatcher
+      - redis
     env_file:
       - ./api/.env
-    volumes:
-      - $HOME/.composer/cache:/root/.composer/cache
-      - ./api:/srv/api:rw,cached
-      - /srv/api/var/cache/
-      - /srv/api/var/log/
 
   api:
-    image: zero-dechet/nginx
+    image: ${CONTAINER_REGISTRY_BASE}/nginx
     build:
       context: ./api
       target: zero_dechet_nginx
       cache_from:
-        - zero-dechet/nginx
+        - ${CONTAINER_REGISTRY_BASE}/php
+        - ${CONTAINER_REGISTRY_BASE}/nginx
+        - ${CONTAINER_REGISTRY_BASE}/varnish
     depends_on:
       - php
-    volumes:
-      - ./api/public:/srv/api/public:ro
+
+  redis:
+    image: redis:4-alpine
 
   cache-proxy:
-    image: zero-dechet/varnish
+    image: ${CONTAINER_REGISTRY_BASE}/varnish
     build:
       context: ./api
       target: zero_dechet_varnish
       cache_from:
-        - zero-dechet/varnish
+        - ${CONTAINER_REGISTRY_BASE}/php
+        - ${CONTAINER_REGISTRY_BASE}/nginx
+        - ${CONTAINER_REGISTRY_BASE}/varnish
     depends_on:
       - api
-    volumes:
-      - ./api/docker/varnish/conf:/usr/local/etc/varnish:ro
     tmpfs:
       - /usr/local/var/varnish:exec
 
@@ -52,33 +54,35 @@ services:
       - POSTGRES_DB=api
       - POSTGRES_USER=zero-dechet
       - POSTGRES_PASSWORD=z3r0d3ch3t
-    volumes:
-      - ./api/docker/postgres/healthcheck:/usr/local/bin/healthcheck:rw
-      - db-data:/var/lib/postgresql/data:rw
 
   client:
-    image: zero-dechet/client
+    image: ${CONTAINER_REGISTRY_BASE}/client
     build:
       context: ./client
+      target: zero_dechet_client
       cache_from:
-        - zero-dechet/client
+        - ${CONTAINER_REGISTRY_BASE}/client
     env_file:
       - ./client/.env
-    volumes:
-      - ./client:/usr/src/client:rw,cached
-      - /usr/src/client/node_modules
+
+  app:
+    image: ${CONTAINER_REGISTRY_BASE}/app
+    build:
+      context: ./app
+      target: zero_dechet_app
+      cache_from:
+        - ${CONTAINER_REGISTRY_BASE}/app
+    env_file:
+      - ./app/.env
 
   admin:
-    image: zero-dechet/admin
+    image: ${CONTAINER_REGISTRY_BASE}/admin
     build:
       context: ./admin
       cache_from:
-        - zero-dechet/admin
+        - ${CONTAINER_REGISTRY_BASE}/admin
     env_file:
       - ./admin/.env
-    volumes:
-      - ./admin:/usr/src/admin:rw,cached
-      - /usr/src/admin/node_modules
 
   h2-proxy:
     build:
@@ -89,11 +93,5 @@ services:
       - api
       - cache-proxy
 
-  selenium:
-    image: selenium/standalone-chrome:3.14
-
   mailcatcher:
     image: tophfr/mailcatcher:0.6.5
-
-volumes:
-  db-data: {}

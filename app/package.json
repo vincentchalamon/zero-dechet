@@ -23,5 +23,20 @@
     "redux-axios-middleware": "^4.0.0",
     "redux-thunk": "^2.3.0",
     "yup": "^0.26.6"
+  },
+  "devDependencies": {
+    "detox": "^9.0.6",
+    "jest": "^23.6.0"
+  },
+  "detox": {
+    "test-runner": "jest",
+    "configurations": {
+      "ios.sim.debug": {
+        "binaryPath": "ios/build/Build/Products/Debug-iphonesimulator/zero-dechet.app",
+        "build": "xcodebuild -project ios/zero-dechet.xcodeproj -scheme zero-dechet -configuration Debug -sdk iphonesimulator -derivedDataPath ios/build",
+        "type": "ios.simulator",
+        "name": "iPhone 7"
+      }
+    }
   }
 }

@@ -36,11 +36,6 @@ class Kernel extends BaseKernel
         return $this->getProjectDir().'/var/log';
     }
 
-    public function getSessionDir()
-    {
-        return $this->getProjectDir().'/var/sessions';
-    }
-
     public function registerBundles()
     {
         $contents = require $this->getProjectDir().'/config/bundles.php';
@@ -76,13 +71,6 @@ class Kernel extends BaseKernel
             $routes->import($confDir.'/routes/'.$this->environment.'/**/*'.self::CONFIG_EXTS, '/', 'glob');
         }
         $routes->import($confDir.'/routes'.self::CONFIG_EXTS, '/', 'glob');
-    }
-
-    protected function getKernelParameters()
-    {
-        return \array_merge([
-            'kernel.sessions_dir' => \realpath($this->getSessionDir()) ?: $this->getSessionDir(),
-        ], parent::getKernelParameters());
     }
 
     protected function build(ContainerBuilder $container)

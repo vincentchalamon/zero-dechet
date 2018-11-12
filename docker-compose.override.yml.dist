@@ -1,23 +1,64 @@
 version: '3.4'
 
+volumes:
+  db-data: {}
+
 services:
+  php:
+    volumes:
+      - $HOME/.composer/cache:/root/.composer/cache
+      - ./api:/srv/api:rw,cached
+      # If you develop on Linux, uncomment the following line to use a bind-mounted host directory instead
+      # - ./api/var:/srv/api/var:rw
+
   api:
+    volumes:
+      - ./api/public:/srv/api/public:ro
     ports:
       - 8080:80
 
+  redis:
+    ports:
+      - 6379:6379
+
   cache-proxy:
+    volumes:
+      - ./api/docker/varnish/conf:/usr/local/etc/varnish:ro
     ports:
       - 8081:80
 
   db:
+    volumes:
+      - ./api/docker/postgres/healthcheck:/usr/local/bin/healthcheck:rw
+      - db-data:/var/lib/postgresql/data:rw
+      # You may use a bind-mounted host directory instead, so that it is harder to accidentally remove the volume and lose all your data!
+      # - ./docker/db/data:/var/lib/postgresql/data:rw
     ports:
       - 5432:5432
 
   client:
+    volumes:
+      - ./client:/usr/src/client:rw,cached
+      - /usr/src/client/node_modules
+    environment:
+      REACT_APP_API_ENTRYPOINT: https://localhost:8443
+      PUPPETEER_EXECUTABLE_PATH: /usr/bin/chromium-browser
     ports:
       - 80:3000
 
+  app:
+    volumes:
+      - ./app:/usr/src/app:rw,cached
+      - /usr/src/app/node_modules
+    environment:
+      REACT_APP_API_ENTRYPOINT: https://localhost:8443
+
   admin:
+    volumes:
+      - ./admin:/usr/src/admin:rw,cached
+      - /usr/src/admin/node_modules
+    environment:
+      REACT_APP_API_ENTRYPOINT: https://localhost:8443
     ports:
       - 81:3000
 
@@ -27,10 +68,6 @@ services:
       - 444:444
       - 8443:8443
       - 8444:8444
-
-  selenium:
-    ports:
-      - 4444:4444
 
   mailcatcher:
     ports:

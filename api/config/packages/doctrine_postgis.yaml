@@ -1,0 +1,16 @@
+doctrine:
+    dbal:
+        mapping_types:
+            _text: string
+        types:
+            geometry:
+                class: Jsor\Doctrine\PostGIS\Types\GeometryType
+                commented: false
+    orm:
+        dql:
+            string_functions:
+                ST_Distance_Sphere: Jsor\Doctrine\PostGIS\Functions\ST_Distance_Sphere
+                ST_GeomFromText: Jsor\Doctrine\PostGIS\Functions\ST_GeomFromText
+
+services:
+    Jsor\Doctrine\PostGIS\Event\ORMSchemaEventSubscriber: ~
