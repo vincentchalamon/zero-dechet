@@ -162,13 +162,3 @@ To launch eslint analysis:
 ```bash
 yarn eslint src
 ```
-
-#### Run the app on your device
-
-Using [expo](https://expo.io), you can run the app on your device (require to install expo on your device):
-
-```bash
-yarn start
-```
-
-Then, scan the QR code, the app will be downloaded & synched, and start on your device.

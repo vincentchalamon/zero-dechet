@@ -1,8 +1,10 @@
 {
+  "name": "zero_dechet",
+  "displayName": "zero_dechet",
   "expo": {
-    "name": "zero-dechet",
+    "name": "zero_dechet",
     "description": "Zero Dechet mobile app.",
-    "slug": "zero-dechet",
+    "slug": "zero_dechet",
     "privacy": "public",
     "sdkVersion": "30.0.0",
     "platforms": ["ios", "android"],

@@ -17,7 +17,6 @@ RUN apk add --no-cache \
 	;
 
 ARG APCU_VERSION=5.1.12
-ARG POSTGRES_VERSION=11
 ARG REDIS_VERSION=4.1.1
 RUN set -eux; \
 	apk add --no-cache --virtual .build-deps \
@@ -76,19 +75,22 @@ RUN set -eux; \
 	composer install --prefer-dist --no-dev --no-autoloader --no-scripts --no-progress --no-suggest; \
 	composer clear-cache
 
-COPY . ./
-
 RUN set -eux; \
-	mkdir -p var/cache var/log; \
-	composer dump-autoload --classmap-authoritative --no-dev; \
-	composer run-script --no-dev post-install-cmd; \
-	chmod +x bin/console; sync
+	mkdir -p var/cache var/log
 VOLUME /srv/api/var
 
 COPY docker/php/docker-entrypoint.sh /usr/local/bin/docker-entrypoint
 RUN chmod +x /usr/local/bin/docker-entrypoint
 
 ENTRYPOINT ["docker-entrypoint"]
+
+COPY . ./
+
+RUN set -eux; \
+	chmod +x bin/console; sync; \
+	composer dump-autoload --classmap-authoritative --no-dev; \
+	composer run-script --no-dev post-install-cmd
+
 CMD ["php-fpm"]
 
 FROM nginx:${NGINX_VERSION}-alpine AS zero_dechet_nginx

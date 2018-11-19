@@ -7,9 +7,10 @@ monolog:
             excluded_404s:
                 # regex: exclude all 404 errors from the logs
                 - ^/
+        # https://devcenter.heroku.com/articles/getting-started-with-symfony#changing-the-log-destination-for-production
         nested:
             type: stream
-            path: '%kernel.logs_dir%/%kernel.environment%.log'
+            path:  'php://stderr'
             level: debug
         console:
             type: console

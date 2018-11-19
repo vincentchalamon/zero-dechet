@@ -17,9 +17,11 @@ executors:
     docker:
       - image: vincentchalamon/node:11.2.0
 
-  docker-executor:
+  android-executor:
     docker:
-      - image: docker/compose:1.23.1
+      - image: vincentchalamon/node:android
+    environment:
+      JVM_OPTS: -Xmx3200m
 
 jobs:
   # API
@@ -166,41 +168,39 @@ jobs:
           path: api/swagger.json
           destination: swagger.json
 
-#  deploy-api:
-#    docker:
-#      - image: buildpack-deps:trusty
-#    steps:
-#      - restore_cache:
-#          keys:
-#            - api-{{ .Environment.CIRCLE_SHA1 }}
-#      - run:
-#          name: Deploy API
-#          command: |
-#            heroku login
-#            git push https://heroku:$HEROKU_API_KEY@git.heroku.com/$HEROKU_APP_NAME.git master
+  deploy-api:
+    docker:
+      - image: buildpack-deps:trusty
+    steps:
+      - restore_cache:
+          keys:
+            - api-{{ .Environment.CIRCLE_SHA1 }}
+      - run:
+          name: Deploy API
+          command: git subtree push --prefix api https://heroku:$HEROKU_API_KEY@git.heroku.com/$HEROKU_APP_NAME.git master
 
   # Admin
-#  build-and-deploy-admin:
-#    executor: node-executor
-#    steps:
-#      - checkout
-#      - restore_cache:
-#          keys:
-#            - node_modules-{{ checksum "admin/yarn.lock" }}
-#            # fallback to using the latest cache if no exact match is found
-#            - node_modules-
-#      - run:
-#          name: Install dependencies
-#          working_directory: admin
-#          command: yarn install --pure-lockfile
-#      - run:
-#          name: Build app
-#          working_directory: admin
-#          command: yarn build
-#          environment:
-#            REACT_APP_API_ENTRYPOINT: https://api.zero-dechet.app
-#      - store_artifacts:
-#          path: admin/build
+  deploy-admin:
+    executor: node-executor
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - node_modules-{{ checksum "admin/yarn.lock" }}
+            # fallback to using the latest cache if no exact match is found
+            - node_modules-
+      - run:
+          name: Install dependencies
+          working_directory: admin
+          command: yarn install --pure-lockfile
+      - run:
+          name: Build app
+          working_directory: admin
+          command: yarn build
+          environment:
+            REACT_APP_API_ENTRYPOINT: https://api.zero-dechet.app
+      - store_artifacts:
+          path: admin/build
 #      - run: |
 #            todo Deploy to Google Bucket?
 
@@ -226,6 +226,9 @@ jobs:
           paths:
             - ./app
           key: app-{{ .Environment.CIRCLE_SHA1 }}
+      - run:
+          working_directory: app
+          command: ls -als
 
   eslint:
     executor: node-executor
@@ -239,28 +242,19 @@ jobs:
           command: yarn eslint src features
 
   detox:
-    docker:
-      image: circleci/android:api-28-alpha
-    environment:
-      JVM_OPTS: -Xmx3200m
+    executor: android-executor
     steps:
-      - run:
-          name: Init environment
-          environment:
-            NODE_VERSION: stable
-          command: |
-            curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.2/install.sh | bash
-            export NVM_DIR="$HOME/.nvm" && [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
-            nvm install $NODE_VERSION
-            nvm use $NODE_VERSION
-            npm install -g react-native-cli detox-cli
       - restore_cache:
           keys: 
             - app-{{ .Environment.CIRCLE_SHA1 }}
       - run:
           name: Build app
           working_directory: app
-          command: detox build --configuration android.emu.release
+          command: |
+            whoami
+            pwd
+            ls -als
+            detox build --configuration android.emu.release
           environment:
             REACT_APP_API_ENTRYPOINT: https://api.zero-dechet.app
       - run:
@@ -272,14 +266,14 @@ jobs:
             - ./app/build
           key: app-build-{{ .Environment.CIRCLE_SHA1 }}
 
-#  deploy-app:
-#    executor: deploy-executor
-#    steps:
-#      - restore_cache:
-#          keys:
-#            - app-build-{{ .Environment.CIRCLE_SHA1 }}
-#      - store_artifacts:
-#          path: app/build
+  deploy-app:
+    executor: android-executor
+    steps:
+      - restore_cache:
+          keys:
+            - app-build-{{ .Environment.CIRCLE_SHA1 }}
+      - store_artifacts:
+          path: app/build
 #      - run: |
 #            todo Deploy to stores
 
@@ -313,35 +307,39 @@ workflows:
       - behat:
           requires:
             - init-api
-#      - deploy-api:
-#          requires:
-#            - phpunit
-#            - security_checker
-#            - monitor_health
-#            - doctrine_schema_validator
-#            - php_cs_fixer
-#            - phpstan
-#            - behat
-#            - swagger_validator
-#          filters:
-#            branches:
-#              only: master
+      - deploy-api:
+          requires:
+            - phpunit
+            - security_checker
+            - monitor_health
+            - doctrine_schema_validator
+            - php_cs_fixer
+            - phpstan
+            - behat
+            - swagger_validator
+          filters:
+            branches:
+              only: master
       # Admin
-#      - build-and-deploy-admin:
-#          requires:
-#            - deploy-api
-#          filters:
-#            branches:
-#              only: master
-      # APP
+      - deploy-admin:
+          requires:
+            - deploy-api
+          filters:
+            branches:
+              only: master
+      # App
       - init-app
+      - eslint:
+          requires:
+            - init-app
       - detox:
           requires:
             - init-app
-#      - deploy-app:
-#          requires:
-#            - detox
-#            - deploy-api
-#          filters:
-#            branches:
-#              only: master
+      - deploy-app:
+          requires:
+            - eslint
+            - detox
+            - deploy-api
+          filters:
+            branches:
+              only: master

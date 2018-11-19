@@ -2,7 +2,27 @@ liip_monitor:
     # enabling the controller requires that `assets` are enabled in the framework bundle
     enable_controller: false
     checks:
-        php_extensions:     [apcu, Zend OPcache, PDO, date, json, pdo_pgsql, curl, intl, tokenizer, mbstring, dom, pcre, reflection, spl]
+        php_extensions:
+            - apcu
+            - curl
+            - date
+            - dom
+            - fileinfo
+            - hash
+            - iconv
+            - intl
+            - json
+            - mbstring
+            - openssl
+            - pcre
+            - PDO
+            - pdo_pgsql
+            - redis
+            - reflection
+            - spl
+            - tokenizer
+            - xml
+            - Zend OPcache
         php_version:
             '7.2':          '>='
         readable_directory: ['%kernel.cache_dir%', '%kernel.logs_dir%']

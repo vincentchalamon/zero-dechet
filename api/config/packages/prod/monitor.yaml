@@ -1,0 +1,9 @@
+liip_monitor:
+    checks:
+#        redis:
+#            name:
+#                dsn: 'redis://%env(REDIS_HOST)%:%env(REDIS_PORT)%'
+        doctrine_dbal: default
+        doctrine_migrations:
+            migrations_with_doctrine_bundle: 
+                connection: default

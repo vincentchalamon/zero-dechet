@@ -27,9 +27,6 @@ final class Version20181019075654 extends AbstractMigration
 
         $this->addSql('CREATE EXTENSION IF NOT EXISTS "uuid-ossp"');
         $this->addSql('CREATE EXTENSION IF NOT EXISTS postgis');
-        $this->addSql('CREATE EXTENSION IF NOT EXISTS postgis_topology');
-        $this->addSql('CREATE EXTENSION IF NOT EXISTS fuzzystrmatch');
-        $this->addSql('CREATE EXTENSION IF NOT EXISTS postgis_tiger_geocoder');
     }
 
     public function down(Schema $schema): void

@@ -11,7 +11,25 @@
     ],
     "require": {
         "php": "^7.2",
+        "ext-apcu": "*",
+        "ext-curl": "*",
+        "ext-date": "*",
+        "ext-dom": "*",
+        "ext-fileinfo": "*",
+        "ext-hash": "*",
         "ext-iconv": "*",
+        "ext-intl": "*",
+        "ext-json": "*",
+        "ext-mbstring": "*",
+        "ext-openssl": "*",
+        "ext-pcre": "*",
+        "ext-PDO": "*",
+        "ext-pdo_pgsql": "*",
+        "ext-redis": "*",
+        "ext-reflection": "*",
+        "ext-spl": "*",
+        "ext-tokenizer": "*",
+        "ext-xml": "*",
         "api-platform/api-pack": "^1.1",
         "api-platform/core": "^2.3@dev",
         "csa/guzzle-bundle": "^3.1",
@@ -86,6 +104,9 @@
         ],
         "post-update-cmd": [
             "@auto-scripts"
+        ],
+        "compile": [
+            "php bin/console doctrine:migrations:migrate"
         ]
     },
     "conflict": {
