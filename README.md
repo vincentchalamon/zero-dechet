@@ -8,7 +8,7 @@ Zero Dechet
 This project has been built using following frameworks:
 
 * [API Platform](https://api-platform.com)
-* [ReactJS](http://reactjs.fr)
+* [React Native](https://facebook.github.io/react-native/)
 
 Install
 -------
@@ -16,7 +16,7 @@ Install
     $ git clone git@github.com/vincentchalamon/zero-dechet.git
     $ cp api/.env.dist api/.env
     $ cp docker-compose.override.yml.dist docker-compose.override.yml
-    $ docker-compose up
+    $ docker-compose up -d
 
 Contributing
 ------------

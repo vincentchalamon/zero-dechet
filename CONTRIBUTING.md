@@ -4,7 +4,7 @@ If you happen to find a bug, we kindly request you to report it using GitHub by 
 
 -   Check if the bug is not already reported
 -   A clear title to resume the issue
--   A description of the workflow needed to reproduce the bug (a Gherkin scenario would be awesome)
+-   A description of the workflow needed to reproduce the bug
 
 > _NOTE:_ Don't hesitate giving as much information as you can (OS, PHP version extensions...)
 
@@ -83,13 +83,6 @@ To launch Behat tests:
 bin/behat
 ```
 
-You may need to clear the cache manually before running Behat tests because of the temporary database. To do so, just
-remove the `test` cache directory:
-
-```bash
-rm -r app/cache/test
-```
-
 #### Doctrine schema validation
 
 To analyse your Doctrine schema, use:
@@ -136,7 +129,7 @@ To use the doctrine extension bundle, you have to enable each extension you need
 
 See details at the documentation [https://github.com/Atlantic18/DoctrineExtensions](https://github.com/Atlantic18/DoctrineExtensions).
 
-## Client tests
+## App tests
 
 #### Jest and coverage generation
 
@@ -154,48 +147,13 @@ yarn jest --coverage
 
 Coverage will be available in `coverage/clover.xml`.
 
-#### Nightwatch
+#### E2E
 
-To launch e2e tests:
-
-```bash
-yarn nightwatch
-```
-
-By default, it'll use the docker image. If you want to customize the Nightwatch configuration, create a custom
-configuration file and load it on run:
+To launch e2e tests (requires Android/iOS emulator):
 
 ```bash
-yarn nightwatch -c nightwatch.conf.override.js
+yarn detox
 ```
-
-How to use in Docker:
-
-```bash
-# Update dependencies if necessary
-docker-compose exec client yarn install --pure-lockfile
-
-# Run Nightwatch in Docker
-docker-compose exec client yarn nightwatch -e docker
-```
-
-##### How to mock API
-
-The API has been mocked. To start the mock server, run the following command:
-
-```bash
-yarn simulado -d features/mocks
-```
-
-By default, the mock server is exposed on port 7001. To change the default port, use `-p` option:
-
-```bash
-yarn simulado -d features/mocks -p 1234
-```
-
-Add any mock in the `features/mocks` directory as JSON files.
-
-Read documentation on https://github.com/ldabiralai/simulado.
 
 #### ESLint
 
@@ -204,3 +162,13 @@ To launch eslint analysis:
 ```bash
 yarn eslint src
 ```
+
+#### Run the app on your device
+
+Using [expo](https://expo.io), you can run the app on your device (require to install expo on your device):
+
+```bash
+yarn start
+```
+
+Then, scan the QR code, the app will be downloaded & synched, and start on your device.

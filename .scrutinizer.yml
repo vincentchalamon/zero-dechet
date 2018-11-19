@@ -32,26 +32,6 @@ build:
                       coverage:
                           file: coverage.xml
                           format: clover
-        client-analysis:
-            root_path: client
-            environment:
-                node: v8.12
-            project_setup:
-                override:
-                    - 'true'
-            tests:
-                override:
-                    - js-scrutinizer-run --sub-project-dir=client
-        client-tests:
-            root_path: client
-            environment:
-                node: v8.12
-            tests:
-                override:
-                    - command: yarn jest --ci --coverage --passWithNoTests
-                      coverage:
-                          file: coverage/clover.xml
-                          format: clover
 
 filter:
     excluded_paths:
@@ -63,7 +43,6 @@ filter:
         - api/var/
     dependency_paths:
         - api/vendor/
-        - client/node_modules/
 
 tools:
     external_code_coverage: false
@@ -77,6 +56,7 @@ tools:
     php_cs_fixer:
         config:
             level: 'all'
+
 checks:
     php:
         fix_php_opening_tag: false

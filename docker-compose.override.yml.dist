@@ -17,10 +17,6 @@ services:
     ports:
       - 8080:80
 
-  redis:
-    ports:
-      - 6379:6379
-
   cache-proxy:
     volumes:
       - ./api/docker/varnish/conf:/usr/local/etc/varnish:ro
@@ -33,18 +29,19 @@ services:
       - db-data:/var/lib/postgresql/data:rw
       # You may use a bind-mounted host directory instead, so that it is harder to accidentally remove the volume and lose all your data!
       # - ./docker/db/data:/var/lib/postgresql/data:rw
+    healthcheck:
+      test: /usr/local/bin/healthcheck
     ports:
       - 5432:5432
 
-  client:
-    volumes:
-      - ./client:/usr/src/client:rw,cached
-      - /usr/src/client/node_modules
-    environment:
-      REACT_APP_API_ENTRYPOINT: https://localhost:8443
-      PUPPETEER_EXECUTABLE_PATH: /usr/bin/chromium-browser
+  redis:
     ports:
-      - 80:3000
+      - 6379:6379
+
+  mailcatcher:
+    ports:
+      - 1080:80
+      - 1025:25
 
   app:
     volumes:
@@ -68,8 +65,3 @@ services:
       - 444:444
       - 8443:8443
       - 8444:8444
-
-  mailcatcher:
-    ports:
-      - 1080:80
-      - 1025:25

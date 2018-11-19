@@ -29,9 +29,6 @@ services:
     depends_on:
       - php
 
-  redis:
-    image: redis:4-alpine
-
   cache-proxy:
     image: ${CONTAINER_REGISTRY_BASE}/varnish
     build:
@@ -48,22 +45,16 @@ services:
 
   db:
     image: mdillon/postgis:11-alpine
-    healthcheck:
-      test: /usr/local/bin/healthcheck
     environment:
       - POSTGRES_DB=api
       - POSTGRES_USER=zero-dechet
       - POSTGRES_PASSWORD=z3r0d3ch3t
 
-  client:
-    image: ${CONTAINER_REGISTRY_BASE}/client
-    build:
-      context: ./client
-      target: zero_dechet_client
-      cache_from:
-        - ${CONTAINER_REGISTRY_BASE}/client
-    env_file:
-      - ./client/.env
+  redis:
+    image: redis:4-alpine
+
+  mailcatcher:
+    image: tophfr/mailcatcher:0.6.5
 
   app:
     image: ${CONTAINER_REGISTRY_BASE}/app
@@ -88,10 +79,6 @@ services:
     build:
       context: ./h2-proxy
     depends_on:
-      - client
       - admin
       - api
       - cache-proxy
-
-  mailcatcher:
-    image: tophfr/mailcatcher:0.6.5
