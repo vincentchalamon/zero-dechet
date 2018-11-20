@@ -67,3 +67,9 @@ services:
 
     api_platform.security.expression_language:
         class: App\Security\ExpressionLanguage
+
+    App\Serializer\DocumentationNormalizer:
+        decorates: api_platform.swagger.normalizer.documentation
+        arguments:
+            $decorated: '@App\Serializer\DocumentationNormalizer.inner'
+        autoconfigure: false
