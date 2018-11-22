@@ -318,15 +318,15 @@ workflows:
             - behat
             - swagger_validator
           filters:
-            branches:
-              only: master
+            tags:
+              only: /.*/
       # Admin
       - deploy-admin:
           requires:
             - deploy-api
           filters:
-            branches:
-              only: master
+            tags:
+              only: /.*/
       # App
       - init-app
       - eslint:
@@ -341,5 +341,5 @@ workflows:
             - detox
             - deploy-api
           filters:
-            branches:
-              only: master
+            tags:
+              only: /.*/
