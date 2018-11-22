@@ -240,11 +240,7 @@ jobs:
       - run:
           name: Build app
           working_directory: app
-          command: |
-            whoami
-            pwd
-            ls -als
-            detox build --configuration android.emu.release
+          command: detox build --configuration android.emu.release
           environment:
             REACT_APP_API_ENTRYPOINT: https://api.zero-dechet.app
       - run:

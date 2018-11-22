@@ -27,13 +27,13 @@ default:
                 bootstrap: features/bootstrap/bootstrap.php
                 class: App\Kernel
         Behat\MinkExtension:
-            base_url: https://api.zero-dechet.fr
+            base_url: https://www.zero-dechet.app
             sessions:
                 default:
                     symfony2: ~
         Behatch\Extension: ~
         Alex\MailCatcher\Behat\MailCatcherExtension\Extension:
-            url: http://localhost:1080
+            url: http://mailcatcher
             purge_before_scenario: true
         ApiExtension: ~
 

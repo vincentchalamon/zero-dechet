@@ -774,7 +774,7 @@ final class FeatureContext extends BaseContext
     {
         $this->mailcatcherContext->verifyMailsSent(1);
         $this->mailcatcherContext->seeMailSubject('Validation de votre adresse email');
-        $this->mailcatcherContext->seeMailFrom('no-reply@zero-dechet.fr');
+        $this->mailcatcherContext->seeMailFrom('no-reply@zero-dechet.app');
         $this->mailcatcherContext->seeMailTo('jOhN.dOe@eXaMpLe.cOm');
     }
 

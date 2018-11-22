@@ -4463,16 +4463,16 @@
         },
         {
             "name": "symfony/security",
-            "version": "v4.1.1",
+            "version": "v4.1.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/security.git",
-                "reference": "fa46e38ff4dea2d3949630efd33ed73e2ac0850a"
+                "reference": "7fc807061344b5803d1eb897a6806967c5b2b8e2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/security/zipball/fa46e38ff4dea2d3949630efd33ed73e2ac0850a",
-                "reference": "fa46e38ff4dea2d3949630efd33ed73e2ac0850a",
+                "url": "https://api.github.com/repos/symfony/security/zipball/7fc807061344b5803d1eb897a6806967c5b2b8e2",
+                "reference": "7fc807061344b5803d1eb897a6806967c5b2b8e2",
                 "shasum": ""
             },
             "require": {
@@ -4517,7 +4517,10 @@
                     "Symfony\\Component\\Security\\": ""
                 },
                 "exclude-from-classmap": [
-                    "/Tests/"
+                    "/Core/Tests/",
+                    "/Csrf/Tests/",
+                    "/Guard/Tests/",
+                    "/Http/Tests/"
                 ]
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -4536,7 +4539,7 @@
             ],
             "description": "Symfony Security Component",
             "homepage": "https://symfony.com",
-            "time": "2018-06-22T08:59:39+00:00"
+            "time": "2018-10-30T17:00:46+00:00"
         },
         {
             "name": "symfony/security-bundle",
@@ -8699,16 +8702,16 @@
         },
         {
             "name": "vincentchalamon/api-extension",
-            "version": "1.0.0-beta.3",
+            "version": "1.0.0-beta.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/vincentchalamon/api-extension.git",
-                "reference": "e86b543dd9ac5a1109f34ad9457c294f23a073a1"
+                "reference": "eded9d9dd133991167f243365db5ee514b80c858"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vincentchalamon/api-extension/zipball/e86b543dd9ac5a1109f34ad9457c294f23a073a1",
-                "reference": "e86b543dd9ac5a1109f34ad9457c294f23a073a1",
+                "url": "https://api.github.com/repos/vincentchalamon/api-extension/zipball/eded9d9dd133991167f243365db5ee514b80c858",
+                "reference": "eded9d9dd133991167f243365db5ee514b80c858",
                 "shasum": ""
             },
             "require": {
@@ -8759,7 +8762,7 @@
                 }
             ],
             "description": "Behat extension for API Platform",
-            "time": "2018-10-11T07:18:02+00:00"
+            "time": "2018-11-14T22:53:19+00:00"
         }
     ],
     "aliases": [],

@@ -11,4 +11,4 @@ services:
         arguments:
             $defaults:
                 from:
-                    no-reply@zero-dechet.fr: Zéro Déchet
+                    no-reply@zero-dechet.app: Zéro Déchet

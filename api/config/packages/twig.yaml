@@ -1,5 +1,5 @@
 parameters:
-    env(APP_DOMAIN): 'https://www.zero-dechet.fr'
+    env(APP_DOMAIN): 'https://www.zero-dechet.app'
 
 twig:
     paths: ['%kernel.project_dir%/templates']
