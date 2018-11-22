@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the Zero Dechet project.
+ *
+ * (c) Vincent Chalamon <vincentchalamon@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 declare(strict_types=1);
 
 namespace App\Serializer;
@@ -39,7 +48,7 @@ final class DocumentationNormalizer implements NormalizerInterface
             'responses' => [
                 200 => [
                     'description' => 'Valid credentials',
-                    'schema' => ['$ref' => '#/definitions/User-user:read'],
+                    'schema' => ['$ref' => '#/definitions/User-user_output_place_output_profile_output'],
                 ],
                 401 => ['description' => 'Invalid credentials'],
             ],
@@ -107,7 +116,7 @@ final class DocumentationNormalizer implements NormalizerInterface
                 200 => [
                     'description' => 'Authenticated user',
                     'schema' => [
-                        '$ref' => '#/definitions/User-user:read',
+                        '$ref' => '#/definitions/User-user_output_place_output_profile_output',
                     ],
                 ],
                 400 => ['description' => 'Missing email parameter or invalid format'],
