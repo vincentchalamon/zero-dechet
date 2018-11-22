@@ -1,3 +1,3 @@
 import UserResource from './UserResource';
 
-export {UserResource};
+export { UserResource };

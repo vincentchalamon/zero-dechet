@@ -1,11 +1,10 @@
-import React, {Fragment} from 'react';
-import {Image, ScrollView, StyleSheet, View} from 'react-native';
-import {Text} from 'react-native-paper';
-import {compose} from 'recompose';
-import {connect} from 'react-redux';
-import {createBottomTabNavigator, createDrawerNavigator, createStackNavigator} from 'react-navigation';
-import I18n from '../../translations';
-import {Dashboard, Login} from '../';
+import React, { Fragment } from 'react';
+import { Image, ScrollView, StyleSheet, View } from 'react-native';
+import { Text } from 'react-native-paper';
+import { compose } from 'recompose';
+import { connect } from 'react-redux';
+import { createBottomTabNavigator, createDrawerNavigator, createStackNavigator } from 'react-navigation';
+import { Dashboard, Login } from '../';
 
 const withRedux = connect(
   state => {
@@ -34,16 +33,16 @@ const styles = StyleSheet.create({
 
 const SideMenu = () => {
   return (
-    <View style={[styles.sidebar, {height: '100%'}]}>
-      <Text style={{color: 'white', fontSize: 25, marginBottom: 30}}>
-        <Image source={require('../../../assets/logo.png')} style={{width: 140, height: 140}}/>
+    <View style={[styles.sidebar, { height: '100%' }]}>
+      <Text style={{ color: 'white', fontSize: 25, marginBottom: 30 }}>
+        <Image source={require('../../../assets/logo.png')} style={{ width: 140, height: 140 }}/>
         Zéro Déchet
       </Text>
       <ScrollView>
-        <Text style={{color: 'white'}}>Aide</Text>
-        <Text style={{color: 'white'}}>CGU</Text>
-        <Text style={{color: 'white'}}>Mentions Légales</Text>
-        <Text style={{color: 'white'}}>Le Zéro Déchet</Text>
+        <Text style={{ color: 'white' }}>Aide</Text>
+        <Text style={{ color: 'white' }}>CGU</Text>
+        <Text style={{ color: 'white' }}>Mentions Légales</Text>
+        <Text style={{ color: 'white' }}>Le Zéro Déchet</Text>
       </ScrollView>
     </View>
   );
@@ -64,13 +63,13 @@ const LoginNavigator = createStackNavigator({
 
 const Theme = compose(
   withRedux,
-)(({isAuthenticated}) => {
+)(({ isAuthenticated }) => {
   return (
     <Fragment>
-      <Appbar.Header style={styles.topbar}>
-        <Appbar.Action icon="menu"/>
-        <Appbar.Content title={I18n.t('title')}/>
-      </Appbar.Header>
+      {/*<Appbar.Header style={styles.topbar}>*/}
+        {/*<Appbar.Action icon="menu"/>*/}
+        {/*<Appbar.Content title={I18n.t('title')}/>*/}
+      {/*</Appbar.Header>*/}
       {isAuthenticated ? <DashboardNavigator/> : <LoginNavigator/>}
     </Fragment>
   );

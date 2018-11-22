@@ -1,6 +1,6 @@
-import {combineReducers} from 'redux';
-import app, {LOADING, NOTIFY} from './appReducer';
-import user, {LOAD_USER_ERROR, LOAD_USER_SUCCESS, LOGIN_ERROR, LOGIN_SUCCESS, LOGOUT} from './userReducer';
+import { combineReducers } from 'redux';
+import app, { LOADING, NOTIFY } from './appReducer';
+import user, { LOAD_USER_ERROR, LOAD_USER_SUCCESS, LOGIN_ERROR, LOGIN_SUCCESS, LOGOUT } from './userReducer';
 
 export {
   LOADING,
@@ -11,4 +11,4 @@ export {
   LOGIN_SUCCESS,
   LOGOUT,
 };
-export default combineReducers({app, user});
+export default combineReducers({ app, user });

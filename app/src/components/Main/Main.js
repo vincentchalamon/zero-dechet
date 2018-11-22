@@ -1,8 +1,8 @@
-import React, {Fragment} from 'react';
-import {ActivityIndicator, StatusBar, StyleSheet, View} from 'react-native';
-import {connect} from 'react-redux';
-import {compose, lifecycle} from 'recompose';
-import {loadUser} from '../../actions';
+import React, { Fragment } from 'react';
+import { ActivityIndicator, StatusBar, StyleSheet, View } from 'react-native';
+import { connect } from 'react-redux';
+import { compose, lifecycle } from 'recompose';
+import { loadUser } from '../../actions';
 import Theme from './Theme';
 
 const withRedux = connect(
@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
   }
 });
 
-const Main = ({isStarting}) => {
+const Main = ({ isStarting }) => {
   // todo Add fadeOut after starting
   if (true === isStarting) {
     return (

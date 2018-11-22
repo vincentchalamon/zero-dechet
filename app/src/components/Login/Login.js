@@ -1,11 +1,11 @@
 import React from 'react';
-import {connect} from 'react-redux';
-import {Keyboard, TouchableOpacity, Text, TextInput as NativeTextInput, View} from 'react-native';
-import {Button, TextInput} from 'react-native-paper';
-import {compose} from 'recompose';
-import {Formik, withFormik} from 'formik';
+import { connect } from 'react-redux';
+import { Keyboard, TouchableOpacity, Text, TextInput as NativeTextInput, View } from 'react-native';
+import { Button, TextInput } from 'react-native-paper';
+import { compose } from 'recompose';
+import { Formik, withFormik } from 'formik';
 import * as yup from 'yup';
-import {login} from '../../actions';
+import { login } from '../../actions';
 import I18n from '../../translations';
 
 const withRedux = connect(
@@ -23,7 +23,7 @@ const withRedux = connect(
   }
 );
 
-const Login = ({touched, errors, handleChange, handleSubmit, isLoading, navigation}) => {
+const Login = ({ touched, errors, handleChange, handleSubmit, isLoading, navigation }) => {
   return (
     <Formik>
       <View>
@@ -64,7 +64,7 @@ export default compose(
       email: yup.string().email(I18n.t('email.invalid')).required(I18n.t('email.required')),
       password: yup.string().required(I18n.t('password.required')),
     }),
-    handleSubmit: (values, {props, setSubmitting}) => {
+    handleSubmit: (values, { props, setSubmitting }) => {
       Keyboard.dismiss();
       props.login(values.email, values.password);
       setSubmitting(false);

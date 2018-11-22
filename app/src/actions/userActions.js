@@ -1,7 +1,6 @@
-import {LOAD_USER_ERROR, LOAD_USER_SUCCESS, LOGIN_ERROR, LOGIN_SUCCESS, LOGOUT} from '../reducers';
-import {loading} from './appActions';
-import {UserResource} from '../resources';
-import I18n from '../translations';
+import { LOAD_USER_ERROR, LOAD_USER_SUCCESS, LOGIN_ERROR, LOGIN_SUCCESS, LOGOUT } from '../reducers';
+import { loading } from './appActions';
+import { UserResource } from '../resources';
 
 export const loadUser = () => async dispatch => {
   try {
@@ -31,7 +30,7 @@ export const login = (email, password) => async dispatch => {
       user: user,
     });
   } catch (e) {
-    dispatch(error(I18n.t('login.error')));
+    // dispatch(error(I18n.t('login.error')));
 
     return dispatch({
       type: LOGIN_ERROR,

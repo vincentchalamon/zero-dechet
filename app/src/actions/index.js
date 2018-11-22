@@ -1,5 +1,5 @@
-import {loading} from './appActions';
-import {loadUser, login, logout} from './userActions';
+import { loading } from './appActions';
+import { loadUser, login, logout } from './userActions';
 
 export {
   loading,

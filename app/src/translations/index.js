@@ -4,6 +4,6 @@ import en from './en';
 
 I18n.fallbacks = true;
 
-I18n.translations = {en, fr};
+I18n.translations = { en, fr };
 
 export default I18n;

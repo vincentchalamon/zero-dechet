@@ -1,4 +1,4 @@
-import {LOADING} from '../reducers';
+import { LOADING } from '../reducers';
 
 export const loading = () => dispatch => {
   return dispatch({

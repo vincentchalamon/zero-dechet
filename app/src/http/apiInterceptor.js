@@ -1,5 +1,5 @@
 import axios from 'axios';
-import {ConstraintViolationsListError, InvalidRequestError} from '../exceptions';
+import { ConstraintViolationsListError, InvalidRequestError } from '../exceptions';
 
 axios.interceptors.request.use((config) => {
   config.baseURL = 'http://localhost:81';
