@@ -137,7 +137,7 @@ jobs:
           keys:
             - api-{{ .Environment.CIRCLE_SHA1 }}
       - run:
-          name: Execute migrations
+          name: Update schema
           working_directory: api
           command: |
             wget https://github.com/jwilder/dockerize/releases/download/v0.3.0/dockerize-linux-amd64-v0.3.0.tar.gz
@@ -146,6 +146,7 @@ jobs:
             echo "Waiting for PostgreSQL to be ready..."
             dockerize -wait tcp://localhost:5432 -timeout 1m
             bin/console doctrine:migrations:migrate --no-interaction
+            bin/console doctrine:schema:update --force --no-interaction
       - run:
           name: Behat
           working_directory: api
@@ -229,7 +230,7 @@ jobs:
       - run:
           name: ESLint
           working_directory: app
-          command: yarn eslint src features
+          command: yarn eslint src
 
   detox:
     executor: android-executor
