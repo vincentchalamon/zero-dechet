@@ -9,7 +9,6 @@ services:
       cache_from:
         - ${CONTAINER_REGISTRY_BASE}/php
         - ${CONTAINER_REGISTRY_BASE}/nginx
-        - ${CONTAINER_REGISTRY_BASE}/varnish
     depends_on:
       - db
       - mailcatcher
@@ -25,23 +24,8 @@ services:
       cache_from:
         - ${CONTAINER_REGISTRY_BASE}/php
         - ${CONTAINER_REGISTRY_BASE}/nginx
-        - ${CONTAINER_REGISTRY_BASE}/varnish
     depends_on:
       - php
-
-  cache-proxy:
-    image: ${CONTAINER_REGISTRY_BASE}/varnish
-    build:
-      context: ./api
-      target: zero_dechet_varnish
-      cache_from:
-        - ${CONTAINER_REGISTRY_BASE}/php
-        - ${CONTAINER_REGISTRY_BASE}/nginx
-        - ${CONTAINER_REGISTRY_BASE}/varnish
-    depends_on:
-      - api
-    tmpfs:
-      - /usr/local/var/varnish:exec
 
   db:
     image: mdillon/postgis:11-alpine
@@ -81,4 +65,3 @@ services:
     depends_on:
       - admin
       - api
-      - cache-proxy

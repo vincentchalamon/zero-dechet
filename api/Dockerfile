@@ -3,7 +3,6 @@
 
 ARG PHP_VERSION=7.2
 ARG NGINX_VERSION=1.15
-ARG VARNISH_VERSION=6.0
 
 FROM php:${PHP_VERSION}-fpm-alpine AS zero_dechet_php
 
@@ -104,7 +103,3 @@ COPY --from=zero_dechet_php /srv/api/public public/
 COPY docker/nginx/healthcheck /usr/local/bin/healthcheck
 
 HEALTHCHECK CMD /usr/local/bin/healthcheck
-
-FROM cooptilleuls/varnish:${VARNISH_VERSION}-alpine AS zero_dechet_varnish
-
-COPY docker/varnish/conf/default.vcl /usr/local/etc/varnish/default.vcl

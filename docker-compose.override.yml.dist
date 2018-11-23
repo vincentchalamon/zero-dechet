@@ -17,12 +17,6 @@ services:
     ports:
       - 8080:80
 
-  cache-proxy:
-    volumes:
-      - ./api/docker/varnish/conf:/usr/local/etc/varnish:ro
-    ports:
-      - 8081:80
-
   db:
     volumes:
       - ./api/docker/postgres/healthcheck:/usr/local/bin/healthcheck:rw
