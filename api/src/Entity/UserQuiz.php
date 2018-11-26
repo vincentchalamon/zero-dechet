@@ -25,16 +25,16 @@ use Symfony\Component\Validator\Constraints as Assert;
  *
  * @ORM\Entity
  * @ApiResource(attributes={
- *     "normalization_context"={"groups"={"user_quiz_output", "choice_output"}},
- *     "denormalization_context"={"groups"={"user_quiz_input"}}
+ *     "normalization_context"={"groups"={"user_quiz:read", "choice:read"}},
+ *     "denormalization_context"={"groups"={"user_quiz:write"}}
  * }, subresourceOperations={
  *     "api_users_quizzes_get_subresource"={
- *         "access_control"="(is_granted('ROLE_ADMIN') or request.attributes.get('object') == user or (is_granted('ROLE_ADMIN_CITY') and is_in_the_same_city(request.attributes.get('object').getProfile()))) and is_feature_enabled('quiz')"
+ *         "access_control"="is_granted('ROLE_ADMIN') or request.attributes.get('object') == user"
  *     }
  * }, collectionOperations={
- *     "post"={"access_control"="is_granted('ROLE_USER') and is_feature_enabled('quiz')"}
+ *     "post"={"access_control"="is_granted('ROLE_USER')"}
  * }, itemOperations={
- *     "get"={"access_control"="(is_granted('ROLE_ADMIN') or object.getUser() == user) and is_feature_enabled('quiz')"}
+ *     "get"={"access_control"="is_granted('ROLE_ADMIN') or object.getUser() == user"}
  * })
  */
 class UserQuiz
@@ -56,7 +56,7 @@ class UserQuiz
      * @ORM\ManyToOne(targetEntity="App\Entity\Quiz", inversedBy="quizzes")
      * @ORM\JoinColumn(nullable=false, onDelete="CASCADE")
      * @Assert\NotNull
-     * @Groups({"user_quiz_input"})
+     * @Groups({"user_quiz:write"})
      */
     private $quiz;
 
@@ -69,7 +69,7 @@ class UserQuiz
     /**
      * @ORM\ManyToMany(targetEntity="App\Entity\Choice")
      * @Assert\Count(min="1")
-     * @Groups({"user_quiz_input", "user_quiz_output"})
+     * @Groups({"user_quiz:write", "user_quiz:read"})
      */
     private $choices;
 

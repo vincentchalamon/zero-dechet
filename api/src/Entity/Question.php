@@ -24,10 +24,10 @@ use Symfony\Component\Validator\Constraints as Assert;
  *
  * @ORM\Entity
  * @ApiResource(attributes={
- *     "normalization_context"={"groups"={"question_output", "choice_output"}},
- *     "denormalization_context"={"groups"={"question_input", "choice_input"}}
+ *     "normalization_context"={"groups"={"question:read", "choice:read"}},
+ *     "denormalization_context"={"groups"={"question:write", "choice:write"}}
  * }, collectionOperations={}, itemOperations={
- *     "get"={"access_control"="is_granted('ROLE_ADMIN') and is_feature_enabled('quiz')"}
+ *     "get"={"access_control"="is_granted('ROLE_ADMIN')"}
  * })
  */
 class Question
@@ -42,7 +42,7 @@ class Question
     /**
      * @ORM\Column
      * @Assert\NotBlank
-     * @Groups({"question_input", "question_output"})
+     * @Groups({"question:write", "question:read"})
      */
     private $title;
 
@@ -50,7 +50,7 @@ class Question
      * @ORM\ManyToOne(targetEntity="App\Entity\Quiz", inversedBy="questions")
      * @ORM\JoinColumn(nullable=false, onDelete="CASCADE")
      * @Assert\NotNull
-     * @Groups({"question_input"})
+     * @Groups({"question:write"})
      */
     private $quiz;
 
@@ -58,14 +58,14 @@ class Question
      * @ORM\OneToMany(targetEntity="App\Entity\Choice", mappedBy="question", cascade={"all"}, orphanRemoval=true, fetch="EAGER")
      * @Assert\NotNull
      * @Assert\Count(min="2")
-     * @Groups({"question_input", "question_output"})
+     * @Groups({"question:write", "question:read"})
      */
     private $choices;
 
     /**
      * @ORM\ManyToMany(targetEntity="App\Entity\Content")
      * @Assert\Count(min="1")
-     * @Groups({"question_input", "question_output"})
+     * @Groups({"question:write", "question:read"})
      */
     private $contents;
 

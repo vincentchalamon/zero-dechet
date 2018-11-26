@@ -23,15 +23,15 @@ use Symfony\Component\Validator\Constraints as Assert;
  *
  * @ORM\Entity
  * @ApiResource(attributes={
- *     "normalization_context"={"groups"={"place_output"}},
- *     "denormalization_context"={"groups"={"place_input"}}
+ *     "normalization_context"={"groups"={"place:read"}},
+ *     "denormalization_context"={"groups"={"place:write"}}
  * }, collectionOperations={
- *     "get"={"access_control"="is_granted('ROLE_USER') and is_feature_enabled('quiz')"},
- *     "post"={"access_control"="is_granted('ROLE_ADMIN') and is_feature_enabled('quiz')"}
+ *     "get"={"access_control"="is_granted('ROLE_USER')"},
+ *     "post"={"access_control"="is_granted('ROLE_ADMIN')"}
  * }, itemOperations={
- *     "get"={"access_control"="is_granted('ROLE_USER') and is_feature_enabled('quiz')"},
- *     "put"={"access_control"="is_granted('ROLE_ADMIN') and is_feature_enabled('quiz')"},
- *     "delete"={"access_control"="is_granted('ROLE_ADMIN') and is_feature_enabled('quiz')"}
+ *     "get"={"access_control"="is_granted('ROLE_USER')"},
+ *     "put"={"access_control"="is_granted('ROLE_ADMIN')"},
+ *     "delete"={"access_control"="is_granted('ROLE_ADMIN')"}
  * })
  */
 class Place
@@ -46,7 +46,7 @@ class Place
     /**
      * @ORM\Column
      * @Assert\NotBlank
-     * @Groups({"place_input", "place_output"})
+     * @Groups({"place:write", "place:read"})
      */
     private $name;
 

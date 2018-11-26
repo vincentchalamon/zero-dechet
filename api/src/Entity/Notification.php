@@ -24,7 +24,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
  * @ORM\Entity
  * @ORM\EntityListeners({"App\EntityListener\NotificationEntityListener"})
  * @ApiResource(attributes={
- *     "normalization_context"={"groups"={"notification_output"}}
+ *     "normalization_context"={"groups"={"notification:read"}}
  * }, collectionOperations={
  *     "get"={"access_control"="is_granted('ROLE_USER')"}
  * }, itemOperations={
@@ -43,27 +43,27 @@ class Notification
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\User")
      * @ORM\JoinColumn(nullable=false, onDelete="CASCADE")
-     * @Groups({"notification_output"})
+     * @Groups({"notification:read"})
      */
     private $user;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Event")
      * @ORM\JoinColumn(nullable=false, onDelete="CASCADE")
-     * @Groups({"notification_output"})
+     * @Groups({"notification:read"})
      */
     private $event;
 
     /**
      * @ORM\Column(type="datetime")
      * @Gedmo\Timestampable(on="create")
-     * @Groups({"notification_output"})
+     * @Groups({"notification:read"})
      */
     private $createdAt;
 
     /**
      * @ORM\Column
-     * @Groups({"notification_output"})
+     * @Groups({"notification:read"})
      */
     private $message;
 
@@ -71,7 +71,7 @@ class Notification
      * todo Find a better way to manage Notification.isRead (/!\ performances).
      *
      * @ORM\Column(type="boolean", name="is_read")
-     * @Groups({"notification_output"})
+     * @Groups({"notification:read"})
      */
     private $read = false;
 

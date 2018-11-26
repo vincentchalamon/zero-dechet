@@ -36,23 +36,23 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @CurrentPassword
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=true)
  * @ApiResource(attributes={
- *     "normalization_context"={"groups"={"user_output", "place_output", "profile_output"}},
- *     "denormalization_context"={"groups"={"user_input", "profile_input"}}
+ *     "normalization_context"={"groups"={"user:read", "place:read", "profile:read"}},
+ *     "denormalization_context"={"groups"={"user:write", "profile:write"}}
  * }, collectionOperations={
  *     "post"={
  *         "validation_groups"={"Default", "registration"},
- *         "access_control"="is_granted('ROLE_ADMIN') or (is_granted('IS_AUTHENTICATED_ANONYMOUSLY') and is_feature_enabled('register'))"
+ *         "access_control"="is_granted('ROLE_ADMIN') or is_granted('IS_AUTHENTICATED_ANONYMOUSLY')"
  *     },
- *     "get"={"access_control"="is_granted('ROLE_ADMIN') or is_granted('ROLE_ADMIN_CITY')"},
+ *     "get"={"access_control"="is_granted('ROLE_ADMIN')"},
  *     "import"={
  *         "method"="POST",
  *         "access_control"="is_granted('ROLE_ADMIN')",
  *         "path"="/users/import.{_format}"
  *     }
  * }, itemOperations={
- *     "get"={"access_control"="is_granted('ROLE_ADMIN') or (is_granted('ROLE_ADMIN_CITY') and is_in_the_same_city(object.getProfile())) or object == user"},
- *     "put"={"access_control"="is_granted('ROLE_ADMIN') or (is_granted('ROLE_ADMIN_CITY') and is_in_the_same_city(object.getProfile())) or object == user"},
- *     "delete"={"access_control"="is_granted('ROLE_ADMIN') or (is_granted('ROLE_ADMIN_CITY') and is_in_the_same_city(object.getProfile())) or object == user"},
+ *     "get"={"access_control"="is_granted('ROLE_ADMIN') or object == user"},
+ *     "put"={"access_control"="is_granted('ROLE_ADMIN') or or object == user"},
+ *     "delete"={"access_control"="is_granted('ROLE_ADMIN') or object == user"},
  *     "validate"={
  *         "path"="/users/{id}/validate.{_format}",
  *         "method"="GET",
@@ -63,7 +63,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *                 {"name"="id", "in"="path", "required"=true, "type"="string"}
  *             }
  *         },
- *         "access_control"="is_granted('IS_AUTHENTICATED_ANONYMOUSLY') and is_feature_enabled('register')"
+ *         "access_control"="is_granted('IS_AUTHENTICATED_ANONYMOUSLY')"
  *     },
  *     "scores"={
  *         "path"="/users/{id}/scores.{_format}",
@@ -74,8 +74,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  *                 {"name"="id", "in"="path", "required"=true, "type"="string"}
  *             }
  *         },
- *         "normalization_context"={"groups"={"score_output"}},
- *         "access_control"="(is_granted('ROLE_ADMIN') or object == user or (is_granted('ROLE_ADMIN_CITY') and is_in_the_same_city(object.getProfile()))) and is_feature_enabled('quiz')"
+ *         "normalization_context"={"groups"={"score:read"}},
+ *         "access_control"="is_granted('ROLE_ADMIN') or object == user"
  *     },
  *     "events"={
  *         "path"="/users/{id}/events.{_format}",
@@ -87,8 +87,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  *                 {"name"="id", "in"="path", "required"=true, "type"="string"}
  *             }
  *         },
- *         "normalization_context"={"groups"={"event_output"}},
- *         "access_control"="((request.query.has('token') and object.getToken() == request.query.get('token')) or object == user) and is_feature_enabled('event')"
+ *         "normalization_context"={"groups"={"event:read"}},
+ *         "access_control"="(request.query.has('token') and object.getToken() == request.query.get('token')) or object == user"
  *     }
  * }, subresourceOperations={
  *     "quizzes_get_subresource"={
@@ -118,7 +118,7 @@ class User implements UserInterface
     /**
      * @ORM\Column(type="datetime")
      * @Gedmo\Timestampable(on="create")
-     * @Groups({"user_export"})
+     * @Groups({"user:export"})
      */
     private $createdAt;
 
@@ -135,7 +135,7 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="boolean", name="is_active")
-     * @Groups({"admin_output", "admin_input", "user_export"})
+     * @Groups({"admin:read", "admin:write", "user:export"})
      */
     private $active = false;
 
@@ -148,7 +148,7 @@ class User implements UserInterface
      * @ORM\Column(length=200)
      * @Assert\NotBlank
      * @Assert\Email
-     * @Groups({"user_output", "user_input", "user_export"})
+     * @Groups({"user:read", "user:write", "user:export"})
      */
     private $email;
 
@@ -167,14 +167,14 @@ class User implements UserInterface
      *
      * @Assert\NotBlank(groups={"registration"})
      * @Assert\Length(min="7")
-     * @Groups({"user_input"})
+     * @Groups({"user:write"})
      */
     private $plainPassword;
 
     /**
      * Not persisted in database, security for password update.
      *
-     * @Groups({"user_input"})
+     * @Groups({"user:write"})
      */
     private $currentPassword;
 
@@ -183,19 +183,13 @@ class User implements UserInterface
      *
      * @Assert\NotBlank(groups={"registration"})
      * @Assert\IsTrue(groups={"registration"})
-     * @Groups({"user_input"})
+     * @Groups({"user:write"})
      */
     private $cgu = false;
 
     /**
-     * @ORM\Column(type="boolean", name="is_newsletter")
-     * @Groups({"user_input", "user_output", "user_export"})
-     */
-    private $newsletter = false;
-
-    /**
      * @ORM\Column(type="array")
-     * @Groups({"admin_output", "admin_input", "user_export"})
+     * @Groups({"admin:read", "admin:write", "user:export"})
      */
     private $roles = ['ROLE_USER'];
 
@@ -208,21 +202,16 @@ class User implements UserInterface
 
     /**
      * @ORM\ManyToMany(targetEntity="App\Entity\Place")
-     * @Groups({"owner_input", "owner_output"})
+     * @Groups({"owner:write", "owner:read"})
      */
     private $ignoredPlaces;
 
     /**
      * @ORM\ManyToMany(targetEntity="App\Entity\Content", fetch="EXTRA_LAZY")
-     * @Groups({"owner_input"})
+     * @Groups({"owner:write"})
      * @ApiSubresource
      */
     private $favorites;
-
-    /**
-     * @ORM\ManyToMany(targetEntity="App\Entity\Team", mappedBy="users")
-     */
-    private $teams;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Weighing", mappedBy="user", fetch="EXTRA_LAZY")
@@ -232,7 +221,7 @@ class User implements UserInterface
 
     /**
      * @ORM\OneToOne(targetEntity="App\Entity\Profile", mappedBy="user", cascade={"all"}, fetch="EAGER")
-     * @Groups({"user_output", "user_export", "user_input"})
+     * @Groups({"user:read", "user:export", "user:write"})
      */
     private $profile;
 
@@ -242,15 +231,8 @@ class User implements UserInterface
     private $registrations;
 
     /**
-     * @ORM\Column(type="array")
-     * @Assert\Expression("'ROLE_ADMIN_CITY' not in this.getRoles() || value !== []")
-     * @Groups({"admin_output", "admin_input", "user_export"})
-     */
-    private $cities = [];
-
-    /**
      * @ORM\Column(type="boolean", name="is_notify_by_email")
-     * @Groups({"owner_input", "owner_output"})
+     * @Groups({"owner:write", "owner:read"})
      */
     private $notifyByEmail = false;
 
@@ -259,10 +241,8 @@ class User implements UserInterface
         $this->quizzes = new ArrayCollection();
         $this->ignoredPlaces = new ArrayCollection();
         $this->favorites = new ArrayCollection();
-        $this->teams = new ArrayCollection();
         $this->weighings = new ArrayCollection();
         $this->registrations = new ArrayCollection();
-        $this->token = \bin2hex(\random_bytes(25));
     }
 
     public function getSalt(): void
@@ -324,7 +304,7 @@ class User implements UserInterface
         $this->active = $active;
     }
 
-    public function getToken(): string
+    public function getToken(): ?string
     {
         return $this->token;
     }
@@ -389,16 +369,6 @@ class User implements UserInterface
         $this->cgu = $cgu;
     }
 
-    public function isNewsletter(): bool
-    {
-        return $this->newsletter;
-    }
-
-    public function setNewsletter(bool $newsletter): void
-    {
-        $this->newsletter = $newsletter;
-    }
-
     public function getRoles(): array
     {
         return $this->roles;
@@ -455,26 +425,6 @@ class User implements UserInterface
     public function removeFavorite(Content $content): void
     {
         $this->favorites->removeElement($content);
-    }
-
-    /**
-     * @return Team[]
-     */
-    public function getTeams(): array
-    {
-        return $this->teams->getValues();
-    }
-
-    public function addTeam(Team $team): void
-    {
-        if (!$this->teams->contains($team)) {
-            $this->teams[] = $team;
-        }
-    }
-
-    public function removeTeam(Team $team): void
-    {
-        $this->teams->removeElement($team);
     }
 
     /**
@@ -546,18 +496,6 @@ class User implements UserInterface
         return $this->registrations->filter(function (Registration $registration) {
             return $registration->getEvent()->isPast() && !$registration->isPresent();
         })->count();
-    }
-
-    public function getCities(): array
-    {
-        return $this->cities;
-    }
-
-    public function setCities(array $cities): void
-    {
-        $this->cities = \array_filter(\array_map('trim', $cities), function ($city) {
-            return !empty($city);
-        });
     }
 
     public function isNotifyByEmail(): bool

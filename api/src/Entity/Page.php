@@ -25,8 +25,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  *
  * @ORM\Entity
  * @ApiResource(attributes={
- *     "normalization_context"={"groups"={"page_output"}},
- *     "denormalization_context"={"groups"={"page_input"}}
+ *     "normalization_context"={"groups"={"page:read"}},
+ *     "denormalization_context"={"groups"={"page:write"}}
  * }, collectionOperations={
  *     "get"={"access_control"="is_granted('IS_AUTHENTICATED_ANONYMOUSLY')"},
  *     "post"={"access_control"="is_granted('ROLE_ADMIN')"}
@@ -49,21 +49,21 @@ class Page
     /**
      * @ORM\Column
      * @Assert\NotBlank
-     * @Groups({"page_input", "page_output"})
+     * @Groups({"page:write", "page:read"})
      */
     private $title;
 
     /**
      * @ORM\Column(type="text")
      * @Assert\NotBlank
-     * @Groups({"page_input", "page_output"})
+     * @Groups({"page:write", "page:read"})
      */
     private $content;
 
     /**
      * @ORM\Column
      * @Assert\NotBlank
-     * @Groups({"page_input", "page_output"})
+     * @Groups({"page:write", "page:read"})
      */
     private $url;
 

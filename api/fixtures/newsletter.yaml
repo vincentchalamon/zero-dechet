@@ -1,5 +1,0 @@
-App\Entity\Newsletter:
-    newsletter.{1..10}:
-        subject: <fr_FR:sentence()>
-        content: <fr_FR:paragraph()>
-        status: <randomElement(['pending', 'sending', 'sent'])>

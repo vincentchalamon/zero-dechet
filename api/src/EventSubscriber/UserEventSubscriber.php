@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace App\EventSubscriber;
 
 use ApiPlatform\Core\EventListener\EventPriorities;
-use App\Entity\Contact;
 use App\Entity\Event;
 use App\Entity\Profile;
 use App\Entity\Registration;
@@ -93,7 +92,6 @@ final class UserEventSubscriber implements EventSubscriberInterface
         if (!$request->isMethod(Request::METHOD_POST) || !\in_array($request->attributes->get('_api_resource_class'), [
             UserQuiz::class,
             Profile::class,
-            Contact::class,
             Event::class,
             Registration::class,
         ], true) || null !== $data->getUser()) {

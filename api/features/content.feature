@@ -39,21 +39,7 @@ Feature: CRUD Content
     When I get a list of contents
     Then I am unauthorized to access this resource
 
-  Scenario: As a user, I can get a list of contents filtered by title
-    Given the following user:
-      | email           | roles     | active |
-      | foo@example.com | ROLE_USER | true   |
-    And I am authenticated as "foo@example.com"
-    And the following contents:
-      | published | title                      |
-      | true      | Lorem ipsum                |
-      | false     | Lorem ipsum dolor sit amet |
-      | true      | Hello World!               |
-    When I get a list of contents filtered by title ipsum
-    Then I see a list of contents
-    And the JSON node "hydra:totalItems" should be equal to 1
-
-  Scenario: As an admin, I can get a content
+  Scenario: As an admin, I can get a published content
     Given the following user:
       | email             | roles      | active |
       | admin@example.com | ROLE_ADMIN | true   |
@@ -64,7 +50,7 @@ Feature: CRUD Content
     When I get a content
     Then I see a content
 
-  Scenario: As a user, I can get a content
+  Scenario: As a user, I can get a published content
     Given the following user:
       | email           | roles     | active |
       | foo@example.com | ROLE_USER | true   |
@@ -75,7 +61,7 @@ Feature: CRUD Content
     When I get a content
     Then I see a content
 
-  Scenario: As anonymous, I cannot get a content
+  Scenario: As anonymous, I cannot get a published content
     Given the following content:
       | published |
       | true      |
@@ -104,12 +90,8 @@ Feature: CRUD Content
     When I get a content
     Then the content is not found
 
-  Scenario: As a city admin, I cannot get a non-published content
-    Given the following user:
-      | email             | roles           | active |
-      | admin@example.com | ROLE_ADMIN_CITY | true   |
-    And I am authenticated as "admin@example.com"
-    And the following content:
+  Scenario: As anonymous, I cannot get a non-published content
+    Given the following content:
       | published |
       | false     |
     When I get a content
@@ -131,14 +113,6 @@ Feature: CRUD Content
     When I create a content
     Then I am forbidden to access this resource
 
-  Scenario: As a city admin, I cannot create a content
-    Given the following user:
-      | email             | roles           | active |
-      | admin@example.com | ROLE_ADMIN_CITY | true   |
-    And I am authenticated as "admin@example.com"
-    When I create a content
-    Then I am forbidden to access this resource
-
   Scenario: As anonymous, I cannot create a content
     When I create a content
     Then I am unauthorized to access this resource
@@ -148,9 +122,7 @@ Feature: CRUD Content
       | email             | roles      | active |
       | admin@example.com | ROLE_ADMIN | true   |
     And I am authenticated as "admin@example.com"
-    And the following content:
-      | published |
-      | true      |
+    And there is a content
     When I update a content
     Then I see a content
 
@@ -159,17 +131,6 @@ Feature: CRUD Content
       | email           | roles     | active |
       | foo@example.com | ROLE_USER | true   |
     And I am authenticated as "foo@example.com"
-    And the following content:
-      | published |
-      | true      |
-    When I update a content
-    Then I am forbidden to access this resource
-
-  Scenario: As a city admin, I cannot update a content
-    Given the following user:
-      | email             | roles           | active |
-      | admin@example.com | ROLE_ADMIN_CITY | true   |
-    And I am authenticated as "admin@example.com"
     And the following content:
       | published |
       | true      |
@@ -199,17 +160,6 @@ Feature: CRUD Content
       | email           | roles     | active |
       | foo@example.com | ROLE_USER | true   |
     And I am authenticated as "foo@example.com"
-    And the following content:
-      | published |
-      | true      |
-    When I delete a content
-    Then I am forbidden to access this resource
-
-  Scenario: As a city admin, I cannot delete a content
-    Given the following user:
-      | email             | roles           | active |
-      | admin@example.com | ROLE_ADMIN_CITY | true   |
-    And I am authenticated as "admin@example.com"
     And the following content:
       | published |
       | true      |

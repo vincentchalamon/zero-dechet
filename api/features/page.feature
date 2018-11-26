@@ -25,14 +25,6 @@ Feature: CRUD Page
     When I create a new page
     Then I see a page
 
-  Scenario: As a city admin, I cannot create a page
-    Given the following user:
-      | email             | roles           | active |
-      | admin@example.com | ROLE_ADMIN_CITY | true   |
-    And I am authenticated as "admin@example.com"
-    When I create a page
-    Then I am forbidden to access this resource
-
   Scenario: As a user, I cannot create a page
     Given the following user:
       | email           | roles     | active |
@@ -54,15 +46,6 @@ Feature: CRUD Page
     And there is a page
     When I update a page
     Then I see a page
-
-  Scenario: As a city admin, I cannot update a page
-    Given the following user:
-      | email             | roles           | active |
-      | admin@example.com | ROLE_ADMIN_CITY | true   |
-    And I am authenticated as "admin@example.com"
-    And there is a page
-    When I update a page
-    Then I am forbidden to access this resource
 
   Scenario: As a user, I cannot update a page
     Given the following user:
@@ -86,15 +69,6 @@ Feature: CRUD Page
     And there is a page
     When I delete a page
     Then the page has been successfully deleted
-
-  Scenario: As a city admin, I cannot delete a page
-    Given the following user:
-      | email             | roles           | active |
-      | admin@example.com | ROLE_ADMIN_CITY | true   |
-    And I am authenticated as "admin@example.com"
-    And there is a page
-    When I delete a page
-    Then I am forbidden to access this resource
 
   Scenario: As a user, I cannot delete a page
     Given the following user:

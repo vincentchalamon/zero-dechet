@@ -39,7 +39,7 @@ final class NotificationEntityListener
         $swiftMessage = new \Swift_Message(
             $notification->getMessage(),
             // todo Change template
-            $this->templating->render('contact.html.twig', ['message' => $notification->getMessage()]),
+            $this->templating->render('notification.html.twig', ['message' => $notification->getMessage()]),
             'text/html'
         );
         $swiftMessage->setTo($notification->getUser()->getEmail());

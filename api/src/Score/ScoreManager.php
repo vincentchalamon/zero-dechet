@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace App\Score;
 
-use App\Authorization\AuthorizationCheckerInterface;
 use App\Entity\Choice;
 use App\Entity\Content;
 use App\Entity\Quiz;
@@ -26,12 +25,10 @@ use Doctrine\Common\Persistence\ManagerRegistry;
  */
 final class ScoreManager
 {
-    private $authorizationChecker;
     private $registry;
 
-    public function __construct(AuthorizationCheckerInterface $authorizationChecker, ManagerRegistry $registry)
+    public function __construct(ManagerRegistry $registry)
     {
-        $this->authorizationChecker = $authorizationChecker;
         $this->registry = $registry;
     }
 
@@ -59,17 +56,15 @@ final class ScoreManager
             return new Score($quiz, 0, []);
         }
 
-        if (true === $this->authorizationChecker->isFeatureEnabled('content')) {
-            $invalidChoices = \array_filter($userQuiz->getChoices(), function (Choice $choice) {
-                return !$choice->isValid();
+        $invalidChoices = \array_filter($userQuiz->getChoices(), function (Choice $choice) {
+            return !$choice->isValid();
+        });
+        if ($invalidChoices) {
+            $contents = \array_filter(\array_unique(\array_merge(...\array_map(function (Choice $choice) {
+                return $choice->getQuestion()->getContents();
+            }, $invalidChoices))), function (Content $content) {
+                return $content->isPublished();
             });
-            if ($invalidChoices) {
-                $contents = \array_filter(\array_unique(\array_merge(...\array_map(function (Choice $choice) {
-                    return $choice->getQuestion()->getContents();
-                }, $invalidChoices))), function (Content $content) {
-                    return $content->isPublished();
-                });
-            }
         }
 
         $score = \round((\count(\array_filter($userQuiz->getChoices(), function (Choice $choice) {

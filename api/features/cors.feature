@@ -1,4 +1,3 @@
-@ko
 Feature: As an application, I can get an API resource
 
   Scenario: As an invalid application, I cannot get an API resource

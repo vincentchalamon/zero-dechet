@@ -34,28 +34,12 @@ services:
             - { name: api_platform.doctrine.orm.query_extension.collection, priority: 9 }
             - { name: api_platform.doctrine.orm.query_extension.item }
 
-    App\Doctrine\ORM\Extension\EventExtension:
-        autoconfigure: false
-        tags:
-            - { name: api_platform.doctrine.orm.query_extension.collection, priority: 9 }
-
     App\Doctrine\ORM\Extension\RegistrationExtension:
         autoconfigure: false
         tags:
             - { name: api_platform.doctrine.orm.query_extension.collection, priority: 9 }
 
-    App\Doctrine\ORM\Extension\NewsletterExtension:
-        autoconfigure: false
-        tags:
-            - { name: api_platform.doctrine.orm.query_extension.collection, priority: 9 }
-            - { name: api_platform.doctrine.orm.query_extension.item }
-
     App\Doctrine\ORM\Extension\SecurityExtension:
-        autoconfigure: false
-        tags:
-            - { name: api_platform.doctrine.orm.query_extension.collection, priority: 9 }
-
-    App\Doctrine\ORM\Extension\UserExtension:
         autoconfigure: false
         tags:
             - { name: api_platform.doctrine.orm.query_extension.collection, priority: 9 }
@@ -64,9 +48,6 @@ services:
         decorates: api_platform.serializer.context_builder
         arguments:
             $decorated: '@App\Serializer\ContextBuilder.inner'
-
-    api_platform.security.expression_language:
-        class: App\Security\ExpressionLanguage
 
     App\Serializer\DocumentationNormalizer:
         decorates: api_platform.swagger.normalizer.documentation

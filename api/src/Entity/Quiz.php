@@ -27,16 +27,16 @@ use Symfony\Component\Validator\Constraints as Assert;
  *
  * @ORM\Entity
  * @ApiResource(attributes={
- *     "normalization_context"={"groups"={"quiz_output", "place_output", "question_output", "choice_output"}},
- *     "denormalization_context"={"groups"={"quiz_input", "question_input", "choice_input"}},
+ *     "normalization_context"={"groups"={"quiz:read", "place:read", "question:read", "choice:read"}},
+ *     "denormalization_context"={"groups"={"quiz:write", "question:write", "choice:write"}},
  *     "order"={"position"="ASC"}
  * }, collectionOperations={
- *     "get"={"access_control"="is_granted('ROLE_USER') and is_feature_enabled('quiz')"},
- *     "post"={"access_control"="is_granted('ROLE_ADMIN') and is_feature_enabled('quiz')"}
+ *     "get"={"access_control"="is_granted('ROLE_USER')"},
+ *     "post"={"access_control"="is_granted('ROLE_ADMIN')"}
  * }, itemOperations={
- *     "get"={"access_control"="is_granted('ROLE_USER') and is_feature_enabled('quiz')"},
- *     "put"={"access_control"="is_granted('ROLE_ADMIN') and is_feature_enabled('quiz') and 0 == object.countQuizzes()"},
- *     "delete"={"access_control"="is_granted('ROLE_ADMIN') and is_feature_enabled('quiz') and 0 == object.countQuizzes()"}
+ *     "get"={"access_control"="is_granted('ROLE_USER')"},
+ *     "put"={"access_control"="is_granted('ROLE_ADMIN') and 0 == object.countQuizzes()"},
+ *     "delete"={"access_control"="is_granted('ROLE_ADMIN') and 0 == object.countQuizzes()"}
  * })
  * @ApiFilter(SearchFilter::class, properties={"place"})
  */
@@ -54,7 +54,7 @@ class Quiz
      * @ORM\ManyToOne(targetEntity="App\Entity\Place")
      * @ORM\JoinColumn(nullable=false, onDelete="CASCADE")
      * @Assert\NotNull
-     * @Groups({"quiz_input", "quiz_output"})
+     * @Groups({"quiz:write", "quiz:read"})
      */
     private $place;
 
@@ -62,7 +62,7 @@ class Quiz
      * @ORM\OneToMany(targetEntity="App\Entity\Question", mappedBy="quiz", cascade={"all"}, orphanRemoval=true, fetch="EAGER")
      * @Assert\NotNull
      * @Assert\Count(min="1")
-     * @Groups({"quiz_input", "quiz_output"})
+     * @Groups({"quiz:write", "quiz:read"})
      */
     private $questions;
 
@@ -74,7 +74,7 @@ class Quiz
     /**
      * @Gedmo\SortablePosition
      * @ORM\Column(type="integer")
-     * @Groups({"quiz_input", "quiz_output"})
+     * @Groups({"quiz:write", "quiz:read"})
      */
     private $position;
 

@@ -11,6 +11,4 @@ App\Entity\Event:
         latitude: <latitude(3, 3)>
         longitude: <longitude(50, 50)>
         organizer: '@user.*'
-        active: <boolean(80)>
-        autoValidateRegistrations: <boolean(80)>
         likes: '<numberBetween(2, 10)>x @user.*'

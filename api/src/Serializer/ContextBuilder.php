@@ -43,23 +43,23 @@ class ContextBuilder implements SerializerContextBuilderInterface
     {
         $context = $this->decorated->createFromRequest($request, $normalization, $extractedAttributes);
         $resourceClass = $request->attributes->get('_api_resource_class');
-        $hasAdmin = 0 < \count($this->propertyInfoExtractor->getProperties($resourceClass, ['serializer_groups' => [$normalization ? 'admin_output' : 'admin_input']]));
+        $hasAdmin = 0 < \count($this->propertyInfoExtractor->getProperties($resourceClass, ['serializer_groups' => [$normalization ? 'admin:read' : 'admin:write']]));
         if ($hasAdmin && $this->authorizationChecker->isGranted('ROLE_ADMIN')) {
-            $context['groups'][] = $normalization ? 'admin_output' : 'admin_input';
+            $context['groups'][] = $normalization ? 'admin:read' : 'admin:write';
         }
 
         if ($request->attributes->get('data') instanceof User
             && $this->authorizationChecker->isGranted('ROLE_USER')
             && $request->attributes->get('data') === $this->tokenStorage->getToken()->getUser()
         ) {
-            $context['groups'][] = $normalization ? 'owner_output' : 'owner_input';
+            $context['groups'][] = $normalization ? 'owner:read' : 'owner:write';
         }
 
         if ($request->attributes->get('data') instanceof Registration
             && $this->authorizationChecker->isGranted('ROLE_USER')
             && $request->attributes->get('data')->getEvent()->getOrganizer() === $this->tokenStorage->getToken()->getUser()
         ) {
-            $context['groups'][] = $normalization ? 'organizer_output' : 'organizer_input';
+            $context['groups'][] = $normalization ? 'organizer:read' : 'organizer:write';
         }
 
         return $context;

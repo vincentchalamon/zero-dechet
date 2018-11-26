@@ -27,7 +27,7 @@ default:
                 bootstrap: features/bootstrap/bootstrap.php
                 class: App\Kernel
         Behat\MinkExtension:
-            base_url: https://www.zero-dechet.app
+            base_url: https://api.zero-dechet.app
             sessions:
                 default:
                     symfony2: ~

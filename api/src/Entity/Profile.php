@@ -53,79 +53,79 @@ class Profile
 
     /**
      * @ORM\Column(nullable=true)
-     * @Groups({"profile_input", "profile_output", "user_output"})
+     * @Groups({"profile:write", "profile:read", "user:read"})
      */
     private $firstName;
 
     /**
      * @ORM\Column(nullable=true)
-     * @Groups({"profile_input", "profile_output", "user_output"})
+     * @Groups({"profile:write", "profile:read", "user:read"})
      */
     private $lastName;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
-     * @Groups({"profile_input", "profile_output", "user_output"})
+     * @Groups({"profile:write", "profile:read", "user:read"})
      */
     private $familySize;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
-     * @Groups({"profile_input", "profile_output", "user_output"})
+     * @Groups({"profile:write", "profile:read", "user:read"})
      */
     private $nbAdults;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
-     * @Groups({"profile_input", "profile_output", "user_output"})
+     * @Groups({"profile:write", "profile:read", "user:read"})
      */
     private $nbChildren;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
-     * @Groups({"profile_input", "profile_output", "user_output"})
+     * @Groups({"profile:write", "profile:read", "user:read"})
      */
     private $nbBabies;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
-     * @Groups({"profile_input", "profile_output", "user_output"})
+     * @Groups({"profile:write", "profile:read", "user:read"})
      */
     private $nbPets;
 
     /**
      * @ORM\Column(nullable=true)
-     * @Groups({"profile_input", "profile_output", "user_output"})
+     * @Groups({"profile:write", "profile:read", "user:read"})
      */
     private $mobile;
 
     /**
      * @ORM\Column(nullable=true)
-     * @Groups({"profile_input", "profile_output", "user_output"})
+     * @Groups({"profile:write", "profile:read", "user:read"})
      */
     private $phone;
 
     /**
      * @ORM\Column(nullable=true)
-     * @Groups({"profile_input", "profile_output", "user_output"})
+     * @Groups({"profile:write", "profile:read", "user:read"})
      */
     private $address;
 
     /**
      * @ORM\Column(nullable=true)
-     * @Groups({"profile_input", "profile_output", "user_output"})
+     * @Groups({"profile:write", "profile:read", "user:read"})
      */
     private $postcode;
 
     /**
      * @ORM\Column(nullable=true)
-     * @Groups({"profile_input", "profile_output", "user_output"})
+     * @Groups({"profile:write", "profile:read", "user:read"})
      */
     private $city;
 
     /**
      * @ORM\Column(name="is_bi_flow", type="boolean")
-     * @Groups({"profile_input", "profile_output", "user_output"})
+     * @Groups({"profile:write", "profile:read", "user:read"})
      */
     private $biFlow = false;
 

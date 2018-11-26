@@ -32,16 +32,16 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\EntityListeners({"App\EntityListener\GeocoderEntityListener", "App\EntityListener\EventEntityListener"})
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=true)
  * @ApiResource(attributes={
- *     "normalization_context"={"groups"={"event_output"}},
- *     "denormalization_context"={"groups"={"event_input"}},
+ *     "normalization_context"={"groups"={"event:read"}},
+ *     "denormalization_context"={"groups"={"event:write"}},
  *     "order"={"startAt"="ASC"}
  * }, collectionOperations={
- *     "get"={"access_control"="is_granted('ROLE_USER') and is_feature_enabled('event')"},
- *     "post"={"access_control"="is_granted('ROLE_USER') and is_feature_enabled('event')"}
+ *     "get"={"access_control"="is_granted('ROLE_USER')"},
+ *     "post"={"access_control"="is_granted('ROLE_USER')"}
  * }, itemOperations={
- *     "get"={"access_control"="(is_granted('ROLE_ADMIN') or (is_granted('ROLE_USER') and (user == object.getOrganizer() or object.isActive()))) and is_feature_enabled('event')"},
- *     "put"={"access_control"="(is_granted('ROLE_ADMIN') or (is_granted('ROLE_USER') and user == object.getOrganizer())) and is_feature_enabled('event')"},
- *     "delete"={"access_control"="(is_granted('ROLE_ADMIN') or (is_granted('ROLE_USER') and user == object.getOrganizer())) and is_feature_enabled('event')"},
+ *     "get"={"access_control"="is_granted('ROLE_USER')"},
+ *     "put"={"access_control"="(is_granted('ROLE_ADMIN') or (is_granted('ROLE_USER') and user == object.getOrganizer()))"},
+ *     "delete"={"access_control"="(is_granted('ROLE_ADMIN') or (is_granted('ROLE_USER') and user == object.getOrganizer()))"},
  *     "like"={
  *         "path"="/events/{id}/like.{_format}",
  *         "controller"="App\Action\UserLikeEvent",
@@ -51,7 +51,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *                 {"name"="id", "in"="path", "required"=true, "type"="string"}
  *             }
  *         },
- *         "access_control"="is_granted('ROLE_USER') and object.isActive() and is_feature_enabled('event')"
+ *         "access_control"="is_granted('ROLE_USER')"
  *     }
  * }, subresourceOperations={
  *     "registrations_get_subresource"={
@@ -91,35 +91,35 @@ class Event implements GeocoderInterface
     /**
      * @ORM\Column
      * @Assert\NotBlank
-     * @Groups({"event_input", "event_output"})
+     * @Groups({"event:write", "event:read"})
      */
     private $title;
 
     /**
      * @ORM\Column(type="text")
      * @Assert\NotBlank
-     * @Groups({"event_input", "event_output"})
+     * @Groups({"event:write", "event:read"})
      */
     private $description;
 
     /**
      * @ORM\Column(type="datetime")
      * @Assert\NotBlank
-     * @Groups({"event_input", "event_output"})
+     * @Groups({"event:write", "event:read"})
      */
     private $startAt;
 
     /**
      * @ORM\Column(type="datetime")
      * @Assert\NotBlank
-     * @Groups({"event_input", "event_output"})
+     * @Groups({"event:write", "event:read"})
      */
     private $endAt;
 
     /**
      * @ORM\Column(type="text")
      * @Assert\NotBlank
-     * @Groups({"event_input", "event_output"})
+     * @Groups({"event:write", "event:read"})
      */
     private $address;
 
@@ -127,14 +127,14 @@ class Event implements GeocoderInterface
      * @ORM\Column
      * @Assert\NotBlank
      * @Assert\Length(min="5", max="5")
-     * @Groups({"event_input", "event_output"})
+     * @Groups({"event:write", "event:read"})
      */
     private $postcode;
 
     /**
      * @ORM\Column
      * @Assert\NotBlank
-     * @Groups({"event_input", "event_output"})
+     * @Groups({"event:write", "event:read"})
      */
     private $city;
 
@@ -145,13 +145,13 @@ class Event implements GeocoderInterface
 
     /**
      * @ORM\Column(type="float")
-     * @Groups({"shop_output"})
+     * @Groups({"shop:read"})
      */
     private $longitude;
 
     /**
      * @ORM\Column(type="float")
-     * @Groups({"shop_output"})
+     * @Groups({"shop:read"})
      */
     private $latitude;
 
@@ -163,31 +163,25 @@ class Event implements GeocoderInterface
 
     /**
      * @ORM\Column(type="integer", nullable=true, name="registrations_limit")
-     * @Groups({"event_input", "event_output"})
+     * @Groups({"event:write", "event:read"})
      */
     private $limit;
 
     /**
-     * @ORM\Column(type="boolean", name="is_active")
-     * @Groups({"admin_input", "admin_output"})
-     */
-    private $active = false;
-
-    /**
      * @ORM\Column(type="boolean", name="is_auto_validate_registrations")
-     * @Groups({"event_input", "event_output"})
+     * @Groups({"event:write", "event:read"})
      */
     private $autoValidateRegistrations = false;
 
     /**
      * @ORM\ManyToMany(targetEntity="App\Entity\User", fetch="EXTRA_LAZY")
-     * @Groups({"event_input", "event_output"})
+     * @Groups({"event:write", "event:read"})
      */
     private $likes;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Registration", mappedBy="event", fetch="EXTRA_LAZY")
-     * @Groups({"event_input", "event_output"})
+     * @Groups({"event:write", "event:read"})
      * @ApiSubresource
      */
     private $registrations;
@@ -204,7 +198,7 @@ class Event implements GeocoderInterface
     }
 
     /**
-     * @Groups({"event_output"})
+     * @Groups({"event:read"})
      */
     public function getFullAddress(): string
     {
@@ -380,16 +374,6 @@ class Event implements GeocoderInterface
     public function setLimit(?int $limit): void
     {
         $this->limit = $limit;
-    }
-
-    public function isActive(): bool
-    {
-        return $this->active;
-    }
-
-    public function setActive(bool $active): void
-    {
-        $this->active = $active;
     }
 
     public function isAutoValidateRegistrations(): bool

@@ -13,10 +13,7 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
-use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiResource;
-use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
-use App\Doctrine\ORM\Filter\FulltextSearchFilter;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -29,22 +26,20 @@ use Symfony\Component\Validator\Constraints as Assert;
  *
  * @ORM\Entity
  * @ApiResource(attributes={
- *     "normalization_context"={"groups"={"content_output"}},
- *     "denormalization_context"={"groups"={"content_input"}}
+ *     "normalization_context"={"groups"={"content:read"}},
+ *     "denormalization_context"={"groups"={"content:write"}}
  * }, subresourceOperations={
  *     "api_users_favorites_get_subresource"={
- *         "access_control"="(is_granted('ROLE_ADMIN') or request.attributes.get('object') == user or (is_granted('ROLE_ADMIN_CITY') and is_in_the_same_city(request.attributes.get('object').getProfile()))) and is_feature_enabled('content')"
+ *         "access_control"="is_granted('ROLE_ADMIN') or request.attributes.get('object') == user)"
  *     }
  * }, collectionOperations={
- *     "get"={"access_control"="is_granted('ROLE_USER') and is_feature_enabled('content')"},
- *     "post"={"access_control"="is_granted('ROLE_ADMIN') and is_feature_enabled('content')"}
+ *     "get"={"access_control"="is_granted('ROLE_USER')"},
+ *     "post"={"access_control"="is_granted('ROLE_ADMIN')"}
  * }, itemOperations={
- *     "get"={"access_control"="is_granted('ROLE_USER') and is_feature_enabled('content')"},
- *     "put"={"access_control"="is_granted('ROLE_ADMIN') and is_feature_enabled('content')"},
- *     "delete"={"access_control"="is_granted('ROLE_ADMIN') and is_feature_enabled('content')"}
+ *     "get"={"access_control"="is_granted('ROLE_USER')"},
+ *     "put"={"access_control"="is_granted('ROLE_ADMIN')"},
+ *     "delete"={"access_control"="is_granted('ROLE_ADMIN')"}
  * })
- * @ApiFilter(SearchFilter::class, properties={"title"="ipartial", "content"="ipartial"})
- * @ApiFilter(FulltextSearchFilter::class, properties={"title", "content"})
  */
 class Content
 {
@@ -58,27 +53,27 @@ class Content
     /**
      * @ORM\Column
      * @Assert\NotBlank
-     * @Groups({"content_input", "content_output"})
+     * @Groups({"content:write", "content:read"})
      */
     private $title;
 
     /**
      * @ORM\Column
      * @Gedmo\Slug(fields={"title"})
-     * @Groups({"content_input", "content_output"})
+     * @Groups({"content:write", "content:read"})
      */
     private $slug;
 
     /**
      * @ORM\Column(type="text")
      * @Assert\NotBlank
-     * @Groups({"content_input", "content_output"})
+     * @Groups({"content:write", "content:read"})
      */
     private $content;
 
     /**
      * @ORM\Column(name="is_published", type="boolean")
-     * @Groups({"content_input", "admin_output"})
+     * @Groups({"content:write", "admin:read"})
      */
     private $published = false;
 

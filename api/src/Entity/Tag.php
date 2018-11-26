@@ -23,15 +23,15 @@ use Symfony\Component\Validator\Constraints as Assert;
  *
  * @ORM\Entity
  * @ApiResource(attributes={
- *     "normalization_context"={"groups"={"tag_output"}},
- *     "denormalization_context"={"groups"={"tag_input"}}
+ *     "normalization_context"={"groups"={"tag:read"}},
+ *     "denormalization_context"={"groups"={"tag:write"}}
  * }, collectionOperations={
- *     "get"={"access_control"="is_granted('ROLE_USER') and is_feature_enabled('shop')"},
- *     "post"={"access_control"="is_granted('ROLE_ADMIN') and is_feature_enabled('shop')"}
+ *     "get"={"access_control"="is_granted('ROLE_USER')"},
+ *     "post"={"access_control"="is_granted('ROLE_ADMIN')"}
  * }, itemOperations={
- *     "get"={"access_control"="is_granted('ROLE_USER') and is_feature_enabled('shop')"},
- *     "put"={"access_control"="is_granted('ROLE_ADMIN') and is_feature_enabled('shop')"},
- *     "delete"={"access_control"="is_granted('ROLE_ADMIN') and is_feature_enabled('shop')"}
+ *     "get"={"access_control"="is_granted('ROLE_USER')"},
+ *     "put"={"access_control"="is_granted('ROLE_ADMIN')"},
+ *     "delete"={"access_control"="is_granted('ROLE_ADMIN')"}
  * })
  */
 class Tag
@@ -45,7 +45,7 @@ class Tag
 
     /**
      * @ORM\Column
-     * @Groups({"tag_input", "tag_output"})
+     * @Groups({"tag:write", "tag:read"})
      * @Assert\NotBlank
      */
     private $name;

@@ -24,11 +24,11 @@ use Symfony\Component\Validator\Constraints as Assert;
  *
  * @ORM\Entity
  * @ApiResource(attributes={
- *     "normalization_context"={"groups"={"choice_output"}},
- *     "denormalization_context"={"groups"={"choice_input"}},
+ *     "normalization_context"={"groups"={"choice:read"}},
+ *     "denormalization_context"={"groups"={"choice:write"}},
  *     "order"={"position"="ASC"}
  * }, collectionOperations={}, itemOperations={
- *     "get"={"access_control"="is_granted('ROLE_ADMIN') and is_feature_enabled('quiz')"}
+ *     "get"={"access_control"="is_granted('ROLE_ADMIN')"}
  * })
  */
 class Choice
@@ -45,27 +45,27 @@ class Choice
      * @ORM\ManyToOne(targetEntity="App\Entity\Question", inversedBy="choices")
      * @ORM\JoinColumn(nullable=false, onDelete="CASCADE")
      * @Assert\NotNull
-     * @Groups({"choice_input"})
+     * @Groups({"choice:write"})
      */
     private $question;
 
     /**
      * @ORM\Column
      * @Assert\NotBlank
-     * @Groups({"choice_input", "choice_output"})
+     * @Groups({"choice:write", "choice:read"})
      */
     private $name;
 
     /**
      * @ORM\Column(type="boolean", name="is_valid")
-     * @Groups({"choice_input", "admin_output"})
+     * @Groups({"choice:write", "admin:read"})
      */
     private $valid = false;
 
     /**
      * @Gedmo\SortablePosition
      * @ORM\Column(type="integer")
-     * @Groups({"choice_input", "admin_output"})
+     * @Groups({"choice:write", "admin:read"})
      */
     private $position;
 

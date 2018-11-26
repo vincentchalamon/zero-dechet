@@ -31,16 +31,17 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\EntityListeners("App\EntityListener\GeocoderEntityListener")
  * @ApiResource(attributes={
  *     "order"={"name"="ASC"},
- *     "normalization_context"={"groups"={"shop_output", "tag_output"}},
- *     "denormalization_context"={"groups"={"shop_input"}},
- *     "access_control"="is_granted('ROLE_USER') and is_feature_enabled('shop')"
+ *     "normalization_context"={"groups"={"shop:read", "tag:read"}},
+ *     "denormalization_context"={"groups"={"shop:write"}},
+ *     "access_control"="is_granted('ROLE_USER')"
  * }, itemOperations={
  *     "get",
- *     "put"={"access_control"="(is_granted('ROLE_ADMIN') or (is_granted('ROLE_ADMIN_CITY') and is_in_the_same_city(object))) and is_feature_enabled('shop')"},
- *     "delete"={"access_control"="(is_granted('ROLE_ADMIN') or (is_granted('ROLE_ADMIN_CITY') and is_in_the_same_city(object))) and is_feature_enabled('shop')"}
+ *     "put"={"access_control"="is_granted('ROLE_ADMIN')"},
+ *     "delete"={"access_control"="is_granted('ROLE_ADMIN')"}
  * })
  * @ApiFilter(GeocodingFilter::class)
  * @ApiFilter(TagsFilter::class)
+ * todo Replace by ES?
  * @ApiFilter(SearchFilter::class, properties={"name"="ipartial"})
  */
 class Shop implements GeocoderInterface
@@ -67,14 +68,19 @@ class Shop implements GeocoderInterface
     /**
      * @ORM\Column
      * @Assert\NotBlank
-     * @Groups({"shop_input", "shop_output"})
+     * @Groups({"shop:write", "shop:read"})
      */
     private $name;
 
     /**
+     * @ORM\Column(type="boolean", name="is_active")
+     */
+    private $active = false;
+
+    /**
      * @ORM\Column(type="text")
      * @Assert\NotBlank
-     * @Groups({"shop_input", "shop_output"})
+     * @Groups({"shop:write", "shop:read"})
      */
     private $address;
 
@@ -82,14 +88,14 @@ class Shop implements GeocoderInterface
      * @ORM\Column
      * @Assert\NotBlank
      * @Assert\Length(min="5", max="5")
-     * @Groups({"shop_input", "shop_output"})
+     * @Groups({"shop:write", "shop:read"})
      */
     private $postcode;
 
     /**
      * @ORM\Column
      * @Assert\NotBlank
-     * @Groups({"shop_input", "shop_output"})
+     * @Groups({"shop:write", "shop:read"})
      */
     private $city;
 
@@ -100,20 +106,20 @@ class Shop implements GeocoderInterface
 
     /**
      * @ORM\Column(type="float")
-     * @Groups({"shop_output"})
+     * @Groups({"shop:read"})
      */
     private $longitude;
 
     /**
      * @ORM\Column(type="float")
-     * @Groups({"shop_output"})
+     * @Groups({"shop:read"})
      */
     private $latitude;
 
     /**
      * @ORM\ManyToMany(targetEntity="App\Entity\Tag")
      * @ORM\OrderBy({"name"="ASC"})
-     * @Groups({"tag_input", "tag_output"})
+     * @Groups({"tag:write", "tag:read"})
      */
     private $tags;
 
@@ -160,6 +166,16 @@ class Shop implements GeocoderInterface
     public function setName(string $name): void
     {
         $this->name = $name;
+    }
+
+    public function isActive(): bool
+    {
+        return $this->active;
+    }
+
+    public function setActive(bool $active): void
+    {
+        $this->active = $active;
     }
 
     public function getAddress(): string

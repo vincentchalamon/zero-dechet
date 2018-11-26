@@ -29,14 +29,6 @@ Feature: CRUD Tag
     When I create a tag
     Then I see a tag
 
-  Scenario: As a city admin, I cannot create a tag
-    Given the following user:
-      | email             | roles           | active |
-      | admin@example.com | ROLE_ADMIN_CITY | true   |
-    And I am authenticated as "admin@example.com"
-    When I create a tag
-    Then I am forbidden to access this resource
-
   Scenario: As anonymous, I cannot create a tag
     When I create a tag
     Then I am unauthorized to access this resource
@@ -57,15 +49,6 @@ Feature: CRUD Tag
     And there is a tag
     When I update a tag
     Then I see a tag
-
-  Scenario: As a city admin, I cannot update a tag
-    Given the following user:
-      | email             | roles           | active |
-      | admin@example.com | ROLE_ADMIN_CITY | true   |
-    And I am authenticated as "admin@example.com"
-    And there is a tag
-    When I update a tag
-    Then I am forbidden to access this resource
 
   Scenario: As a user, I cannot update a tag
     Given the following user:
@@ -89,15 +72,6 @@ Feature: CRUD Tag
     And there is a tag
     When I delete a tag
     Then the tag has been successfully deleted
-
-  Scenario: As a city admin, I cannot delete a tag
-    Given the following user:
-      | email             | roles           | active |
-      | admin@example.com | ROLE_ADMIN_CITY | true   |
-    And I am authenticated as "admin@example.com"
-    And there is a tag
-    When I delete a tag
-    Then I am forbidden to access this resource
 
   Scenario: As a user, I cannot delete a tag
     Given the following user:

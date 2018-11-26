@@ -66,14 +66,6 @@ Feature: CRUD Quiz
     When I create a quiz
     Then I am forbidden to access this resource
 
-  Scenario: As a city, I cannot create a quiz
-    Given the following user:
-      | email             | roles           | active |
-      | admin@example.com | ROLE_ADMIN_CITY | true   |
-    And I am authenticated as "admin@example.com"
-    When I create a quiz
-    Then I am forbidden to access this resource
-
   Scenario: As anonymous, I cannot create a quiz
     When I create a quiz
     Then I am unauthorized to access this resource
@@ -139,15 +131,6 @@ Feature: CRUD Quiz
     When I update an existing quiz
     Then I am forbidden to access this resource
 
-  Scenario: As a city admin, I cannot update a quiz
-    Given the following user:
-      | email             | roles           | active |
-      | admin@example.com | ROLE_ADMIN_CITY | true   |
-    And I am authenticated as "admin@example.com"
-    And there are valid quizzes
-    When I update an existing quiz
-    Then I am forbidden to access this resource
-
   Scenario: As a user, I cannot update a quiz
     Given the following user:
       | email           | roles     | active |
@@ -179,15 +162,6 @@ Feature: CRUD Quiz
     And I am authenticated as "admin@example.com"
     And there are valid quizzes
     And user "foo@example.com" has quizzes
-    When I delete a quiz
-    Then I am forbidden to access this resource
-
-  Scenario: As a city admin, I cannot delete a quiz
-    Given the following user:
-      | email             | roles           | active |
-      | admin@example.com | ROLE_ADMIN_CITY | true   |
-    And I am authenticated as "admin@example.com"
-    And there are valid quizzes
     When I delete a quiz
     Then I am forbidden to access this resource
 

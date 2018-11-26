@@ -28,19 +28,19 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Entity
  * @ApiResource(attributes={
  *     "order"={"createdAt"="ASC"},
- *     "normalization_context"={"groups"={"weighing_output", "user_output"}},
- *     "denormalization_context"={"groups"={"weighing_input"}}
+ *     "normalization_context"={"groups"={"weighing:read", "user:read"}},
+ *     "denormalization_context"={"groups"={"weighing:write"}}
  * }, subresourceOperations={
  *     "api_users_weighings_get_subresource"={
- *         "access_control"="(is_granted('ROLE_ADMIN') or request.attributes.get('object') == user or (is_granted('ROLE_ADMIN_CITY') and is_in_the_same_city(request.attributes.get('object').getProfile()))) and is_feature_enabled('weighing')"
+ *         "access_control"="is_granted('ROLE_ADMIN') or request.attributes.get('object') == user"
  *     }
  * }, collectionOperations={
- *     "post"={"access_control"="is_granted('ROLE_USER') and is_feature_enabled('weighing')"},
- *     "get"={"access_control"="is_granted('ROLE_USER') and is_feature_enabled('weighing')"}
+ *     "post"={"access_control"="is_granted('ROLE_USER')"},
+ *     "get"={"access_control"="is_granted('ROLE_USER')"}
  * }, itemOperations={
- *     "get"={"access_control"="(is_granted('ROLE_ADMIN') or object.getUser() == user or (is_granted('ROLE_ADMIN_CITY') and is_in_the_same_city(object.getUser().getProfile()))) and is_feature_enabled('weighing')"},
- *     "put"={"access_control"="(is_granted('ROLE_ADMIN') or object.getUser() == user or (is_granted('ROLE_ADMIN_CITY') and is_in_the_same_city(object.getUser().getProfile()))) and is_feature_enabled('weighing')"},
- *     "delete"={"access_control"="(is_granted('ROLE_ADMIN') or object.getUser() == user or (is_granted('ROLE_ADMIN_CITY') and is_in_the_same_city(object.getUser().getProfile()))) and is_feature_enabled('weighing')"}
+ *     "get"={"access_control"="is_granted('ROLE_ADMIN') or object.getUser() == user"},
+ *     "put"={"access_control"="is_granted('ROLE_ADMIN') or object.getUser() == user"},
+ *     "delete"={"access_control"="is_granted('ROLE_ADMIN') or object.getUser() == user"}
  * })
  * @ApiFilter(SearchFilter::class, properties={"user", "type", "user.profile.city"})
  * @ApiFilter(RangeFilter::class, properties={"total"})
@@ -61,28 +61,28 @@ class Weighing
     /**
      * @ORM\Column(type="datetime")
      * @Gedmo\Timestampable(on="create")
-     * @Groups({"weighing_output"})
+     * @Groups({"weighing:read"})
      */
     private $createdAt;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="weighings")
      * @ORM\JoinColumn(nullable=false, onDelete="CASCADE")
-     * @Groups({"weighing_input", "weighing_output"})
+     * @Groups({"weighing:write", "weighing:read"})
      * @Assert\NotNull
      */
     private $user;
 
     /**
      * @ORM\Column(type="float")
-     * @Groups({"weighing_input", "weighing_output"})
+     * @Groups({"weighing:write", "weighing:read"})
      * @Assert\NotBlank
      */
     private $total;
 
     /**
      * @ORM\Column
-     * @Groups({"weighing_input", "weighing_output"})
+     * @Groups({"weighing:write", "weighing:read"})
      * @Assert\NotBlank
      * @Assert\Choice(choices={
      *     Weighing::TYPE_BIODEGRADABLE,

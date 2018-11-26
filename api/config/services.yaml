@@ -2,7 +2,6 @@
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
     locale: 'fr'
-    env(AUTO_VALIDATE_EVENTS): true
 
 services:
     # default configuration for services in *this* file
@@ -27,11 +26,6 @@ services:
     App\EntityListener\:
         resource: '../src/EntityListener'
         tags: ['doctrine.orm.entity_listener']
-
-    App\EntityListener\EventEntityListener:
-        tags: ['doctrine.orm.entity_listener']
-        arguments:
-            $autoValidateEvents: '%env(bool:AUTO_VALIDATE_EVENTS)%'
 
     App\Serializer\WeighingNormalizer:
         autoconfigure: false

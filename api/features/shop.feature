@@ -1,3 +1,4 @@
+@ko
 Feature: CRUD Shop
   In order to use the Shop API
   As a user or an admin
@@ -9,28 +10,28 @@ Feature: CRUD Shop
       | admin@example.com | ROLE_ADMIN | true   |
     And I am authenticated as "admin@example.com"
     And the following shops:
-      | name                       | address                    | postcode | city  | coordinates                 |
-      | Day by Day                 | 384 Rue Léon Gambetta      | 59000    | Lille | POINT(3.0477986 50.6266922) |
-      | L'Epicerie Equitable       | 22 Place Nouvelle Aventure | 59000    | Lille | POINT(3.0488861 50.6261559) |
-      | Biocoop Vert'Tige Wazemmes | 9 Place Nouvelle Aventure  | 59000    | Lille | POINT(3.049558 50.626873)   |
+      | name                       | address                    | postcode | city  | coordinates                 | active |
+      | Day by Day                 | 384 Rue Léon Gambetta      | 59000    | Lille | POINT(3.0477986 50.6266922) | true   |
+      | L'Epicerie Equitable       | 22 Place Nouvelle Aventure | 59000    | Lille | POINT(3.0488861 50.6261559) | false  |
+      | Biocoop Vert'Tige Wazemmes | 9 Place Nouvelle Aventure  | 59000    | Lille | POINT(3.049558 50.626873)   | true   |
     When I get a list of shops
     Then I see a list of shops
 
-  Scenario: As a user, I can get a list of shops
+  Scenario: As a user, I can get a list of active shops
     Given the following user:
       | email           | roles     | active |
       | foo@example.com | ROLE_USER | true   |
     And I am authenticated as "foo@example.com"
     And the following shops:
-      | name                       | address                    | postcode | city  | coordinates                 |
-      | Day by Day                 | 384 Rue Léon Gambetta      | 59000    | Lille | POINT(3.0477986 50.6266922) |
-      | L'Epicerie Equitable       | 22 Place Nouvelle Aventure | 59000    | Lille | POINT(3.0488861 50.6261559) |
-      | Biocoop Vert'Tige Wazemmes | 9 Place Nouvelle Aventure  | 59000    | Lille | POINT(3.049558 50.626873)   |
+      | name                       | address                    | postcode | city  | coordinates                 | active |
+      | Day by Day                 | 384 Rue Léon Gambetta      | 59000    | Lille | POINT(3.0477986 50.6266922) | true   |
+      | L'Epicerie Equitable       | 22 Place Nouvelle Aventure | 59000    | Lille | POINT(3.0488861 50.6261559) | false  |
+      | Biocoop Vert'Tige Wazemmes | 9 Place Nouvelle Aventure  | 59000    | Lille | POINT(3.049558 50.626873)   | true   |
     When I get a list of shops
     Then I see a list of shops
-    And the JSON node "hydra:totalItems" should be equal to 3
+    And the JSON node "hydra:totalItems" should be equal to 2
 
-  Scenario Outline: As a user, I can get a list of shops filtered by tag
+  Scenario Outline: As a user, I can get a list of active shops filtered by tag
     Given the following user:
       | email           | roles     | active |
       | foo@example.com | ROLE_USER | true   |
@@ -41,10 +42,10 @@ Feature: CRUD Shop
       | épicerie   |
       | cosmétique |
     And the following shops:
-      | name                       | address                    | postcode | city  | coordinates                 | tags                             |
-      | Day by Day                 | 384 Rue Léon Gambetta      | 59000    | Lille | POINT(3.0477986 50.6266922) | animalerie, épicerie, cosmétique |
-      | L'Epicerie Equitable       | 22 Place Nouvelle Aventure | 59000    | Lille | POINT(3.0488861 50.6261559) | animalerie, cosmétique           |
-      | Biocoop Vert'Tige Wazemmes | 9 Place Nouvelle Aventure  | 59000    | Lille | POINT(3.049558 50.626873)   | cosmétique                       |
+      | name                       | address                    | postcode | city  | coordinates                 | tags                             | active |
+      | Day by Day                 | 384 Rue Léon Gambetta      | 59000    | Lille | POINT(3.0477986 50.6266922) | animalerie, épicerie, cosmétique | true   |
+      | L'Epicerie Equitable       | 22 Place Nouvelle Aventure | 59000    | Lille | POINT(3.0488861 50.6261559) | animalerie, cosmétique           | false  |
+      | Biocoop Vert'Tige Wazemmes | 9 Place Nouvelle Aventure  | 59000    | Lille | POINT(3.049558 50.626873)   | cosmétique                       | true   |
     And I add Accept header equal to "application/ld+json"
     When I send a GET request to "/shops?<query>"
     Then I see a list of shops
@@ -52,8 +53,8 @@ Feature: CRUD Shop
     Examples:
       | query                                       | total |
       | tags.name[]=épicerie                        | 1     |
-      | tags.name[]=animalerie                      | 2     |
-      | tags.name[]=cosmétique                      | 3     |
+      | tags.name[]=animalerie                      | 1     |
+      | tags.name[]=cosmétique                      | 2     |
       | tags.name[]=cosmétique&tags.name[]=épicerie | 1     |
 
   Scenario: As an admin, I can create a shop
@@ -62,11 +63,12 @@ Feature: CRUD Shop
       | admin@example.com | ROLE_ADMIN | true   |
     And I am authenticated as "admin@example.com"
     When I create a shop with:
-      | name               | address          | postcode | city  |
-      | Supermarchés Match | 97 Rue Solférino | 59000    | Lille |
+      | name               | address          | postcode | city  | active |
+      | Supermarchés Match | 97 Rue Solférino | 59000    | Lille | true   |
     Then I see a shop
+    And the shop is active
 
-  Scenario: As a user, I can create a shop
+  Scenario: As a user, I can create a shop, it's inactive by default waiting for an admin validation
     Given the following user:
       | email           | roles     | active |
       | foo@example.com | ROLE_USER | true   |
@@ -75,6 +77,7 @@ Feature: CRUD Shop
       | name       | address               | postcode | city  |
       | Day by Day | 384 Rue Léon Gambetta | 59000    | Lille |
     Then I see a shop
+    And the shop is inactive
 
   Scenario: As an admin, I can update a shop
     Given the following user:
@@ -88,32 +91,6 @@ Feature: CRUD Shop
       | name       | address               | postcode | city  |
       | Day by Day | 384 Rue Léon Gambetta | 59000    | Lille |
     Then I see a shop
-
-  Scenario: As a city admin, I can update a shop in my city
-    Given the following user:
-      | email             | roles           | active | cities         |
-      | admin@example.com | ROLE_ADMIN_CITY | true   | Lille, Roubaix |
-    And I am authenticated as "admin@example.com"
-    And the following shop:
-      | name       | address               | postcode | city  | coordinates                 |
-      | Day by Day | 384 Rue Léon Gambetta | 59000    | Lille | POINT(3.0477986 50.6266922) |
-    When I update a shop with:
-      | name       | address               | postcode | city  |
-      | Day by Day | 384 Rue Léon Gambetta | 59000    | Lille |
-    Then I see a shop
-
-  Scenario: As a city admin, I cannot update a shop in another city
-    Given the following user:
-      | email             | roles           | active | cities |
-      | admin@example.com | ROLE_ADMIN_CITY | true   | Paris  |
-    And I am authenticated as "admin@example.com"
-    And the following shop:
-      | name       | address               | postcode | city  | coordinates                 |
-      | Day by Day | 384 Rue Léon Gambetta | 59000    | Lille | POINT(3.0477986 50.6266922) |
-    When I update a shop with:
-      | name       | address               | postcode | city  |
-      | Day by Day | 384 Rue Léon Gambetta | 59000    | Lille |
-    Then I am forbidden to access this resource
 
   Scenario: As a user, I cannot update a shop
     Given the following user:
@@ -138,28 +115,6 @@ Feature: CRUD Shop
       | Day by Day | 384 Rue Léon Gambetta | 59000    | Lille | POINT(3.0477986 50.6266922) |
     When I delete a shop
     Then the shop has been successfully deleted
-
-  Scenario: As a city admin, I can delete a shop in my city
-    Given the following user:
-      | email             | roles           | active | cities         |
-      | admin@example.com | ROLE_ADMIN_CITY | true   | Lille, Roubaix |
-    And I am authenticated as "admin@example.com"
-    And the following shop:
-      | name       | address               | postcode | city  | coordinates                 |
-      | Day by Day | 384 Rue Léon Gambetta | 59000    | Lille | POINT(3.0477986 50.6266922) |
-    When I delete a shop
-    Then the shop has been successfully deleted
-
-  Scenario: As a city admin, I cannot delete a shop in another city
-    Given the following user:
-      | email             | roles           | active | cities |
-      | admin@example.com | ROLE_ADMIN_CITY | true   | Paris  |
-    And I am authenticated as "admin@example.com"
-    And the following shop:
-      | name       | address               | postcode | city  | coordinates                 |
-      | Day by Day | 384 Rue Léon Gambetta | 59000    | Lille | POINT(3.0477986 50.6266922) |
-    When I delete a shop
-    Then I am forbidden to access this resource
 
   Scenario: As a user, I cannot delete a shop
     Given the following user:

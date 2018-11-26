@@ -28,18 +28,18 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @UniqueEntity({"user", "event"})
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=true)
  * @ApiResource(attributes={
- *     "normalization_context"={"groups"={"registration_output"}},
- *     "denormalization_context"={"groups"={"registration_input"}}
+ *     "normalization_context"={"groups"={"registration:read"}},
+ *     "denormalization_context"={"groups"={"registration:write"}}
  * }, subresourceOperations={
  *     "foo"={
- *         "access_control"="is_granted('ROLE_USER') and is_feature_enabled('event')"
+ *         "access_control"="is_granted('ROLE_USER')"
  *     }
  * }, collectionOperations={
- *     "post"={"access_control"="is_granted('ROLE_USER') and is_feature_enabled('event')"}
+ *     "post"={"access_control"="is_granted('ROLE_USER')"}
  * }, itemOperations={
- *     "get"={"access_control"="is_granted('ROLE_USER') and is_feature_enabled('event')"},
- *     "delete"={"access_control"="is_granted('ROLE_USER') and is_feature_enabled('event')"},
- *     "put"={"access_control"="(is_granted('ROLE_ADMIN') or (is_granted('ROLE_USER') and object.getEvent().getOrganizer() == user)) and is_feature_enabled('event')"}
+ *     "get"={"access_control"="is_granted('ROLE_USER')"},
+ *     "delete"={"access_control"="is_granted('ROLE_USER')"},
+ *     "put"={"access_control"="(is_granted('ROLE_ADMIN') or (is_granted('ROLE_USER') and object.getEvent().getOrganizer() == user))"}
  * })
  */
 class Registration
@@ -58,7 +58,7 @@ class Registration
     /**
      * @ORM\Column(type="datetime")
      * @Gedmo\Timestampable(on="create")
-     * @Groups({"registration_output"})
+     * @Groups({"registration:read"})
      */
     private $createdAt;
 
@@ -70,7 +70,7 @@ class Registration
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="registrations")
      * @ORM\JoinColumn(nullable=false, onDelete="CASCADE")
-     * @Groups({"registration_output", "admin_input"})
+     * @Groups({"registration:read", "admin:write"})
      * @Assert\Expression("value != null and value.isActive() and this.getEvent().getOrganizer() != value")
      */
     private $user;
@@ -78,26 +78,26 @@ class Registration
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Event", inversedBy="registrations")
      * @ORM\JoinColumn(nullable=false, onDelete="CASCADE")
-     * @Groups({"registration_output", "registration_input"})
-     * @Assert\Expression("value != null and value.isActive() and !value.isPast()")
+     * @Groups({"registration:read", "registration:write"})
+     * @Assert\Expression("value != null and !value.isPast()")
      */
     private $event;
 
     /**
      * @ORM\Column
-     * @Groups({"organizer_output", "organizer_input"})
+     * @Groups({"organizer:read", "organizer:write"})
      */
     private $status = self::STATUS_PENDING;
 
     /**
      * @ORM\Column(type="integer")
-     * @Groups({"registration_output", "registration_input"})
+     * @Groups({"registration:read", "registration:write"})
      */
     private $attendees = 1;
 
     /**
      * @ORM\Column(type="boolean", name="is_present")
-     * @Groups({"organizer_output", "organizer_input"})
+     * @Groups({"organizer:read", "organizer:write"})
      */
     private $present = false;
 

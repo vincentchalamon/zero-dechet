@@ -22,12 +22,10 @@ use App\Entity\Place;
 use App\Entity\Question;
 use App\Entity\Quiz;
 use App\Entity\Registration;
-use App\Entity\Team;
+use App\Entity\Shop;
 use App\Entity\User;
 use App\Entity\UserQuiz;
-use App\Entity\Weighing;
 use Behat\Gherkin\Node\PyStringNode;
-use Behat\Gherkin\Node\TableNode;
 use Behatch\Context\BaseContext;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\Request;
@@ -161,6 +159,26 @@ final class FeatureContext extends BaseContext
         $em->persist($quiz);
         $em->flush();
         $em->clear();
+    }
+
+    /**
+     * @Then the shop is inactive
+     */
+    public function theShopIsInactive()
+    {
+        if ($this->registry->getRepository(Shop::class)->findOneBy([])->isActive()) {
+            throw new \Exception('Shop is active.');
+        }
+    }
+
+    /**
+     * @Then the shop is active
+     */
+    public function theShopIsActive()
+    {
+        if (!$this->registry->getRepository(Shop::class)->findOneBy([])->isActive()) {
+            throw new \Exception('Shop is inactive.');
+        }
     }
 
     /**
@@ -327,20 +345,6 @@ final class FeatureContext extends BaseContext
             'email' => 'jOhN.dOe@eXaMpLe.cOm',
             'plainPassword' => $password,
             'cgu' => true,
-        ]);
-    }
-
-    /**
-     * @When /^I register a city admin with cities "(.*)"$/
-     */
-    public function sendPostRequestToUserWith(string $cities): void
-    {
-        $this->apiContext->sendPostRequestToCollection('user', [
-            'email' => 'jOhN.dOe@eXaMpLe.cOm',
-            'roles' => ['ROLE_ADMIN_CITY'],
-            'plainPassword' => 'p4$$w0rd',
-            'cgu' => true,
-            'cities' => \array_map('trim', \explode(',', $cities)),
         ]);
     }
 
@@ -871,14 +875,6 @@ final class FeatureContext extends BaseContext
     }
 
     /**
-     * @Transform :team
-     */
-    public function getTeamByName(string $team): ?Team
-    {
-        return $this->registry->getRepository(Team::class)->findOneBy(['name' => $team]);
-    }
-
-    /**
      * @When I get a list of contents filtered by title :title
      */
     public function sendGetRequestToContentsFilteredBy(string $title)
@@ -1022,10 +1018,10 @@ final class FeatureContext extends BaseContext
     {
         $this->minkContext->assertResponseStatus(200);
         $csv = \array_map('str_getcsv', \explode("\n", <<<'CSV'
-active,email,newsletter,roles,cities,firstName,lastName,familySize,nbAdults,nbChildren,nbBabies,nbPets,mobile,phone,address,postcode,city,biFlow
-1,admin@example.com,,ROLE_ADMIN,,,,,,,,,,,,,,
-1,bar@example.com,,ROLE_USER,,Jane,DOE,0,0,0,0,0,,,,,,
-1,foo@example.com,,ROLE_USER,,John,DOE,3,2,1,0,1,,,"123 chemin du moulin",75000,Lille,
+active,email,roles,cities,firstName,lastName,familySize,nbAdults,nbChildren,nbBabies,nbPets,mobile,phone,address,postcode,city,biFlow
+1,admin@example.com,ROLE_ADMIN,,,,,,,,,,,,,,
+1,bar@example.com,ROLE_USER,,Jane,DOE,0,0,0,0,0,,,,,,
+1,foo@example.com,ROLE_USER,,John,DOE,3,2,1,0,1,,,"123 chemin du moulin",75000,Lille,
 CSV
         ));
         $data = \array_map('str_getcsv', \explode("\n", $this->minkContext->getSession()->getPage()->getContent()));
@@ -1057,36 +1053,12 @@ CSV
     }
 
     /**
-     * @When /^I (update|create) a team with the following users:$/
-     */
-    public function sendPutRequestToTeamWithUsers(string $updateOrCreate, TableNode $table): void
-    {
-        $data = ['users' => \array_map(function ($row) {
-            return $row[0];
-        }, $table->getRows())];
-        if ('update' === $updateOrCreate) {
-            $this->apiContext->sendPutRequestToItem('team', $data);
-        } else {
-            $this->apiContext->sendPostRequestToCollection('team', $data);
-        }
-    }
-
-    /**
      * @When I get weighings filtered by user :user
      */
     public function sendGetRequestToWeighingsDataFilteredByUser(User $user): void
     {
         $this->restContext->iAddHeaderEqualTo('Accept', ApiContext::FORMAT);
         $this->restContext->iSendARequestTo(Request::METHOD_GET, '/users/'.$user->getId().'/weighings');
-    }
-
-    /**
-     * @When I get weighings filtered by team :team
-     */
-    public function sendGetRequestToWeighingsDataFilteredByTeam(Team $team): void
-    {
-        $this->restContext->iAddHeaderEqualTo('Accept', ApiContext::FORMAT);
-        $this->restContext->iSendARequestTo(Request::METHOD_GET, '/weighings?team=/teams/'.$team->getId());
     }
 
     /**
@@ -1098,15 +1070,15 @@ CSV
         $this->restContext->iSendARequestTo(Request::METHOD_GET, '/weighings?user.profile.city='.$city);
     }
 
-    /**
-     * @Then I see a list of weighings data
-     */
-    public function validateResponseUserWeighings(): void
-    {
-        $schema = $this->schemaGenerator->generate(new \ReflectionClass(Weighing::class), ['collection' => true, 'root' => true]);
-        unset($schema['properties']['@id']);
-        $this->apiContext->validateCollectionJsonSchema('weighing', null, $schema);
-    }
+//    /**
+//     * @Then I see a list of weighings data
+//     */
+//    public function validateResponseUserWeighings(): void
+//    {
+//        $schema = $this->schemaGenerator->generate(new \ReflectionClass(Weighing::class), ['collection' => true, 'root' => true]);
+//        unset($schema['properties']['@id']);
+//        $this->apiContext->validateCollectionJsonSchema('weighing', null, $schema);
+//    }
 
     /**
      * @When I like an event
@@ -1141,32 +1113,6 @@ CSV
         $event = $event ?: $this->registry->getRepository(Event::class)->findOneBy([]);
         $this->restContext->iAddHeaderEqualTo('Accept', ApiContext::FORMAT);
         $this->restContext->iSendARequestTo(Request::METHOD_GET, '/events/'.$event->getId().'/registrations');
-    }
-
-    /**
-     * @Then the event is active
-     */
-    public function checkEventIsActive(): void
-    {
-        /** @var Event $event */
-        $event = $this->registry->getRepository(Event::class)->findOneBy([]);
-        $this->registry->getManager()->refresh($event);
-        if (false === $event->isActive()) {
-            throw new \Exception('Event is not active.');
-        }
-    }
-
-    /**
-     * @Then the event is inactive
-     */
-    public function checkEventIsInactive(): void
-    {
-        /** @var Event $event */
-        $event = $this->registry->getRepository(Event::class)->findOneBy([]);
-        $this->registry->getManager()->refresh($event);
-        if (true === $event->isActive()) {
-            throw new \Exception('Event is active.');
-        }
     }
 
     /**

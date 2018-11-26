@@ -48,7 +48,6 @@ final class UserNormalizer implements NormalizerInterface, NormalizerAwareInterf
         $this->ready = false;
         $data = $this->normalizer->normalize($object, $format, $context);
         $data['roles'] = \implode(',', $object->getRoles());
-        $data['cities'] = \implode(',', $object->getCities());
         // todo Fix this shit
         foreach ($this->propertyInfo->getProperties(Profile::class, ['serializer_groups' => $context['groups']]) as $property) {
             $method = 'get'.\ucfirst($property);
