@@ -1,0 +1,7 @@
+services:
+    App\Faker\Provider\:
+        resource: '%kernel.project_dir%/fixtures/Faker/Provider'
+        autowire: true
+        autoconfigure: true
+        public: false
+        tags: ['nelmio_alice.faker.provider']

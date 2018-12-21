@@ -1,4 +1,3 @@
-@ko
 Feature: CRUD User
   In order to use the User API
   As a user or an admin
@@ -22,29 +21,6 @@ Feature: CRUD User
     And I am authenticated as "foo@example.com"
     When I get user "bar@example.com"
     Then I am forbidden to access this resource
-
-  Scenario: As a user, I can create my profile through my account
-    Given the following user:
-      | email           | roles     | active |
-      | foo@example.com | ROLE_USER | true   |
-    And I am authenticated as "foo@example.com"
-    When I create my profile
-    Then I see a user
-    And the JSON node profile should not be null
-    And the JSON node profile.city should be equal to Lille
-
-  Scenario: As a user, I can update my profile through my account
-    Given the following user:
-      | email           | roles     | active |
-      | foo@example.com | ROLE_USER | true   |
-    And the following profile:
-      | user            | city  |
-      | foo@example.com | Paris |
-    And I am authenticated as "foo@example.com"
-    When I update my profile
-    Then I see a user
-    And the JSON node profile should not be null
-    And the JSON node profile.city should be equal to Lille
 
   Scenario: As a user, I can access my own account
     Given the following user:
@@ -124,41 +100,6 @@ Feature: CRUD User
     And I am authenticated as "foo@example.com"
     And there are 3 users
     When I get a list of users
-    Then I am forbidden to access this resource
-
-  Scenario: As an admin, I can import a list of users
-    Given the following user:
-      | email             | roles      | active |
-      | admin@example.com | ROLE_ADMIN | true   |
-    And I am authenticated as "admin@example.com"
-    And I add "Accept" header equal to "application/ld+json"
-    And I add "Content-Type" header equal to "text/csv"
-    When I send a POST request to "/users/import" with body:
-    """
-    email,active,plainPassword
-    foo@example.com,true,fooPassword
-    bar@example.com,1,barPassword
-    john.doe@example.com,false,aPassword
-    jane.doe@example.com,0,anotherPassword
-    """
-    Then I see a list of users
-    And the JSON node "hydra:totalItems" should be equal to 4
-
-  Scenario: As a user, I cannot import a list of users
-    Given the following user:
-      | email           | roles     | active |
-      | foo@example.com | ROLE_USER | true   |
-    And I am authenticated as "foo@example.com"
-    And I add "Accept" header equal to "application/ld+json"
-    And I add "Content-Type" header equal to "text/csv"
-    When I send a POST request to "/users/import" with body:
-    """
-    email,active,plainPassword
-    foo@example.com,true,fooPassword
-    bar@example.com,1,barPassword
-    john.doe@example.com,false,aPassword
-    jane.doe@example.com,0,anotherPassword
-    """
     Then I am forbidden to access this resource
 
   Scenario: As anonymous, I can register
@@ -339,9 +280,12 @@ Feature: CRUD User
           "items": {
             "type": "object",
             "properties": {
-              "@id": {"pattern": "^/choices/[\\w-]+$"},
-              "@type": {"pattern": "^Choice$"},
-              "question": {"pattern": "^/questions/[\\w-]+$"},
+              "question": {
+                "type": "object",
+                "properties": {
+                  "title": {"type": "string"}
+                }
+              },
               "name": {"type": "string"}
             }
           }
@@ -361,17 +305,6 @@ Feature: CRUD User
     Then the response status code should be 201
     And the userQuiz should be attached to "foo@example.com"
 
-  Scenario: As an admin, I cannot update a UserQuiz
-    Given the following users:
-      | email             | roles      | active |
-      | admin@example.com | ROLE_ADMIN | true   |
-      | foo@example.com   | ROLE_USER  | true   |
-    And there are valid quizzes
-    And user "foo@example.com" has quizzes
-    And I am authenticated as "admin@example.com"
-    When I update a userQuiz
-    Then the method is not allowed
-
   Scenario: As an admin, I can get user scores
     Given the following users:
       | email             | roles      | active |
@@ -382,115 +315,3 @@ Feature: CRUD User
     And I am authenticated as "admin@example.com"
     When I get user "foo@example.com" scores
     Then I see user scores
-
-  @ko
-  Scenario: As a user, I can get my favorites
-    Given the following user:
-      | email           | roles     | active |
-      | foo@example.com | ROLE_USER | true   |
-    And I am authenticated as "foo@example.com"
-    And the following contents:
-      | published |
-      | true      |
-      | true      |
-      | true      |
-    And user "foo@example.com" has favorites
-    When I get user "foo@example.com" favorites
-    Then I see the user's favorites
-
-  Scenario: As a user, I cannot get another user favorites
-    Given the following users:
-      | email           | roles     | active |
-      | foo@example.com | ROLE_USER | true   |
-      | bar@example.com | ROLE_USER | true   |
-    And I am authenticated as "foo@example.com"
-    And the following contents:
-      | published |
-      | true      |
-      | true      |
-      | true      |
-    And user "bar@example.com" has favorites
-    When I get user "bar@example.com" favorites
-    Then I am forbidden to access this resource
-
-  Scenario: As an admin, I can get a user favorites
-    Given the following users:
-      | email             | roles      | active |
-      | admin@example.com | ROLE_ADMIN | true   |
-      | foo@example.com   | ROLE_USER  | true   |
-    And I am authenticated as "admin@example.com"
-    And the following contents:
-      | published |
-      | true      |
-      | true      |
-      | true      |
-    And user "foo@example.com" has favorites
-    When I get user "foo@example.com" favorites
-    Then I see the user's favorites
-
-  Scenario: As a user, I can add a favorite
-    Given the following user:
-      | email           | roles     | active |
-      | foo@example.com | ROLE_USER | true   |
-    And I am authenticated as "foo@example.com"
-    And the following contents:
-      | published |
-      | true      |
-      | true      |
-      | true      |
-    When I add favorites
-    Then I see a user
-    And user has 3 favorites
-
-  Scenario: As an admin, I cannot add a favorite to a user
-    Given the following users:
-      | email             | roles      | active |
-      | admin@example.com | ROLE_ADMIN | true   |
-      | foo@example.com   | ROLE_USER  | true   |
-    And I am authenticated as "admin@example.com"
-    And the following contents:
-      | published |
-      | true      |
-      | true      |
-      | true      |
-    When I add favorites to "foo@example.com"
-    Then I see a user
-    And user has 0 favorites
-
-  Scenario: As a user, I cannot add a favorite to another user
-    Given the following users:
-      | email           | roles     | active |
-      | foo@example.com | ROLE_USER | true   |
-      | bar@example.com | ROLE_USER | true   |
-    And I am authenticated as "foo@example.com"
-    And the following contents:
-      | published |
-      | true      |
-      | true      |
-      | true      |
-    When I add favorites to "bar@example.com"
-    Then I am forbidden to access this resource
-
-  Scenario: As a user, I cannot export users
-    Given the following users:
-      | email             | roles      | active |
-      | admin@example.com | ROLE_ADMIN | true   |
-      | foo@example.com   | ROLE_USER  | true   |
-      | bar@example.com   | ROLE_USER  | true   |
-    And I am authenticated as "foo@example.com"
-    When I export users in CSV
-    Then I am forbidden to access this resource
-
-  Scenario: As an admin, I can export users
-    Given the following users:
-      | email             | roles      | active |
-      | admin@example.com | ROLE_ADMIN | true   |
-      | foo@example.com   | ROLE_USER  | true   |
-      | bar@example.com   | ROLE_USER  | true   |
-    And the following profiles:
-      | user            | firstName | lastName | familySize | nbAdults | nbChildren | nbBabies | nbPets | mobile | phone | address              | postcode | city  |
-      | foo@example.com | John      | DOE      | 3          | 2        | 1          | 0        | 1      |        |       | 123 chemin du moulin | 75000    | Lille |
-      | bar@example.com | Jane      | DOE      |            |          |            |          |        |        |       |                      |          |       |
-    And I am authenticated as "admin@example.com"
-    When I export users in CSV
-    Then I get a list of users in CSV

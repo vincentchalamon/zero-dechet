@@ -26,6 +26,9 @@ final class UserScores
 {
     public function __invoke(User $data, ScoreManager $manager, SerializerInterface $serializer): JsonResponse
     {
-        return new JsonResponse($serializer->serialize($manager->getScores($data), ItemNormalizer::FORMAT, ['api_sub_level' => true]), 200, [], true);
+        return new JsonResponse($serializer->serialize($manager->getScores($data), ItemNormalizer::FORMAT, [
+            'api_sub_level' => true,
+            'groups' => ['score:read'],
+        ]), 200, [], true);
     }
 }

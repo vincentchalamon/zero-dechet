@@ -32,7 +32,7 @@ services:
         tags:
             - { name: serializer.normalizer, priority: 17 } # Priority higher than CollectionNormalizer
 
-    App\Serializer\UserNormalizer:
+    App\Serializer\UserQuizNormalizer:
         autoconfigure: false
         tags:
             - { name: serializer.normalizer, priority: 9 } # Priority higher than ItemNormalizer

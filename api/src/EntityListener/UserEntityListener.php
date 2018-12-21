@@ -51,7 +51,7 @@ final class UserEntityListener
 
         $swiftMessage = new \Swift_Message(
             'Validation de votre adresse email',
-            $this->templating->render('registration.html.twig', ['user' => $user]),
+            $this->templating->render('user/create.html.twig', ['user' => $user]),
             'text/html'
         );
         $swiftMessage->setTo($user->getEmail());
@@ -71,7 +71,10 @@ final class UserEntityListener
         $encoding = \mb_detect_encoding($user->getEmail(), \mb_detect_order(), true);
         $user->setEmailCanonical(Urlizer::unaccent(\mb_convert_case($user->getEmail(), MB_CASE_LOWER, $encoding ?: \mb_internal_encoding())));
 
-        $user->setPassword($this->userPasswordEncoder->encodePassword($user, $user->getPlainPassword()));
-        $user->eraseCredentials();
+        $plainPassword = $user->getPlainPassword();
+        if (!empty($plainPassword)) {
+            $user->setPassword($this->userPasswordEncoder->encodePassword($user, $user->getPlainPassword()));
+            $user->eraseCredentials();
+        }
     }
 }

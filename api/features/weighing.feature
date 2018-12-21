@@ -10,10 +10,6 @@ Feature: CRUD Weighing
       | foo@example.com   | ROLE_USER  | true   |
       | bar@example.com   | ROLE_USER  | true   |
     And I am authenticated as "admin@example.com"
-    And the following profiles:
-      | user            |
-      | foo@example.com |
-      | bar@example.com |
     And the following weighings:
       | user            | type           | total |
       | bar@example.com | recyclable     | 10    |
@@ -37,10 +33,6 @@ Feature: CRUD Weighing
       | foo@example.com | ROLE_USER | true   |
       | bar@example.com | ROLE_USER | true   |
     And I am authenticated as "foo@example.com"
-    And the following profiles:
-      | user            |
-      | foo@example.com |
-      | bar@example.com |
     And the following weighings:
       | user            | type       |
       | foo@example.com | recyclable |
@@ -56,9 +48,6 @@ Feature: CRUD Weighing
       | admin@example.com | ROLE_ADMIN | true   |
       | foo@example.com   | ROLE_USER  | true   |
     And I am authenticated as "admin@example.com"
-    And the following profiles:
-      | user            |
-      | foo@example.com |
     And the following weighing:
       | user            | type       |
       | foo@example.com | recyclable |
@@ -70,9 +59,6 @@ Feature: CRUD Weighing
       | email           | roles     | active |
       | foo@example.com | ROLE_USER | true   |
     And I am authenticated as "foo@example.com"
-    And the following profile:
-      | user            |
-      | foo@example.com |
     And the following weighing:
       | user            | type       |
       | foo@example.com | recyclable |
@@ -85,24 +71,17 @@ Feature: CRUD Weighing
       | foo@example.com | ROLE_USER | true   |
       | bar@example.com | ROLE_USER | true   |
     And I am authenticated as "foo@example.com"
-    And the following profiles:
-      | user            |
-      | foo@example.com |
-      | bar@example.com |
     And the following weighing:
       | user            | type       |
       | bar@example.com | recyclable |
     When I get a weighing
     Then I am forbidden to access this resource
 
-  Scenario: As a user, I can create a weighing if I've filled my profile
+  Scenario: As a user, I can create a weighing
     Given the following user:
       | email           | roles     | active |
       | foo@example.com | ROLE_USER | true   |
     And I am authenticated as "foo@example.com"
-    And the following profile:
-      | user            |
-      | foo@example.com |
     When I create a weighing with:
       | type       |
       | recyclable |
@@ -114,9 +93,6 @@ Feature: CRUD Weighing
       | admin@example.com | ROLE_ADMIN | true   |
       | foo@example.com   | ROLE_USER  | true   |
     And I am authenticated as "admin@example.com"
-    And the following profile:
-      | user            |
-      | foo@example.com |
     And the following weighing:
       | user            | type       |
       | foo@example.com | recyclable |
@@ -130,9 +106,6 @@ Feature: CRUD Weighing
       | email           | roles     | active |
       | foo@example.com | ROLE_USER | true   |
     And I am authenticated as "foo@example.com"
-    And the following profile:
-      | user            |
-      | foo@example.com |
     And the following weighing:
       | user            | type       |
       | foo@example.com | recyclable |
@@ -147,9 +120,6 @@ Feature: CRUD Weighing
       | foo@example.com | ROLE_USER | true   |
       | bar@example.com | ROLE_USER | true   |
     And I am authenticated as "foo@example.com"
-    And the following profile:
-      | user            |
-      | foo@example.com |
     And the following weighing:
       | user            | type       |
       | bar@example.com | recyclable |
@@ -164,9 +134,6 @@ Feature: CRUD Weighing
       | admin@example.com | ROLE_ADMIN | true   |
       | foo@example.com   | ROLE_ADMIN | true   |
     And I am authenticated as "admin@example.com"
-    And the following profile:
-      | user            |
-      | foo@example.com |
     And the following weighing:
       | user            | type       |
       | foo@example.com | recyclable |
@@ -178,9 +145,6 @@ Feature: CRUD Weighing
       | email           | roles     | active |
       | foo@example.com | ROLE_USER | true   |
     And I am authenticated as "foo@example.com"
-    And the following profile:
-      | user            |
-      | foo@example.com |
     And the following weighing:
       | user            | type       |
       | foo@example.com | recyclable |
@@ -193,10 +157,6 @@ Feature: CRUD Weighing
       | foo@example.com | ROLE_USER | true   |
       | bar@example.com | ROLE_USER | true   |
     And I am authenticated as "foo@example.com"
-    And the following profiles:
-      | user            |
-      | foo@example.com |
-      | bar@example.com |
     And the following weighing:
       | user            | type       |
       | bar@example.com | recyclable |
@@ -209,10 +169,6 @@ Feature: CRUD Weighing
       | foo@example.com | ROLE_USER | true   |
       | bar@example.com | ROLE_USER | true   |
     And I am authenticated as "foo@example.com"
-    And the following profiles:
-      | user            |
-      | foo@example.com |
-      | bar@example.com |
     And the following weighings:
       | user            | type           |
       | bar@example.com | recyclable     |
@@ -231,10 +187,6 @@ Feature: CRUD Weighing
       | foo@example.com   | ROLE_USER  | true   |
       | bar@example.com   | ROLE_USER  | true   |
     And I am authenticated as "admin@example.com"
-    And the following profiles:
-      | user            |
-      | foo@example.com |
-      | bar@example.com |
     And the following weighings:
       | user            | type           |
       | bar@example.com | recyclable     |
@@ -253,10 +205,6 @@ Feature: CRUD Weighing
       | foo@example.com   | ROLE_USER  | true   |
       | bar@example.com   | ROLE_USER  | true   |
     And I am authenticated as "admin@example.com"
-    And the following profiles:
-      | user            |
-      | foo@example.com |
-      | bar@example.com |
     And the following weighings:
       | user            | type           |
       | bar@example.com | recyclable     |

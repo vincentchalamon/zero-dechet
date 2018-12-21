@@ -17,7 +17,7 @@ use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
 
 /**
- * Add UUID Postgres required extension.
+ * Add PostgreSQL required extension.
  */
 final class Version20181019075654 extends AbstractMigration
 {

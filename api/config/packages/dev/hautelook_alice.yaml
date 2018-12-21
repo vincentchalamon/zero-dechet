@@ -3,11 +3,3 @@ hautelook_alice:
     root_dirs:
         - '%kernel.root_dir%'
         - '%kernel.project_dir%'
-
-services:
-    App\Faker\Provider\:
-        resource: '%kernel.project_dir%/fixtures/Faker/Provider'
-        autowire: true
-        autoconfigure: true
-        public: false
-        tags: ['nelmio_alice.faker.provider']

@@ -45,7 +45,7 @@ class Tag
 
     /**
      * @ORM\Column
-     * @Groups({"tag:write", "tag:read"})
+     * @Groups({"tag:write", "tag:read", "shop:read"})
      * @Assert\NotBlank
      */
     private $name;

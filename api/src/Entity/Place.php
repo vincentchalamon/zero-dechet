@@ -46,7 +46,7 @@ class Place
     /**
      * @ORM\Column
      * @Assert\NotBlank
-     * @Groups({"place:write", "place:read"})
+     * @Groups({"place:write", "place:read", "quiz:read", "score:read"})
      */
     private $name;
 

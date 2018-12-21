@@ -13,8 +13,8 @@ declare(strict_types=1);
 
 namespace App\Score;
 
-use App\Entity\Content;
 use App\Entity\Quiz;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @author Vincent Chalamon <vincentchalamon@gmail.com>
@@ -23,24 +23,27 @@ final class Score
 {
     /**
      * @var Quiz
+     * @Groups({"score:read"})
      */
     private $quiz;
 
     /**
      * @var float
+     * @Groups({"score:read"})
      */
     private $score;
 
     /**
-     * @var Content[]
+     * @var string[]
+     * @Groups({"score:read"})
      */
-    private $contents;
+    private $urls;
 
-    public function __construct(Quiz $quiz, float $score, array $contents)
+    public function __construct(Quiz $quiz, float $score, array $urls)
     {
         $this->quiz = $quiz;
         $this->score = $score;
-        $this->contents = $contents;
+        $this->urls = $urls;
     }
 
     public function getQuiz(): Quiz
@@ -53,8 +56,8 @@ final class Score
         return $this->score;
     }
 
-    public function getContents(): array
+    public function getUrls(): array
     {
-        return $this->contents;
+        return $this->urls;
     }
 }

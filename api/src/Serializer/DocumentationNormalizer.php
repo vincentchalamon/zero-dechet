@@ -48,7 +48,7 @@ final class DocumentationNormalizer implements NormalizerInterface
             'responses' => [
                 200 => [
                     'description' => 'Valid credentials',
-                    'schema' => ['$ref' => '#/definitions/User-user_output_place_output_profile_output'],
+                    'schema' => ['$ref' => '#/definitions/User-user:read'],
                 ],
                 401 => ['description' => 'Invalid credentials'],
             ],
@@ -116,7 +116,7 @@ final class DocumentationNormalizer implements NormalizerInterface
                 200 => [
                     'description' => 'Authenticated user',
                     'schema' => [
-                        '$ref' => '#/definitions/User-user_output_place_output_profile_output',
+                        '$ref' => '#/definitions/User-user:read',
                     ],
                 ],
                 400 => ['description' => 'Missing email parameter or invalid format'],

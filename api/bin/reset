@@ -3,4 +3,3 @@
 bin/console doctrine:database:drop --force --if-exists --env test
 bin/console doctrine:database:create --env test
 bin/console doctrine:migrations:migrate --no-interaction --env test
-bin/console doctrine:schema:update --force --env test

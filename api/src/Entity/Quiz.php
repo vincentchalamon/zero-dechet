@@ -27,8 +27,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  *
  * @ORM\Entity
  * @ApiResource(attributes={
- *     "normalization_context"={"groups"={"quiz:read", "place:read", "question:read", "choice:read"}},
- *     "denormalization_context"={"groups"={"quiz:write", "question:write", "choice:write"}},
+ *     "normalization_context"={"groups"={"quiz:read"}},
+ *     "denormalization_context"={"groups"={"quiz:write"}},
  *     "order"={"position"="ASC"}
  * }, collectionOperations={
  *     "get"={"access_control"="is_granted('ROLE_USER')"},

@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace App\Serializer;
 
 use ApiPlatform\Core\Serializer\SerializerContextBuilderInterface;
-use App\Entity\Registration;
 use App\Entity\User;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\PropertyInfo\PropertyInfoExtractorInterface;
@@ -53,13 +52,6 @@ class ContextBuilder implements SerializerContextBuilderInterface
             && $request->attributes->get('data') === $this->tokenStorage->getToken()->getUser()
         ) {
             $context['groups'][] = $normalization ? 'owner:read' : 'owner:write';
-        }
-
-        if ($request->attributes->get('data') instanceof Registration
-            && $this->authorizationChecker->isGranted('ROLE_USER')
-            && $request->attributes->get('data')->getEvent()->getOrganizer() === $this->tokenStorage->getToken()->getUser()
-        ) {
-            $context['groups'][] = $normalization ? 'organizer:read' : 'organizer:write';
         }
 
         return $context;

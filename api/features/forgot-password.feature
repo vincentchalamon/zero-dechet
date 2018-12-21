@@ -5,8 +5,8 @@ Feature:
 
   Background:
     Given the following user:
-      | email           | active |
-      | foo@example.com | true   |
+      | email           | plainPassword | active |
+      | foo@example.com | p4ssw0rd      | true   |
 
   Scenario: I can reset my password
     When I reset my password
@@ -46,7 +46,6 @@ Feature:
     When I set a new invalid password
     Then the request is invalid
 
-  @ko
   Scenario: I can update my password using a valid token and an valid password
     When I set a new password
     Then my password has been updated

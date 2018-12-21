@@ -13,15 +13,10 @@ declare(strict_types=1);
 
 use ApiExtension\Context\ApiContext;
 use ApiExtension\Helper\ApiHelper;
-use ApiExtension\SchemaGenerator\SchemaGeneratorInterface;
 use App\Entity\Choice;
-use App\Entity\Content;
-use App\Entity\Event;
-use App\Entity\Notification;
 use App\Entity\Place;
 use App\Entity\Question;
 use App\Entity\Quiz;
-use App\Entity\Registration;
 use App\Entity\Shop;
 use App\Entity\User;
 use App\Entity\UserQuiz;
@@ -36,20 +31,17 @@ use Symfony\Component\HttpFoundation\Request;
  */
 final class FeatureContext extends BaseContext
 {
-    private const ICS_PATTERN = '/^BEGIN:VCALENDAR\nVERSION:2\.0\nCALSCALE:GREGORIAN\n(?:BEGIN:VEVENT\nSUMMARY:[^\n]+\nDTSTART;TZID=UTC:\d{8}T\d{6}\nDTEND;TZID=UTC:\d{8}T\d{6}\nLOCATION:[^\n]+\nDESCRIPTION:[^\n]*\nSTATUS:CONFIRMED\nSEQUENCE:3\nBEGIN:VALARM\nTRIGGER:\-PT10M\nACTION:DISPLAY\nEND:VALARM\nEND:VEVENT\n)+END:VCALENDAR$/m';
     use ContextTrait;
 
     private $registry;
-    private $helper;
     private $userRepository;
-    private $schemaGenerator;
+    private $helper;
 
-    public function __construct(ManagerRegistry $registry, ApiHelper $helper, SchemaGeneratorInterface $schemaGenerator)
+    public function __construct(ManagerRegistry $registry, ApiHelper $helper)
     {
         $this->registry = $registry;
-        $this->helper = $helper;
-        $this->schemaGenerator = $schemaGenerator;
         $this->userRepository = $registry->getRepository(User::class);
+        $this->helper = $helper;
     }
 
     /**
@@ -58,24 +50,6 @@ final class FeatureContext extends BaseContext
     public function createQuizzes(): void
     {
         $em = $this->registry->getManager();
-
-        $content1 = new Content();
-        $content1->setTitle('Tuto : fabriquer ses sacs de vrac');
-        $content1->setPublished(true);
-        $content1->setContent('Tuto : fabriquer ses sacs de vrac');
-        $em->persist($content1);
-
-        $content2 = new Content();
-        $content2->setTitle('Tuto : construire un lombricomposteur');
-        $content2->setPublished(true);
-        $content2->setContent('Tuto : construire un lombricomposteur');
-        $em->persist($content2);
-
-        $unpublishedContent = new Content();
-        $unpublishedContent->setTitle('Ce contenu n\'est pas publié');
-        $unpublishedContent->setPublished(false);
-        $unpublishedContent->setContent('Ce contenu n\'est pas publié');
-        $em->persist($unpublishedContent);
 
         $cuisine = new Place();
         $cuisine->setName('Cuisine');
@@ -91,8 +65,7 @@ final class FeatureContext extends BaseContext
 
         $question = new Question();
         $question->setTitle('Comment faites-vous vos courses ?');
-        $question->addContent($content1);
-        $question->addContent($unpublishedContent);
+        $question->setUrls(['https://www.example.com']);
         foreach (['J\'achète en vrac' => true, 'En supermarché' => false] as $label => $valid) {
             $choice = new Choice();
             $choice->setName($label);
@@ -103,7 +76,7 @@ final class FeatureContext extends BaseContext
 
         $question = new Question();
         $question->setTitle('Comment achetez-vous vos légumes ?');
-        $question->addContent($unpublishedContent);
+        $question->setUrls(['https://www.example.com']);
         foreach (['Sous emballage' => false, 'En vrac' => true] as $label => $valid) {
             $choice = new Choice();
             $choice->setName($label);
@@ -119,7 +92,7 @@ final class FeatureContext extends BaseContext
 
         $question = new Question();
         $question->setTitle('Quels produits utilisez-vous sous la douche ?');
-        $question->addContent($unpublishedContent);
+        $question->setUrls(['https://www.example.com']);
         foreach (['Gel douche jetable' => false, 'Savon & shampoing solides' => true] as $label => $valid) {
             $choice = new Choice();
             $choice->setName($label);
@@ -136,7 +109,7 @@ final class FeatureContext extends BaseContext
 
         $question = new Question();
         $question->setTitle('Que faites-vous de vos pelures de légume ?');
-        $question->addContent($content2);
+        $question->setUrls(['https://www.example.com']);
         foreach (['Des soupes' => true, 'Je les composte' => true, 'Je les jette' => false] as $label => $valid) {
             $choice = new Choice();
             $choice->setName($label);
@@ -147,7 +120,7 @@ final class FeatureContext extends BaseContext
 
         $question = new Question();
         $question->setTitle('Quels fruits achetez-vous généralement ?');
-        $question->addContent($unpublishedContent);
+        $question->setUrls(['https://www.example.com']);
         foreach (['Des fruits de saison' => true, 'N\'importe quels fruits' => false] as $label => $valid) {
             $choice = new Choice();
             $choice->setName($label);
@@ -273,17 +246,6 @@ final class FeatureContext extends BaseContext
     }
 
     /**
-     * @When I create a new page
-     */
-    public function sendPostRequestToPageWith(): void
-    {
-        $this->apiContext->sendPostRequestToCollection('page', [
-            'title' => 'Lorem ipsum',
-            'content' => 'Lorem ipsum dolor sit amet',
-        ]);
-    }
-
-    /**
      * @When I get user :user
      */
     public function sendGetRequestToUser(User $user): void
@@ -308,22 +270,6 @@ final class FeatureContext extends BaseContext
         $this->apiContext->sendPutRequestToItem('user', [
             'email' => 'john.doe@example.com',
         ], ['id' => $user->getId()]);
-    }
-
-    /**
-     * @When I create my profile
-     * @When I update my profile
-     */
-    public function sendPutRequestToUserWithProfile(): void
-    {
-        $this->restContext->iAddHeaderEqualTo('Accept', ApiContext::FORMAT);
-        $this->restContext->iAddHeaderEqualTo('Content-Type', ApiContext::FORMAT);
-        $this->restContext->iSendARequestToWithBody('PUT', '/users/'.$this->userRepository->findOneBy([])->getId(), new PyStringNode([\json_encode([
-            'profile' => [
-                'biFlow' => true,
-                'city' => 'Lille',
-            ],
-        ])], 0));
     }
 
     /**
@@ -450,99 +396,19 @@ final class FeatureContext extends BaseContext
                     'maxItems' => 2,
                     'items' => [
                         'type' => 'object',
-                        'required' => ['quiz', 'score', 'contents'],
+                        'required' => ['quiz', 'score', 'urls'],
                         'properties' => [
                             'quiz' => [
-                                'type' => 'object',
-                                'required' => ['@id', '@type', 'place', 'questions', 'position'],
-                                'properties' => [
-                                    '@id' => [
-                                        'pattern' => '^/quizzes/[\\w-]+$',
-                                    ],
-                                    '@type' => [
-                                        'pattern' => '^Quiz$',
-                                    ],
-                                    'place' => [
-                                        'type' => 'object',
-                                        'required' => ['@id', '@type', 'name'],
-                                        'properties' => [
-                                            '@id' => [
-                                                'pattern' => '^/places/[\\w-]+$',
-                                            ],
-                                            '@type' => [
-                                                'pattern' => '^Place$',
-                                            ],
-                                            'name' => [
-                                                'type' => 'string',
-                                            ],
-                                        ],
-                                    ],
-                                    'questions' => [
-                                        'type' => 'array',
-                                        'items' => [
-                                            'type' => 'object',
-                                            'required' => ['@id', '@type', 'title', 'choices'],
-                                            'properties' => [
-                                                '@id' => [
-                                                    'pattern' => '^/questions/[\\w-]+$',
-                                                ],
-                                                '@type' => [
-                                                    'pattern' => '^Question$',
-                                                ],
-                                                'title' => [
-                                                    'type' => 'string',
-                                                ],
-                                                'choices' => [
-                                                    'type' => 'array',
-                                                    'items' => [
-                                                        'type' => 'object',
-                                                        'required' => ['@id', '@type', 'name'],
-                                                        'properties' => [
-                                                            '@id' => [
-                                                                'pattern' => '^/choices/[\\w-]+$',
-                                                            ],
-                                                            '@type' => [
-                                                                'pattern' => '^Choice$',
-                                                            ],
-                                                            'name' => [
-                                                                'type' => 'string',
-                                                            ],
-                                                            'position' => [
-                                                                'type' => 'number',
-                                                            ],
-                                                        ],
-                                                    ],
-                                                ],
-                                            ],
-                                        ],
-                                    ],
-                                    'position' => [
-                                        'type' => 'number',
-                                    ],
-                                ],
+                                'pattern' => '^/quizzes/[\\w-]+$',
                             ],
                             'score' => [
                                 'type' => 'number',
                             ],
-                            'contents' => [
+                            'urls' => [
                                 'type' => 'array',
                                 'items' => [
-                                    'type' => 'object',
-                                    'required' => ['@id', '@type', 'title', 'content'],
-                                    'properties' => [
-                                        '@id' => [
-                                            'pattern' => '^/contents/[\\w-]+$',
-                                        ],
-                                        '@type' => [
-                                            'pattern' => '^Content$',
-                                        ],
-                                        'title' => [
-                                            'type' => 'string',
-                                        ],
-                                        'content' => [
-                                            'type' => 'string',
-                                        ],
-                                    ],
+                                    'type' => 'string',
+                                    'pattern' => '^https?://.*',
                                 ],
                             ],
                         ],
@@ -554,7 +420,7 @@ final class FeatureContext extends BaseContext
                     'maxItems' => 1,
                     'items' => [
                         'type' => 'object',
-                        'required' => ['quiz', 'score', 'contents'],
+                        'required' => ['quiz', 'score', 'urls'],
                         'properties' => [
                             'quiz' => [
                                 'pattern' => '^/quizzes/[\\w-]+$',
@@ -562,25 +428,11 @@ final class FeatureContext extends BaseContext
                             'score' => [
                                 'type' => 'number',
                             ],
-                            'contents' => [
+                            'urls' => [
                                 'type' => 'array',
                                 'items' => [
-                                    'type' => 'object',
-                                    'required' => ['@id', '@type', 'title', 'content'],
-                                    'properties' => [
-                                        '@id' => [
-                                            'pattern' => '^/contents/[\\w-]+$',
-                                        ],
-                                        '@type' => [
-                                            'pattern' => '^Content$',
-                                        ],
-                                        'title' => [
-                                            'type' => 'string',
-                                        ],
-                                        'content' => [
-                                            'type' => 'string',
-                                        ],
-                                    ],
+                                    'type' => 'string',
+                                    'pattern' => '^https?://.*',
                                 ],
                             ],
                         ],
@@ -630,11 +482,14 @@ final class FeatureContext extends BaseContext
     {
         $this->restContext->iAddHeaderEqualTo('Accept', ApiContext::FORMAT);
         $this->restContext->iAddHeaderEqualTo('Content-Type', ApiContext::FORMAT);
+        $quiz = $this->registry->getRepository(Quiz::class)->findOneBy([]);
         $this->restContext->iSendARequestToWithBody(Request::METHOD_POST, '/user_quizzes', new PyStringNode([\json_encode([
-            'quiz' => '/quizzes/'.$this->registry->getRepository(Quiz::class)->findOneBy([])->getId(),
+            'quiz' => '/quizzes/'.$quiz->getId(),
             'choices' => \array_map(function (Choice $choice) {
-                return '/choices/'.$choice->getId();
-            }, $this->registry->getRepository(Choice::class)->findAll()),
+                return $choice->getId();
+            }, \array_merge(...\array_map(function (Question $question) {
+                return $question->getChoices();
+            }, $quiz->getQuestions()))),
         ])], 0));
     }
 
@@ -649,7 +504,7 @@ final class FeatureContext extends BaseContext
             'user' => '/users/'.$user->getId(),
             'quiz' => '/quizzes/'.$this->registry->getRepository(Quiz::class)->findOneBy([])->getId(),
             'choices' => \array_map(function (Choice $choice) {
-                return '/choices/'.$choice->getId();
+                return $choice->getId();
             }, $this->registry->getRepository(Choice::class)->findAll()),
         ])], 0));
     }
@@ -670,116 +525,6 @@ final class FeatureContext extends BaseContext
     {
         $this->restContext->iAddHeaderEqualTo('Accept', ApiContext::FORMAT);
         $this->restContext->iSendARequestTo(Request::METHOD_GET, '/'.$name.'?longitude='.$longitude.'&latitude='.$latitude.'&distance='.($distance * 1000));
-    }
-
-    /**
-     * @When I register to an event
-     * @When I register to this event
-     * @When I register to event :event
-     * @When I register :nb attendees to an event
-     * @When I register :nb attendees to this event
-     * @When I register :nb attendees to event :event
-     */
-    public function sendPostRequestToEvent(int $nb = 1, Event $event = null): void
-    {
-        $this->restContext->iAddHeaderEqualTo('Accept', ApiContext::FORMAT);
-        $this->restContext->iAddHeaderEqualTo('Content-Type', ApiContext::FORMAT);
-        $id = $event ? $event->getId() : $this->registry->getRepository(Event::class)->findOneBy([])->getId();
-        $this->restContext->iSendARequestTo(Request::METHOD_POST, '/registrations', new PyStringNode([\json_encode([
-            'event' => '/events/'.$id,
-            'attendees' => $nb,
-        ])], 0));
-    }
-
-    /**
-     * @When I register user :user to an event
-     */
-    public function sendPostRequestToEventWithUser(User $user): void
-    {
-        $this->restContext->iAddHeaderEqualTo('Accept', ApiContext::FORMAT);
-        $this->restContext->iAddHeaderEqualTo('Content-Type', ApiContext::FORMAT);
-        $id = $this->registry->getRepository(Event::class)->findOneBy([])->getId();
-        $this->restContext->iSendARequestToWithBody(Request::METHOD_POST, '/registrations', new PyStringNode([\json_encode([
-            'event' => '/events/'.$id,
-            'user' => '/users/'.$user->getId(),
-        ])], 0));
-    }
-
-    /**
-     * @Then I am registered to this event
-     */
-    public function checkEventUsers(): void
-    {
-        $event = $this->registry->getRepository(Event::class)->findBy([], ['startAt' => 'DESC'], 1)[0];
-        $user = $this->registry->getRepository(User::class)->findBy([], ['email' => 'DESC'], 1)[0];
-        $this->registry->getManagerForClass(Event::class)->refresh($event);
-        $users = \array_map(function (Registration $registration) {
-            return $registration->getUser();
-        }, $event->getRegistrations());
-        if (!\in_array($user, $users, true)) {
-            throw new \Exception(\sprintf('Event "%s" does not contain user "%s".', $event->getTitle(), $user->getEmail()));
-        }
-    }
-
-    /**
-     * @Given I'm registered to this event
-     * @Given I'm registered and :status to this event
-     * @Given I'm registered to these events
-     * @Given I'm registered and :status to these events
-     * @Given I'm registered to event :event
-     * @Given I'm registered and :status to event :event
-     * @Given user :user is registered to this event
-     * @Given user :user is registered and :status to this event
-     * @Given user :user is registered to these events
-     * @Given user :user is registered and :status to these events
-     * @Given user :user is registered to event :event
-     * @Given user :user is registered and :status to event :event
-     */
-    public function addEventUser(User $user = null, Event $event = null, string $status = Registration::STATUS_PENDING): void
-    {
-        $events = null === $event ? $this->registry->getRepository(Event::class)->findBy([]) : [$event];
-        $user = $user ?: $this->registry->getRepository(User::class)->findOneBy([]);
-        $em = $this->registry->getManager();
-        foreach ($events as $event) {
-            $registration = new Registration();
-            $registration->setUser($user);
-            $registration->setEvent($event);
-            $registration->setStatus($status);
-            $em->persist($registration);
-        }
-        $em->flush();
-        $em->clear();
-    }
-
-    /**
-     * @Given user :user is not registered to this event
-     */
-    public function userIsNotRegisteredToEvent(User $user): void
-    {
-        if (null !== $this->registry->getRepository(Registration::class)->findOneBy(['user' => $user])) {
-            throw new \Exception(\sprintf('A registration has been found for user %s.', $user->getEmail()));
-        }
-    }
-
-    /**
-     * @Given user :user is successfully registered to this event
-     */
-    public function userIsRegisteredToEvent(User $user): void
-    {
-        if (null === $this->registry->getRepository(Registration::class)->findOneBy(['user' => $user])) {
-            throw new \Exception(\sprintf('No registration has been found for user %s.', $user->getEmail()));
-        }
-    }
-
-    /**
-     * @Then I receive an email to validate my registration
-     */
-    public function iReceiveAnEmailToValidateMyRegistration()
-    {
-        $this->mailcatcherContext->verifyMailsSent(1);
-        $this->mailcatcherContext->seeMailSubject('Validation de votre adresse email');
-        $this->mailcatcherContext->seeMailFrom('no-reply@zero-dechet.app');
-        $this->mailcatcherContext->seeMailTo('jOhN.dOe@eXaMpLe.cOm');
     }
 
     /**
@@ -818,159 +563,11 @@ final class FeatureContext extends BaseContext
     }
 
     /**
-     * @When I export my events in webcal
-     * @When I export a user events in webcal
-     */
-    public function sendGetRequestToEventsListInWebcal()
-    {
-        $this->restContext->iAddHeaderEqualTo('Accept', 'text/calendar');
-        $user = $this->userRepository->findOneBy([]);
-        $this->restContext->iSendARequestTo(Request::METHOD_GET, '/users/'.$user->getId().'/events.ics?token='.$user->getToken());
-    }
-
-    /**
-     * @When I export a user events in webcal without the key
-     */
-    public function sendGetRequestToEventsListInWebcalWithoutKey()
-    {
-        $this->restContext->iAddHeaderEqualTo('Accept', 'text/calendar');
-        $user = $this->userRepository->findOneBy([]);
-        $this->restContext->iSendARequestTo(Request::METHOD_GET, '/users/'.$user->getId().'/events.ics');
-    }
-
-    /**
-     * @When I export an invalid user events in webcal
-     */
-    public function sendGetRequestToEventsListInWebcalWithInvalidUser()
-    {
-        $this->restContext->iAddHeaderEqualTo('Accept', 'text/calendar');
-        $this->restContext->iSendARequestTo(Request::METHOD_GET, '/users/foo/events.ics');
-    }
-
-    /**
-     * @Then I see the event webcal
-     */
-    public function checkWebcalEventsList()
-    {
-        $this->minkContext->assertResponseStatus(200);
-        if (!\preg_match(self::ICS_PATTERN, $this->minkContext->getSession()->getPage()->getContent())) {
-            throw new \Exception('Webcal seems not valid.');
-        }
-    }
-
-    /**
      * @Transform :user
      */
     public function getUserByEmail(string $user): ?User
     {
         return $this->registry->getRepository(User::class)->findOneBy(['email' => $user]);
-    }
-
-    /**
-     * @Transform :event
-     */
-    public function getEventByTitle(string $event): ?Event
-    {
-        return $this->registry->getRepository(Event::class)->findOneBy(['title' => $event]);
-    }
-
-    /**
-     * @When I get a list of contents filtered by title :title
-     */
-    public function sendGetRequestToContentsFilteredBy(string $title)
-    {
-        $this->restContext->iAddHeaderEqualTo('Accept', ApiContext::FORMAT);
-        $this->restContext->iSendARequestTo(Request::METHOD_GET, '/contents?title='.$title);
-    }
-
-    /**
-     * @Given user :user has favorites
-     */
-    public function addFavoritesToUser(User $user)
-    {
-        $contents = $this->registry->getRepository(Content::class)->findAll();
-        foreach ($contents as $content) {
-            $user->addFavorite($content);
-        }
-        $em = $this->registry->getManagerForClass(User::class);
-        $em->persist($user);
-        $em->flush();
-        $em->clear();
-    }
-
-    /**
-     * @When I get user :user favorites
-     */
-    public function sendGetRequestToUserFavorites(User $user): void
-    {
-        $this->restContext->iAddHeaderEqualTo('Accept', ApiContext::FORMAT);
-        $this->restContext->iSendARequestTo(Request::METHOD_GET, \sprintf('/users/%s/favorites', $user->getId()));
-    }
-
-    /**
-     * @Then I see the user's favorites
-     */
-    public function checkFavorites(): void
-    {
-        $this->minkContext->assertResponseStatus(200);
-        $this->jsonContext->theResponseShouldBeInJson();
-        $this->jsonContext->theJsonShouldBeValidAccordingToThisSchema(new PyStringNode([\json_encode([
-            'type' => 'object',
-            'properties' => [
-                '@context' => ['pattern' => '^/contexts/Content$'],
-                '@id' => ['pattern' => '^/users/[\w-]+/favorites$'],
-                '@type' => ['pattern' => '^hydra:Collection$'],
-                'hydra:totalItems' => ['type' => 'integer'],
-                'hydra:member' => [
-                    'type' => 'array',
-                    'minItems' => 3,
-                    'maxItems' => 3,
-                    'items' => [
-                        'type' => 'object',
-                        'properties' => [
-                            '@id' => ['pattern' => '^/contents/[\w-]+$'],
-                            '@type' => ['pattern' => '^Content$'],
-                            'title' => ['type' => 'string'],
-                            'content' => ['type' => 'string'],
-                        ],
-                        'required' => ['@id', '@type', 'title', 'content'],
-                    ],
-                ],
-            ],
-            'required' => ['@context', '@id', '@type', 'hydra:totalItems', 'hydra:member'],
-        ])], 0));
-    }
-
-    /**
-     * @When I add favorites
-     * @When I add favorites to :user
-     */
-    public function addUserFavorites(User $user = null): void
-    {
-        if (!$user) {
-            $user = $this->userRepository->findOneBy([]);
-        }
-        $contents = $this->registry->getRepository(Content::class)->findBy([]);
-        $this->apiContext->sendPutRequestToItem('user', [
-            'favorites' => \array_map(function (Content $content) {
-                return $content->getTitle();
-            }, $contents),
-        ], ['id' => $user->getId()]);
-    }
-
-    /**
-     * @Then user has :nb favorites
-     * @Then user :user has :nb favorites
-     */
-    public function checkUserHasFavorites(int $nb, User $user = null): void
-    {
-        if (!$user) {
-            $user = $this->userRepository->findOneBy([]);
-        }
-        $this->registry->getManagerForClass(User::class)->refresh($user);
-        if ($nb !== ($count = \count($user->getFavorites()))) {
-            throw new \Exception(\sprintf('User has %s favorites.', 0 === $count ? 'no' : $count));
-        }
     }
 
     /**
@@ -982,24 +579,6 @@ final class FeatureContext extends BaseContext
         if ($user !== $userQuiz->getUser()) {
             throw new \Exception('UserQuiz has been atatched to the wrong user: '.$userQuiz->getUser()->getEmail());
         }
-    }
-
-    /**
-     * @When /^I export (?P<name>[A-z\-\_]+) in CSV$/
-     */
-    public function sendGetRequestToExport(string $name): void
-    {
-        $this->restContext->iAddHeaderEqualTo('Accept', 'text/csv');
-        $this->restContext->iSendARequestTo(Request::METHOD_GET, $this->helper->getUri($this->helper->getReflectionClass($name)));
-    }
-
-    /**
-     * @When I export event :event registrations in CSV
-     */
-    public function exportEventRegistrationsInCSV(Event $event): void
-    {
-        $this->restContext->iAddHeaderEqualTo('Accept', 'text/csv');
-        $this->restContext->iSendARequestTo(Request::METHOD_GET, '/events/'.$event->getId().'/registrations');
     }
 
     /**
@@ -1018,10 +597,10 @@ final class FeatureContext extends BaseContext
     {
         $this->minkContext->assertResponseStatus(200);
         $csv = \array_map('str_getcsv', \explode("\n", <<<'CSV'
-active,email,roles,cities,firstName,lastName,familySize,nbAdults,nbChildren,nbBabies,nbPets,mobile,phone,address,postcode,city,biFlow
-1,admin@example.com,ROLE_ADMIN,,,,,,,,,,,,,,
-1,bar@example.com,ROLE_USER,,Jane,DOE,0,0,0,0,0,,,,,,
-1,foo@example.com,ROLE_USER,,John,DOE,3,2,1,0,1,,,"123 chemin du moulin",75000,Lille,
+active,email,roles
+1,admin@example.com,ROLE_ADMIN
+1,bar@example.com,ROLE_USER
+1,foo@example.com,ROLE_USER
 CSV
         ));
         $data = \array_map('str_getcsv', \explode("\n", $this->minkContext->getSession()->getPage()->getContent()));
@@ -1062,181 +641,22 @@ CSV
     }
 
     /**
-     * @When I get weighings filtered by city :city
+     * @Then I receive an email to validate my registration
      */
-    public function sendGetRequestToWeighingsDataFilteredByCity(string $city): void
+    public function iReceiveAnEmailToValidateMyRegistration()
     {
-        $this->restContext->iAddHeaderEqualTo('Accept', ApiContext::FORMAT);
-        $this->restContext->iSendARequestTo(Request::METHOD_GET, '/weighings?user.profile.city='.$city);
-    }
-
-//    /**
-//     * @Then I see a list of weighings data
-//     */
-//    public function validateResponseUserWeighings(): void
-//    {
-//        $schema = $this->schemaGenerator->generate(new \ReflectionClass(Weighing::class), ['collection' => true, 'root' => true]);
-//        unset($schema['properties']['@id']);
-//        $this->apiContext->validateCollectionJsonSchema('weighing', null, $schema);
-//    }
-
-    /**
-     * @When I like an event
-     */
-    public function ILikeAnEvent(): void
-    {
-        /** @var Event $event */
-        $event = $this->registry->getRepository(Event::class)->findOneBy([]);
-        $this->restContext->iAddHeaderEqualTo('Accept', ApiContext::FORMAT);
-        $this->restContext->iAddHeaderEqualTo('Content-Type', ApiContext::FORMAT);
-        $this->restContext->iSendARequestTo(Request::METHOD_PUT, '/events/'.$event->getId().'/like');
+        $this->mailcatcherContext->verifyMailsSent(1);
+        $this->mailcatcherContext->seeMailSubject('Validation de votre adresse email');
+        $this->mailcatcherContext->seeMailFrom('no-reply@zero-dechet.app');
+        $this->mailcatcherContext->seeMailTo('jOhN.dOe@eXaMpLe.cOm');
     }
 
     /**
-     * @Given user :user likes the event :event
+     * @When /^I export (?P<name>[A-z\-\_]+) in CSV$/
      */
-    public function userLikesTheEvent(User $user, Event $event): void
+    public function sendGetRequestToExport(string $name): void
     {
-        $event->addLike($user);
-        $em = $this->registry->getManager();
-        $em->persist($event);
-        $em->flush();
-        $em->clear();
-    }
-
-    /**
-     * @When I get event :event registrations
-     * @When I get an event registrations
-     */
-    public function sendGetRequestToEventRegistrations(Event $event = null): void
-    {
-        $event = $event ?: $this->registry->getRepository(Event::class)->findOneBy([]);
-        $this->restContext->iAddHeaderEqualTo('Accept', ApiContext::FORMAT);
-        $this->restContext->iSendARequestTo(Request::METHOD_GET, '/events/'.$event->getId().'/registrations');
-    }
-
-    /**
-     * @When I validate user :user registration
-     */
-    public function validateUserRegistration(User $user): void
-    {
-        $registration = $this->registry->getRepository(Registration::class)->findOneBy(['user' => $user]);
-        $this->apiContext->sendPutRequestToItem('registration', [
-            'status' => Registration::STATUS_VALIDATED,
-        ], ['id' => $registration->getId()]);
-    }
-
-    /**
-     * @When I refuse user :user registration
-     */
-    public function refuseUserRegistration(User $user): void
-    {
-        $registration = $this->registry->getRepository(Registration::class)->findOneBy(['user' => $user]);
-        $this->apiContext->sendPutRequestToItem('registration', [
-            'status' => Registration::STATUS_REFUSED,
-        ], ['id' => $registration->getId()]);
-    }
-
-    /**
-     * @Then the registration is :status
-     * @Then user :user registration is :status
-     */
-    public function checkRegistrationStatus(string $status, User $user = null): void
-    {
-        $registration = $this->registry->getRepository(Registration::class)->findBy($user ? ['user' => $user] : [], ['createdAt' => 'DESC'], 1)[0];
-        $this->registry->getManager()->refresh($registration);
-        if ($status !== $registration->getStatus()) {
-            throw new \Exception(\sprintf('Invalid registration status: %s expected, got %s.', $status, $registration->getStatus()));
-        }
-    }
-
-    /**
-     * @Then I see a list of event registrations
-     */
-    public function validateEventRegistrationsSchema(): void
-    {
-        $this->apiContext->validateCollectionJsonSchema('registrations', null, [
-            'type' => 'object',
-            'properties' => [
-                '@id' => [
-                    'type' => 'string',
-                    'pattern' => '^/events/[\\w-]+/registrations$',
-                ],
-                '@type' => [
-                    'type' => 'string',
-                    'pattern' => '^hydra:Collection$',
-                ],
-                '@context' => [
-                    'type' => 'string',
-                    'pattern' => '^/contexts/Registration$',
-                ],
-                'hydra:member' => [
-                    'type' => 'array',
-                    'items' => [
-                        'type' => 'object',
-                        'properties' => [
-                            '@id' => [
-                                'type' => 'string',
-                                'pattern' => '^/registrations/[\\w-]+$',
-                            ],
-                            '@type' => [
-                                'type' => 'string',
-                                'pattern' => '^Registration$',
-                            ],
-                            'createdAt' => [
-                                'type' => [
-                                    'string',
-                                ],
-                                'pattern' => '^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\+00:00$',
-                            ],
-                            'user' => [
-                                'type' => [
-                                    'string',
-                                ],
-                                'pattern' => '/users/[\\w-]+',
-                            ],
-                            'event' => [
-                                'type' => [
-                                    'string',
-                                ],
-                                'pattern' => '/events/[\\w-]+',
-                            ],
-                            'attendees' => [
-                                'type' => [
-                                    'integer',
-                                ],
-                            ],
-                        ],
-                    ],
-                ],
-                'hydra:totalItems' => [
-                    'type' => 'integer',
-                ],
-            ],
-        ]);
-    }
-
-    /**
-     * @Then no notification is sent
-     * @Then :nb notification is sent
-     * @Then :nb notifications are sent
-     * @Then :nb notification is sent to :user
-     * @Then :nb notifications are sent to :user
-     * @Then :nb notification is sent to :user with message :message
-     * @Then :nb notifications are sent to :user with message :message
-     */
-    public function notificationIsSent(int $nb = 0, User $user = null, string $message = null): void
-    {
-        $criteria = [];
-        if (null !== $user) {
-            $criteria['user'] = $user;
-        }
-        if (null !== $message) {
-            $criteria['message'] = $message;
-        }
-        $notifications = $this->registry->getRepository(Notification::class)->findBy($criteria);
-        if ($nb !== \count($notifications)) {
-            throw new \Exception(\sprintf('Expected %d notification(s), got %d.', $nb, \count($notifications)));
-        }
+        $this->restContext->iAddHeaderEqualTo('Accept', 'text/csv');
+        $this->restContext->iSendARequestTo(Request::METHOD_GET, $this->helper->getUri($this->helper->getReflectionClass($name)));
     }
 }

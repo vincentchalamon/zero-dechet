@@ -36,22 +36,18 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @CurrentPassword
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=true)
  * @ApiResource(attributes={
- *     "normalization_context"={"groups"={"user:read", "place:read", "profile:read"}},
- *     "denormalization_context"={"groups"={"user:write", "profile:write"}}
+ *     "normalization_context"={"groups"={"user:read"}},
+ *     "denormalization_context"={"groups"={"user:write"}}
  * }, collectionOperations={
  *     "post"={
- *         "validation_groups"={"Default", "registration"},
- *         "access_control"="is_granted('ROLE_ADMIN') or is_granted('IS_AUTHENTICATED_ANONYMOUSLY')"
+ *         "validation_groups"={"Default", "user:create"},
+ *         "access_control"="is_granted('ROLE_ADMIN') or is_granted('IS_AUTHENTICATED_ANONYMOUSLY')",
+ *         "denormalization_context"={"groups"={"user:write", "user:create"}}
  *     },
- *     "get"={"access_control"="is_granted('ROLE_ADMIN')"},
- *     "import"={
- *         "method"="POST",
- *         "access_control"="is_granted('ROLE_ADMIN')",
- *         "path"="/users/import.{_format}"
- *     }
+ *     "get"={"access_control"="is_granted('ROLE_ADMIN')"}
  * }, itemOperations={
  *     "get"={"access_control"="is_granted('ROLE_ADMIN') or object == user"},
- *     "put"={"access_control"="is_granted('ROLE_ADMIN') or or object == user"},
+ *     "put"={"access_control"="is_granted('ROLE_ADMIN') or object == user"},
  *     "delete"={"access_control"="is_granted('ROLE_ADMIN') or object == user"},
  *     "validate"={
  *         "path"="/users/{id}/validate.{_format}",
@@ -76,25 +72,9 @@ use Symfony\Component\Validator\Constraints as Assert;
  *         },
  *         "normalization_context"={"groups"={"score:read"}},
  *         "access_control"="is_granted('ROLE_ADMIN') or object == user"
- *     },
- *     "events"={
- *         "path"="/users/{id}/events.{_format}",
- *         "method"="GET",
- *         "controller"="App\Action\UserEvents",
- *         "requirements"={"id"=User::UUID_REQUIREMENT},
- *         "swagger_context"={
- *             "parameters"={
- *                 {"name"="id", "in"="path", "required"=true, "type"="string"}
- *             }
- *         },
- *         "normalization_context"={"groups"={"event:read"}},
- *         "access_control"="(request.query.has('token') and object.getToken() == request.query.get('token')) or object == user"
  *     }
  * }, subresourceOperations={
  *     "quizzes_get_subresource"={
- *         "requirements"={"id"=User::UUID_REQUIREMENT}
- *     },
- *     "favorites_get_subresource"={
  *         "requirements"={"id"=User::UUID_REQUIREMENT}
  *     },
  *     "weighings_get_subresource"={
@@ -118,7 +98,6 @@ class User implements UserInterface
     /**
      * @ORM\Column(type="datetime")
      * @Gedmo\Timestampable(on="create")
-     * @Groups({"user:export"})
      */
     private $createdAt;
 
@@ -135,7 +114,7 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="boolean", name="is_active")
-     * @Groups({"admin:read", "admin:write", "user:export"})
+     * @Groups({"admin:read", "admin:write"})
      */
     private $active = false;
 
@@ -148,7 +127,7 @@ class User implements UserInterface
      * @ORM\Column(length=200)
      * @Assert\NotBlank
      * @Assert\Email
-     * @Groups({"user:read", "user:write", "user:export"})
+     * @Groups({"user:write", "user:read", "weighing:read"})
      */
     private $email;
 
@@ -165,7 +144,7 @@ class User implements UserInterface
     /**
      * Not persisted in database, for password encoding only.
      *
-     * @Assert\NotBlank(groups={"registration"})
+     * @Assert\NotBlank(groups={"user:create"})
      * @Assert\Length(min="7")
      * @Groups({"user:write"})
      */
@@ -179,17 +158,17 @@ class User implements UserInterface
     private $currentPassword;
 
     /**
-     * Not persisted in database, security for registration.
+     * Not persisted in database, security for user create.
      *
-     * @Assert\NotBlank(groups={"registration"})
-     * @Assert\IsTrue(groups={"registration"})
-     * @Groups({"user:write"})
+     * @Assert\NotBlank(groups={"user:create"})
+     * @Assert\IsTrue(groups={"user:create"})
+     * @Groups({"user:create"})
      */
     private $cgu = false;
 
     /**
      * @ORM\Column(type="array")
-     * @Groups({"admin:read", "admin:write", "user:export"})
+     * @Groups({"admin:read", "admin:write"})
      */
     private $roles = ['ROLE_USER'];
 
@@ -207,46 +186,22 @@ class User implements UserInterface
     private $ignoredPlaces;
 
     /**
-     * @ORM\ManyToMany(targetEntity="App\Entity\Content", fetch="EXTRA_LAZY")
-     * @Groups({"owner:write"})
-     * @ApiSubresource
-     */
-    private $favorites;
-
-    /**
      * @ORM\OneToMany(targetEntity="App\Entity\Weighing", mappedBy="user", fetch="EXTRA_LAZY")
      * @ApiSubresource
      */
     private $weighings;
 
-    /**
-     * @ORM\OneToOne(targetEntity="App\Entity\Profile", mappedBy="user", cascade={"all"}, fetch="EAGER")
-     * @Groups({"user:read", "user:export", "user:write"})
-     */
-    private $profile;
-
-    /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Registration", mappedBy="user", fetch="EXTRA_LAZY")
-     */
-    private $registrations;
-
-    /**
-     * @ORM\Column(type="boolean", name="is_notify_by_email")
-     * @Groups({"owner:write", "owner:read"})
-     */
-    private $notifyByEmail = false;
-
     public function __construct()
     {
         $this->quizzes = new ArrayCollection();
         $this->ignoredPlaces = new ArrayCollection();
-        $this->favorites = new ArrayCollection();
         $this->weighings = new ArrayCollection();
-        $this->registrations = new ArrayCollection();
+        $this->token = \bin2hex(\random_bytes(25));
     }
 
-    public function getSalt(): void
+    public function getSalt(): ?string
     {
+        return $this->getToken();
     }
 
     public function getUsername(): string
@@ -304,7 +259,7 @@ class User implements UserInterface
         $this->active = $active;
     }
 
-    public function getToken(): ?string
+    public function getToken(): string
     {
         return $this->token;
     }
@@ -408,26 +363,6 @@ class User implements UserInterface
     }
 
     /**
-     * @return Content[]
-     */
-    public function getFavorites(): array
-    {
-        return $this->favorites->getValues();
-    }
-
-    public function addFavorite(Content $content): void
-    {
-        if (!$this->favorites->contains($content)) {
-            $this->favorites[] = $content;
-        }
-    }
-
-    public function removeFavorite(Content $content): void
-    {
-        $this->favorites->removeElement($content);
-    }
-
-    /**
      * @return Weighing[]
      */
     public function getWeighings(): array
@@ -445,66 +380,5 @@ class User implements UserInterface
     public function removeWeighing(Weighing $weighing): void
     {
         $this->weighings->removeElement($weighing);
-    }
-
-    public function getProfile(): ?Profile
-    {
-        return $this->profile;
-    }
-
-    public function setProfile(?Profile $profile): void
-    {
-        $profile->setUser($this);
-        $this->profile = $profile;
-    }
-
-    /**
-     * @return Registration[]
-     */
-    public function getRegistrations(): array
-    {
-        return $this->registrations->getValues();
-    }
-
-    public function addRegistration(Registration $registration): void
-    {
-        if (!$this->registrations->contains($registration)) {
-            $registration->setUser($this);
-            $this->registrations[] = $registration;
-        }
-    }
-
-    public function removeRegistration(Registration $registration): void
-    {
-        $this->registrations->removeElement($registration);
-    }
-
-    /**
-     * @return Event[]
-     */
-    public function getEvents(): array
-    {
-        return $this->registrations->filter(function (Registration $registration) {
-            return $registration->isValidated();
-        })->map(function (Registration $registration) {
-            return $registration->getEvent();
-        })->getValues();
-    }
-
-    public function getAbsences(): int
-    {
-        return $this->registrations->filter(function (Registration $registration) {
-            return $registration->getEvent()->isPast() && !$registration->isPresent();
-        })->count();
-    }
-
-    public function isNotifyByEmail(): bool
-    {
-        return $this->notifyByEmail;
-    }
-
-    public function setNotifyByEmail(bool $notifyByEmail): void
-    {
-        $this->notifyByEmail = $notifyByEmail;
     }
 }

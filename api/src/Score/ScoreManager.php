@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace App\Score;
 
 use App\Entity\Choice;
-use App\Entity\Content;
 use App\Entity\Quiz;
 use App\Entity\User;
 use App\Entity\UserQuiz;
@@ -60,17 +59,15 @@ final class ScoreManager
             return !$choice->isValid();
         });
         if ($invalidChoices) {
-            $contents = \array_filter(\array_unique(\array_merge(...\array_map(function (Choice $choice) {
-                return $choice->getQuestion()->getContents();
-            }, $invalidChoices))), function (Content $content) {
-                return $content->isPublished();
-            });
+            $urls = \array_unique(\array_merge(...\array_map(function (Choice $choice) {
+                return $choice->getQuestion()->getUrls();
+            }, $invalidChoices)));
         }
 
         $score = \round((\count(\array_filter($userQuiz->getChoices(), function (Choice $choice) {
             return $choice->isValid();
         })) / \count($userQuiz->getChoices())) * 100, 2);
 
-        return new Score($quiz, $score, $contents ?? []);
+        return new Score($quiz, $score, $urls ?? []);
     }
 }

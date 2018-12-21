@@ -31,7 +31,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\EntityListeners("App\EntityListener\GeocoderEntityListener")
  * @ApiResource(attributes={
  *     "order"={"name"="ASC"},
- *     "normalization_context"={"groups"={"shop:read", "tag:read"}},
+ *     "normalization_context"={"groups"={"shop:read"}},
  *     "denormalization_context"={"groups"={"shop:write"}},
  *     "access_control"="is_granted('ROLE_USER')"
  * }, itemOperations={
@@ -74,6 +74,7 @@ class Shop implements GeocoderInterface
 
     /**
      * @ORM\Column(type="boolean", name="is_active")
+     * @Groups({"admin:write", "admin:read"})
      */
     private $active = false;
 
@@ -119,7 +120,7 @@ class Shop implements GeocoderInterface
     /**
      * @ORM\ManyToMany(targetEntity="App\Entity\Tag")
      * @ORM\OrderBy({"name"="ASC"})
-     * @Groups({"tag:write", "tag:read"})
+     * @Groups({"shop:write", "shop:read"})
      */
     private $tags;
 

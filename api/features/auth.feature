@@ -7,7 +7,6 @@ Feature: As a user, I can login to get resources
   Scenario Outline: As anonymous, I can access API doc
     When I get the API doc in <format>
     Then I see the API doc in <format>
-
     Examples:
       | format |
       | json   |

@@ -99,16 +99,12 @@ Feature: CRUD Quiz
           "items": {
             "type": "object",
             "properties": {
-              "@id": {"pattern": "^/questions/[\\w-]+$"},
-              "@type": {"pattern": "^Question$"},
               "title": {"type": "string"},
               "choices": {
                 "type": "array",
                 "items": {
                   "type": "object",
                   "properties": {
-                    "@id": {"pattern": "^/choices/[\\w-]+$"},
-                    "@type": {"pattern": "^Choice$"},
                     "name": {"type": "string"}
                   }
                 }

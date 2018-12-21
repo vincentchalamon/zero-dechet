@@ -22,7 +22,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 /**
  * @author Vincent Chalamon <vincentchalamon@gmail.com>
  */
-final class Security
+final class Login
 {
     /**
      * @Route(name="api_login", path="/login", methods={"POST"})

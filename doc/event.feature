@@ -1,4 +1,3 @@
-@ko
 Feature: CRUD Event
   In order to use the Event API
   As a user or an admin
@@ -40,7 +39,7 @@ Feature: CRUD Event
       | ROLE_USER  |
 
   Scenario: As a user, I can create an event
-    Given the following user:
+    Given the following users:
       | email                | roles     | active |
       | foo@example.com      | ROLE_USER | true   |
       | bar@example.com      | ROLE_USER | true   |

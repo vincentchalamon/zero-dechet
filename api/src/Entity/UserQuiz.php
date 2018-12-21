@@ -25,8 +25,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  *
  * @ORM\Entity
  * @ApiResource(attributes={
- *     "normalization_context"={"groups"={"user_quiz:read", "choice:read"}},
- *     "denormalization_context"={"groups"={"user_quiz:write"}}
+ *     "normalization_context"={"groups"={"user-quiz:read"}},
+ *     "denormalization_context"={"groups"={"user-quiz:write"}}
  * }, subresourceOperations={
  *     "api_users_quizzes_get_subresource"={
  *         "access_control"="is_granted('ROLE_ADMIN') or request.attributes.get('object') == user"
@@ -56,7 +56,7 @@ class UserQuiz
      * @ORM\ManyToOne(targetEntity="App\Entity\Quiz", inversedBy="quizzes")
      * @ORM\JoinColumn(nullable=false, onDelete="CASCADE")
      * @Assert\NotNull
-     * @Groups({"user_quiz:write"})
+     * @Groups({"user-quiz:write"})
      */
     private $quiz;
 
@@ -67,9 +67,10 @@ class UserQuiz
     private $createdAt;
 
     /**
+     * todo Ensure selected choices are related to selected quiz
      * @ORM\ManyToMany(targetEntity="App\Entity\Choice")
      * @Assert\Count(min="1")
-     * @Groups({"user_quiz:write", "user_quiz:read"})
+     * @Groups({"user-quiz:write", "user-quiz:read"})
      */
     private $choices;
 

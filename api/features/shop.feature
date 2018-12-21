@@ -1,4 +1,3 @@
-@ko
 Feature: CRUD Shop
   In order to use the Shop API
   As a user or an admin
@@ -133,15 +132,14 @@ Feature: CRUD Shop
       | foo@example.com | ROLE_USER | true   |
     And I am authenticated as "foo@example.com"
     And the following shops:
-      | name                       | address                    | postcode | city  | coordinates                 |
-      | Day by Day                 | 384 Rue Léon Gambetta      | 59000    | Lille | POINT(3.0477986 50.6266922) |
-      | L'Epicerie Equitable       | 22 Place Nouvelle Aventure | 59000    | Lille | POINT(3.0488861 50.6261559) |
-      | Biocoop Vert'Tige Wazemmes | 9 Place Nouvelle Aventure  | 59000    | Lille | POINT(3.049558 50.626873)   |
-      | La Maison du Zéro Déchet   | 3 Rue Charles Nodier       | 75018    | Paris | POINT(2.3447884 48.8854516) |
+      | name                       | address                    | postcode | city  | coordinates                 | active |
+      | Day by Day                 | 384 Rue Léon Gambetta      | 59000    | Lille | POINT(3.0477986 50.6266922) | true   |
+      | L'Epicerie Equitable       | 22 Place Nouvelle Aventure | 59000    | Lille | POINT(3.0488861 50.6261559) | true   |
+      | Biocoop Vert'Tige Wazemmes | 9 Place Nouvelle Aventure  | 59000    | Lille | POINT(3.049558 50.626873)   | true   |
+      | La Maison du Zéro Déchet   | 3 Rue Charles Nodier       | 75018    | Paris | POINT(2.3447884 48.8854516) | true   |
     When I find shops around 3.0527313,50.6309841 up to <distance> kilometers
     Then the response status code should be 200
     And the JSON node "hydra:totalItems" should be equal to <totalItems>
-
     Examples:
       | distance | totalItems |
       | 1        | 3          |

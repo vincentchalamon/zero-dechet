@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
-use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -23,12 +22,6 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @author Vincent Chalamon <vincentchalamon@gmail.com>
  *
  * @ORM\Entity
- * @ApiResource(attributes={
- *     "normalization_context"={"groups"={"question:read", "choice:read"}},
- *     "denormalization_context"={"groups"={"question:write", "choice:write"}}
- * }, collectionOperations={}, itemOperations={
- *     "get"={"access_control"="is_granted('ROLE_ADMIN')"}
- * })
  */
 class Question
 {
@@ -42,7 +35,7 @@ class Question
     /**
      * @ORM\Column
      * @Assert\NotBlank
-     * @Groups({"question:write", "question:read"})
+     * @Groups({"quiz:write", "quiz:read", "user-quiz:read"})
      */
     private $title;
 
@@ -50,29 +43,28 @@ class Question
      * @ORM\ManyToOne(targetEntity="App\Entity\Quiz", inversedBy="questions")
      * @ORM\JoinColumn(nullable=false, onDelete="CASCADE")
      * @Assert\NotNull
-     * @Groups({"question:write"})
      */
     private $quiz;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Choice", mappedBy="question", cascade={"all"}, orphanRemoval=true, fetch="EAGER")
+     * @ORM\OrderBy({"position"="ASC"})
      * @Assert\NotNull
      * @Assert\Count(min="2")
-     * @Groups({"question:write", "question:read"})
+     * @Groups({"quiz:write", "quiz:read"})
      */
     private $choices;
 
     /**
-     * @ORM\ManyToMany(targetEntity="App\Entity\Content")
+     * @ORM\Column(type="array")
      * @Assert\Count(min="1")
-     * @Groups({"question:write", "question:read"})
+     * @Groups({"quiz:write", "quiz:read"})
      */
-    private $contents;
+    private $urls = [];
 
     public function __construct()
     {
         $this->choices = new ArrayCollection();
-        $this->contents = new ArrayCollection();
     }
 
     public function getId(): ?string
@@ -121,23 +113,13 @@ class Question
         $this->choices->removeElement($choice);
     }
 
-    /**
-     * @return Content[]
-     */
-    public function getContents(): array
+    public function getUrls(): array
     {
-        return $this->contents->getValues();
+        return $this->urls;
     }
 
-    public function addContent(Content $content): void
+    public function setUrls(array $urls): void
     {
-        if (!$this->contents->contains($content)) {
-            $this->contents[] = $content;
-        }
-    }
-
-    public function removeContent(Content $content): void
-    {
-        $this->contents->removeElement($content);
+        $this->urls = $urls;
     }
 }

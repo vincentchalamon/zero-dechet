@@ -30,9 +30,9 @@ services:
   db:
     image: mdillon/postgis:11-alpine
     environment:
-      - POSTGRES_DB=api
-      - POSTGRES_USER=zero-dechet
-      - POSTGRES_PASSWORD=z3r0d3ch3t
+      POSTGRES_DB: api
+      POSTGRES_USER: zero-dechet
+      POSTGRES_PASSWORD: z3r0d3ch3t
 
   redis:
     image: redis:4-alpine
@@ -40,15 +40,15 @@ services:
   mailcatcher:
     image: tophfr/mailcatcher:0.6.5
 
-  app:
-    image: ${CONTAINER_REGISTRY_BASE}/app
-    build:
-      context: ./app
-      target: zero_dechet_app
-      cache_from:
-        - ${CONTAINER_REGISTRY_BASE}/app
-    env_file:
-      - ./app/.env
+#  app:
+#    image: ${CONTAINER_REGISTRY_BASE}/app
+#    build:
+#      context: ./app
+#      target: zero_dechet_app
+#      cache_from:
+#        - ${CONTAINER_REGISTRY_BASE}/app
+#    env_file:
+#      - ./app/.env
 
   admin:
     image: ${CONTAINER_REGISTRY_BASE}/admin

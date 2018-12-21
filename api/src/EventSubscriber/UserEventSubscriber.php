@@ -15,8 +15,6 @@ namespace App\EventSubscriber;
 
 use ApiPlatform\Core\EventListener\EventPriorities;
 use App\Entity\Event;
-use App\Entity\Profile;
-use App\Entity\Registration;
 use App\Entity\User;
 use App\Entity\UserQuiz;
 use Doctrine\Common\Persistence\ManagerRegistry;
@@ -50,7 +48,6 @@ final class UserEventSubscriber implements EventSubscriberInterface
         return [
             KernelEvents::VIEW => [
                 ['generateUserCanonicalFields', EventPriorities::PRE_VALIDATE],
-                ['importUsers', EventPriorities::PRE_VALIDATE],
                 ['setUser', EventPriorities::PRE_VALIDATE],
                 ['encodePassword', EventPriorities::POST_VALIDATE],
             ],
@@ -69,31 +66,13 @@ final class UserEventSubscriber implements EventSubscriberInterface
         $user->setEmailCanonical(Urlizer::unaccent(\mb_convert_case($user->getEmail(), MB_CASE_LOWER, $encoding ?: \mb_internal_encoding())));
     }
 
-    public function importUsers(GetResponseForControllerResultEvent $event)
-    {
-        // todo Find a better way to manage this security
-        $request = $event->getRequest();
-        if ('api_users_import_collection' !== $request->attributes->get('_route')) {
-            return;
-        }
-
-        $users = $event->getControllerResult();
-        $em = $this->registry->getManagerForClass(User::class);
-        foreach ($users as $user) {
-            $em->persist($user);
-        }
-        $em->flush();
-    }
-
     public function setUser(GetResponseEvent $event)
     {
         $request = $event->getRequest();
         $data = $request->attributes->get('data');
         if (!$request->isMethod(Request::METHOD_POST) || !\in_array($request->attributes->get('_api_resource_class'), [
             UserQuiz::class,
-            Profile::class,
             Event::class,
-            Registration::class,
         ], true) || null !== $data->getUser()) {
             return;
         }

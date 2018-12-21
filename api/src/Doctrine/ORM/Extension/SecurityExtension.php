@@ -15,6 +15,7 @@ namespace App\Doctrine\ORM\Extension;
 
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Extension\QueryCollectionExtensionInterface;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Util\QueryNameGeneratorInterface;
+use App\Entity\Shop;
 use App\Entity\UserQuiz;
 use App\Entity\Weighing;
 use Doctrine\ORM\QueryBuilder;
@@ -37,12 +38,20 @@ final class SecurityExtension implements QueryCollectionExtensionInterface
 
     public function applyToCollection(QueryBuilder $queryBuilder, QueryNameGeneratorInterface $queryNameGenerator, string $resourceClass, string $operationName = null)
     {
-        if (!\in_array($resourceClass, [Weighing::class, UserQuiz::class], true) || $this->authorizationChecker->isGranted('ROLE_ADMIN')) {
+        if ($this->authorizationChecker->isGranted('ROLE_ADMIN')) {
             return;
         }
 
-        $queryBuilder
-            ->andWhere(\sprintf('%s.user = :user', $queryBuilder->getRootAlias()[0]))
-            ->setParameter('user', $this->tokenStorage->getToken()->getUser());
+        switch ($resourceClass) {
+            case Weighing::class:
+            case UserQuiz::class:
+                $queryBuilder
+                    ->andWhere('o.user = :user')
+                    ->setParameter('user', $this->tokenStorage->getToken()->getUser());
+                break;
+            case Shop::class:
+                $queryBuilder->andWhere('o.active = true');
+                break;
+        }
     }
 }

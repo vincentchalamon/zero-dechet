@@ -28,3 +28,4 @@ behat.yml
 ###< friendsofphp/php-cs-fixer ###
 
 phpstan.neon
+swagger.json

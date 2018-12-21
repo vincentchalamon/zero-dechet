@@ -28,7 +28,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Entity
  * @ApiResource(attributes={
  *     "order"={"createdAt"="ASC"},
- *     "normalization_context"={"groups"={"weighing:read", "user:read"}},
+ *     "normalization_context"={"groups"={"weighing:read"}},
  *     "denormalization_context"={"groups"={"weighing:write"}}
  * }, subresourceOperations={
  *     "api_users_weighings_get_subresource"={
@@ -42,7 +42,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *     "put"={"access_control"="is_granted('ROLE_ADMIN') or object.getUser() == user"},
  *     "delete"={"access_control"="is_granted('ROLE_ADMIN') or object.getUser() == user"}
  * })
- * @ApiFilter(SearchFilter::class, properties={"user", "type", "user.profile.city"})
+ * @ApiFilter(SearchFilter::class, properties={"user", "type"})
  * @ApiFilter(RangeFilter::class, properties={"total"})
  */
 class Weighing

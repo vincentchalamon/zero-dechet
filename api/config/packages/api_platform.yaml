@@ -6,14 +6,9 @@ api_platform:
     version: '%env(APP_VERSION)%'
     formats:
         jsonld: ['application/ld+json']
-        jsonhal: ['application/hal+json']
-        jsonapi: ['application/vnd.api+json']
         json: ['application/json']
-        xml: ['application/xml', 'text/xml']
-        yaml: ['application/x-yaml']
-        csv: ['text/csv']
         html: ['text/html']
-        ics: ['text/calendar']
+        csv: ['text/csv']
     mapping:
         paths: ['%kernel.project_dir%/src/Entity']
     http_cache:
@@ -27,17 +22,6 @@ services:
         autowire: true
         autoconfigure: true
         public: false
-
-    App\Doctrine\ORM\Extension\PublishableExtension:
-        autoconfigure: false
-        tags:
-            - { name: api_platform.doctrine.orm.query_extension.collection, priority: 9 }
-            - { name: api_platform.doctrine.orm.query_extension.item }
-
-    App\Doctrine\ORM\Extension\RegistrationExtension:
-        autoconfigure: false
-        tags:
-            - { name: api_platform.doctrine.orm.query_extension.collection, priority: 9 }
 
     App\Doctrine\ORM\Extension\SecurityExtension:
         autoconfigure: false
