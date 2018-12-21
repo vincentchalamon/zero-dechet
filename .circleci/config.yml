@@ -48,6 +48,7 @@ jobs:
       - save_cache:
           paths:
             - ./api
+            - ./.git
           key: api-{{ .Environment.CIRCLE_SHA1 }}
 
   phpunit:
