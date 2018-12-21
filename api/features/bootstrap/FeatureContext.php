@@ -582,56 +582,6 @@ final class FeatureContext extends BaseContext
     }
 
     /**
-     * @When I export weighings in CSV for user :user
-     */
-    public function sendGetRequestToExportWeighingsForUser(User $user): void
-    {
-        $this->restContext->iAddHeaderEqualTo('Accept', 'text/csv');
-        $this->restContext->iSendARequestTo(Request::METHOD_GET, '/users/'.$user->getId().'/weighings');
-    }
-
-    /**
-     * @Then I get a list of users in CSV
-     */
-    public function validateCsvResponse(): void
-    {
-        $this->minkContext->assertResponseStatus(200);
-        $csv = \array_map('str_getcsv', \explode("\n", <<<'CSV'
-active,email,roles
-1,admin@example.com,ROLE_ADMIN
-1,bar@example.com,ROLE_USER
-1,foo@example.com,ROLE_USER
-CSV
-        ));
-        $data = \array_map('str_getcsv', \explode("\n", $this->minkContext->getSession()->getPage()->getContent()));
-        $adminRow = \current(\array_filter($data, function ($row) {
-            return 'admin@example.com' === $row[1];
-        }));
-        $fooRow = \current(\array_filter($data, function ($row) {
-            return 'foo@example.com' === $row[1];
-        }));
-        $barRow = \current(\array_filter($data, function ($row) {
-            return 'bar@example.com' === $row[1];
-        }));
-        if ($csv[0] !== $data[0] || $csv[1] !== $adminRow || $csv[2] !== $barRow || $csv[3] !== $fooRow) {
-            throw new \Exception('CSV response seems not valid.');
-        }
-    }
-
-    /**
-     * @Then CSV should contain :nb lines
-     */
-    public function csvShouldContainNbLines(int $nb): void
-    {
-        $this->minkContext->assertResponseStatus(200);
-        $data = \array_map('str_getcsv', \explode("\n", $this->minkContext->getSession()->getPage()->getContent()));
-        \array_shift($data); // Remove headers
-        if ($nb !== \count($data)) {
-            throw new \Exception(\sprintf('CSV response does not have the same number of lines: %d expected, got %d.', $nb, \count($data)));
-        }
-    }
-
-    /**
      * @When I get weighings filtered by user :user
      */
     public function sendGetRequestToWeighingsDataFilteredByUser(User $user): void
@@ -649,14 +599,5 @@ CSV
         $this->mailcatcherContext->seeMailSubject('Validation de votre adresse email');
         $this->mailcatcherContext->seeMailFrom('no-reply@zero-dechet.app');
         $this->mailcatcherContext->seeMailTo('jOhN.dOe@eXaMpLe.cOm');
-    }
-
-    /**
-     * @When /^I export (?P<name>[A-z\-\_]+) in CSV$/
-     */
-    public function sendGetRequestToExport(string $name): void
-    {
-        $this->restContext->iAddHeaderEqualTo('Accept', 'text/csv');
-        $this->restContext->iSendARequestTo(Request::METHOD_GET, $this->helper->getUri($this->helper->getReflectionClass($name)));
     }
 }

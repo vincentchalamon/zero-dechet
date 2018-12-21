@@ -8,7 +8,6 @@ api_platform:
         jsonld: ['application/ld+json']
         json: ['application/json']
         html: ['text/html']
-#        csv: ['text/csv']
     mapping:
         paths: ['%kernel.project_dir%/src/Entity']
     http_cache:
