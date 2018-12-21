@@ -67,7 +67,8 @@ class UserQuiz
     private $createdAt;
 
     /**
-     * todo Ensure selected choices are related to selected quiz
+     * todo Ensure selected choices are related to selected quiz.
+     *
      * @ORM\ManyToMany(targetEntity="App\Entity\Choice")
      * @Assert\Count(min="1")
      * @Groups({"user-quiz:write", "user-quiz:read"})

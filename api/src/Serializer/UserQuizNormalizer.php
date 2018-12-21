@@ -50,7 +50,7 @@ final class UserQuizNormalizer implements ContextAwareDenormalizerInterface, Den
         return $userQuiz;
     }
 
-    public function supportsDenormalization($data, $type, $format = null, array $context = array())
+    public function supportsDenormalization($data, $type, $format = null, array $context = [])
     {
         return UserQuiz::class === $type && isset($data['choices']);
     }

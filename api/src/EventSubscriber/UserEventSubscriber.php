@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace App\EventSubscriber;
 
 use ApiPlatform\Core\EventListener\EventPriorities;
-use App\Entity\Event;
 use App\Entity\User;
 use App\Entity\UserQuiz;
 use Doctrine\Common\Persistence\ManagerRegistry;
@@ -70,10 +69,7 @@ final class UserEventSubscriber implements EventSubscriberInterface
     {
         $request = $event->getRequest();
         $data = $request->attributes->get('data');
-        if (!$request->isMethod(Request::METHOD_POST) || !\in_array($request->attributes->get('_api_resource_class'), [
-            UserQuiz::class,
-            Event::class,
-        ], true) || null !== $data->getUser()) {
+        if (!$request->isMethod(Request::METHOD_POST) || UserQuiz::class !== $request->attributes->get('_api_resource_class') || null !== $data->getUser()) {
             return;
         }
 
