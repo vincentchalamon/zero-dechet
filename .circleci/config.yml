@@ -189,6 +189,9 @@ jobs:
             - node_modules-{{ checksum "admin/yarn.lock" }}
             - node_modules-
       - run:
+          name: Install git
+          command: apk add --no-cache git
+      - run:
           name: Install dependencies
           working_directory: admin
           command: yarn install --pure-lockfile
@@ -217,9 +220,6 @@ jobs:
           paths:
             - ./app
           key: app-{{ .Environment.CIRCLE_SHA1 }}
-      - run:
-          working_directory: app
-          command: ls -als
 
   eslint:
     executor: node-executor
@@ -235,9 +235,10 @@ jobs:
   detox:
     executor: android-executor
     steps:
+      - checkout
       - restore_cache:
-          keys: 
-            - app-{{ .Environment.CIRCLE_SHA1 }}
+          keys:
+            - node_modules-{{ checksum "app/yarn.lock" }}
       - run:
           name: Build app
           working_directory: app
