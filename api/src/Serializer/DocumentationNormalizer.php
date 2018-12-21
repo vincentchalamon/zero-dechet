@@ -35,40 +35,72 @@ final class DocumentationNormalizer implements NormalizerInterface
         $docs['tags'][] = ['name' => 'Security'];
         $docs['paths']['/login']['post'] = [
             'tags' => ['Security'],
-            'summary' => 'Creates access token.',
-            'produces' => ['application/ld+json'],
-            'parameters' => [
-                [
-                    'name' => 'credentials',
-                    'in' => 'body',
-                    'description' => 'The credentials',
-                    'schema' => ['$ref' => '#/definitions/Login'],
-                ],
-            ],
+            'operationId' => 'login',
+            'summary' => 'Creates access token',
             'responses' => [
                 200 => [
                     'description' => 'Valid credentials',
-                    'schema' => ['$ref' => '#/definitions/User-user:read'],
+                    'content' => [
+                        'application/ld+json' => [
+                            'schema' => [
+                                '$ref' => '#/components/schemas/User-user:read',
+                            ],
+                        ],
+                        'application/json' => [
+                            'schema' => [
+                                '$ref' => '#/components/schemas/User-user:read',
+                            ],
+                        ],
+                        'text/html' => [
+                            'schema' => [
+                                '$ref' => '#/components/schemas/User-user:read',
+                            ],
+                        ],
+                    ],
                 ],
-                401 => ['description' => 'Invalid credentials'],
+                401 => [
+                    'description' => 'Invalid credentials',
+                ],
+            ],
+            'requestBody' => [
+                'description' => 'Login',
+                'content' => [
+                    'application/ld+json' => [
+                        'schema' => [
+                            '$ref' => '#/components/schemas/User:login',
+                        ],
+                    ],
+                    'application/json' => [
+                        'schema' => [
+                            '$ref' => '#/components/schemas/User:login',
+                        ],
+                    ],
+                ],
             ],
         ];
-        $docs['definitions']['Login'] = [
+        $docs['components']['schemas']['User:login'] = [
             'type' => 'object',
+            'description' => '',
             'required' => ['username', 'password'],
             'properties' => [
-                'username' => ['type' => 'string'],
-                'password' => ['type' => 'string'],
+                'username' => [
+                    'type' => 'string',
+                ],
+                'password' => [
+                    'type' => 'string',
+                ],
             ],
         ];
 
         // Add POST /logout path
         $docs['paths']['/logout']['post'] = [
             'tags' => ['Security'],
-            'summary' => 'Revokes access token.',
-            'produces' => ['application/ld+json', 'application/json', 'text/html'],
+            'operationId' => 'logout',
+            'summary' => 'Revokes access token',
             'responses' => [
-                204 => ['description' => 'Access token successfully revoked'],
+                204 => [
+                    'description' => 'Access token successfully revoked',
+                ],
             ],
         ];
 
@@ -76,84 +108,119 @@ final class DocumentationNormalizer implements NormalizerInterface
         $docs['tags'][] = ['name' => 'Forgot password'];
         $docs['paths']['/forgot-password/']['post'] = [
             'tags' => ['Forgot password'],
-            'summary' => 'Generates a token and send email.',
-            'produces' => ['application/json'],
-            'parameters' => [
-                [
-                    'name' => 'email',
-                    'in' => 'body',
-                    'description' => 'The user email address',
-                    'schema' => ['$ref' => '#/definitions/RequestPassword'],
+            'operationId' => 'postForgotPassword',
+            'summary' => 'Generates a token and send email',
+            'responses' => [
+                204 => [
+                    'description' => 'Valid email address, no matter if user exists or not',
+                ],
+                400 => [
+                    'description' => 'Missing email parameter or invalid format',
                 ],
             ],
-            'responses' => [
-                204 => ['description' => 'Valid email address, no matter if user exists or not'],
-                400 => ['description' => 'Missing email parameter or invalid format'],
+            'requestBody' => [
+                'description' => 'Request a new password',
+                'content' => [
+                    'application/json' => [
+                        'schema' => [
+                            '$ref' => '#/components/schemas/ForgotPassword:request',
+                        ],
+                    ],
+                ],
             ],
         ];
-        $docs['definitions']['RequestPassword'] = [
+        $docs['components']['schemas']['ForgotPassword:request'] = [
             'type' => 'object',
+            'description' => '',
             'required' => ['email'],
             'properties' => [
-                'email' => ['type' => 'string'],
+                'email' => [
+                    'type' => 'string',
+                ],
             ],
         ];
 
         // Add GET /forgot-password/{token} path
         $docs['paths']['/forgot-password/{token}']['get'] = [
             'tags' => ['Forgot password'],
-            'summary' => 'Validates token.',
-            'produces' => ['application/json'],
+            'operationId' => 'getForgotPassword',
+            'summary' => 'Validates token',
+            'responses' => [
+                200 => [
+                    'description' => 'Authenticated user',
+                    'content' => [
+                        'application/json' => [
+                            'schema' => [
+                                '$ref' => '#/components/schemas/ForgotPassword:validate',
+                            ],
+                        ],
+                    ],
+                ],
+                404 => [
+                    'description' => 'Token not found or expired',
+                ],
+            ],
             'parameters' => [
                 [
                     'name' => 'token',
                     'in' => 'path',
                     'required' => true,
-                    'type' => 'string',
-                ],
-            ],
-            'responses' => [
-                200 => [
-                    'description' => 'Authenticated user',
                     'schema' => [
-                        '$ref' => '#/definitions/User-user:read',
+                        'type' => 'string',
                     ],
                 ],
-                400 => ['description' => 'Missing email parameter or invalid format'],
-                404 => ['description' => 'Token not found'],
             ],
+        ];
+        $docs['components']['schemas']['ForgotPassword:validate'] = [
+            'type' => 'object',
+            'description' => '',
         ];
 
         // Add POST /forgot-password/{token} path
         $docs['paths']['/forgot-password/{token}']['post'] = [
             'tags' => ['Forgot password'],
-            'summary' => 'Resets user password from token.',
-            'produces' => ['application/json'],
+            'operationId' => 'postForgotPasswordToken',
+            'summary' => 'Resets user password from token',
+            'responses' => [
+                204 => [
+                    'description' => 'Email address format valid, no matter if user exists or not',
+                ],
+                400 => [
+                    'description' => 'Missing password parameter',
+                ],
+                404 => [
+                    'description' => 'Token not found',
+                ],
+            ],
             'parameters' => [
                 [
                     'name' => 'token',
                     'in' => 'path',
                     'required' => true,
-                    'type' => 'string',
-                ],
-                [
-                    'name' => 'password',
-                    'in' => 'body',
-                    'description' => 'The user new password',
-                    'schema' => ['$ref' => '#/definitions/ResetPassword'],
+                    'schema' => [
+                        'type' => 'string',
+                    ],
                 ],
             ],
-            'responses' => [
-                204 => ['description' => 'Email address format valid, no matter if user exists or not'],
-                400 => ['description' => 'Missing password parameter'],
-                404 => ['description' => 'Token not found'],
+            'requestBody' => [
+                'description' => 'Reset password',
+                'content' => [
+                    'application/json' => [
+                        'schema' => [
+                            '$ref' => '#/components/schemas/ForgotPassword:reset',
+                        ],
+                    ],
+                ],
             ],
         ];
-        $docs['definitions']['ResetPassword'] = [
+        $docs['components']['schemas']['ForgotPassword:reset'] = [
             'type' => 'object',
+            'description' => '',
             'required' => ['password'],
             'properties' => [
-                'password' => ['type' => 'string'],
+                'password' => [
+                    'type' => 'string',
+                ],
             ],
         ];
 
