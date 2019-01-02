@@ -249,10 +249,9 @@ jobs:
   detox:
     executor: android-executor
     steps:
-      - checkout
       - restore_cache:
-          keys:
-            - node_modules-{{ checksum "app/yarn.lock" }}
+          keys: 
+            - app-{{ .Environment.CIRCLE_SHA1 }}
       - run:
           name: Build app
           working_directory: app
