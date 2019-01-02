@@ -180,7 +180,7 @@ jobs:
           command: git subtree push --prefix api https://heroku:$HEROKU_API_KEY@git.heroku.com/zero-dechet-api.git master
 
   # Admin
-  deploy-admin:
+  init-admin:
     executor: node-executor
     steps:
       - checkout
@@ -189,15 +189,28 @@ jobs:
             - node_modules-{{ checksum "admin/yarn.lock" }}
             - node_modules-
       - run:
-          name: Install git
-          command: apk add --no-cache git
-      - run:
           name: Install dependencies
           working_directory: admin
           command: yarn install --pure-lockfile
+      - save_cache:
+          paths:
+            - admin/node_modules
+          key: node_modules-{{ checksum "admin/yarn.lock" }}
+      - save_cache:
+          paths:
+            - ./admin
+          key: admin-{{ .Environment.CIRCLE_SHA1 }}
+
+  deploy-admin:
+    docker:
+      - image: buildpack-deps:trusty
+    steps:
+      - restore_cache:
+          keys:
+            - admin-{{ .Environment.CIRCLE_SHA1 }}
       - run:
           name: Deploy admin
-          command: git subtree push --prefix api https://heroku:$HEROKU_API_KEY@git.heroku.com/zero-dechet-admin.git master
+          command: git subtree push --prefix admin https://heroku:$HEROKU_API_KEY@git.heroku.com/zero-dechet-admin.git master
 
   # App
   init-app:
@@ -305,16 +318,12 @@ workflows:
             - phpstan
             - behat
             - swagger_validator
-          filters:
-            tags:
-              only: /.*/
       # Admin
+      - init-admin
       - deploy-admin:
           requires:
+            - init-admin
             - deploy-api
-          filters:
-            tags:
-              only: /.*/
       # App
       - init-app
       - eslint:
@@ -328,6 +337,3 @@ workflows:
             - eslint
             - detox
             - deploy-api
-          filters:
-            tags:
-              only: /.*/
