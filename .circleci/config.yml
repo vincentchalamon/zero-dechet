@@ -199,6 +199,7 @@ jobs:
       - save_cache:
           paths:
             - ./admin
+            - ./.git
           key: admin-{{ .Environment.CIRCLE_SHA1 }}
 
   deploy-admin:
