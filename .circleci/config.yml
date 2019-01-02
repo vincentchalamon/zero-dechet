@@ -255,13 +255,13 @@ jobs:
       - run:
           name: Build app
           working_directory: app
-          command: detox build --configuration android.emu.release
+          command: $NVM_BIN/detox build --configuration android.emu.release
           environment:
             REACT_APP_API_ENTRYPOINT: https://api.zero-dechet.app
       - run:
           name: Run Detox
           working_directory: app
-          command: detox test --configuration android.emu.release --cleanup
+          command: $NVM_BIN/detox test --configuration android.emu.release --cleanup
       - save_cache:
           paths:
             - ./app/build
