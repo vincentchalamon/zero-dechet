@@ -9,17 +9,18 @@ version: 2.1
 executors:
   php-executor:
     docker:
-      - image: vincentchalamon/php:7.2-dev
+      - image: vincentchalamon/php:7.2
         environment:
           APP_ENV: test
 
   node-executor:
     docker:
-      - image: vincentchalamon/node:11.2.0
+      - image: vincentchalamon/node:11.6
 
   android-executor:
     docker:
-      - image: vincentchalamon/node:android
+      - image: circleci/android:api-28-node
+        user: root
     environment:
       JVM_OPTS: -Xmx3200m
 
@@ -121,7 +122,7 @@ jobs:
 
   behat:
     docker:
-      - image: vincentchalamon/php:7.2-dev
+      - image: vincentchalamon/php:7.2
         environment:
           APP_ENV: test
           DATABASE_URL: pgsql://root@localhost/zero-dechet
@@ -177,7 +178,7 @@ jobs:
             - api-{{ .Environment.CIRCLE_SHA1 }}
       - run:
           name: Deploy API
-          command: git subtree push --prefix api https://heroku:$HEROKU_API_KEY@git.heroku.com/zero-dechet-api.git master
+          command: git push https://heroku:$HEROKU_API_KEY@git.heroku.com/zero-dechet-api.git `git subtree split --prefix api master`:master --force
 
   # Admin
   init-admin:
@@ -211,7 +212,7 @@ jobs:
             - admin-{{ .Environment.CIRCLE_SHA1 }}
       - run:
           name: Deploy admin
-          command: git subtree push --prefix admin https://heroku:$HEROKU_API_KEY@git.heroku.com/zero-dechet-admin.git master
+          command: git push https://heroku:$HEROKU_API_KEY@git.heroku.com/zero-dechet-admin.git `git subtree split --prefix admin master`:master --force
 
   # App
   init-app:
@@ -246,22 +247,48 @@ jobs:
           working_directory: app
           command: yarn eslint src
 
-  detox:
+#  detox:
+#    executor: android-executor
+#    steps:
+#      - restore_cache:
+#          keys: 
+#            - app-{{ .Environment.CIRCLE_SHA1 }}
+#      - restore_cache:
+#          keys: 
+#            - gradle
+#      - run:
+#          name: Install executables
+#          command: npm install -g detox-cli
+#      - run:
+#          name: Build app
+#          working_directory: /root/project/app
+#          command: detox build --configuration android.emu.release
+#          environment:
+#            REACT_APP_API_ENTRYPOINT: https://api.zero-dechet.app
+#      - save_cache:
+#          paths:
+#            - ./app/android/.gradle/4.4
+#          key: gradle
+#      - run:
+#          name: Run Detox
+#          working_directory: /root/project/app
+#          command: detox test --configuration android.emu.release --cleanup
+
+  build-app:
     executor: android-executor
     steps:
       - restore_cache:
           keys: 
             - app-{{ .Environment.CIRCLE_SHA1 }}
       - run:
-          name: Build app
-          working_directory: app
-          command: sudo detox build --configuration android.emu.release
-          environment:
-            REACT_APP_API_ENTRYPOINT: https://api.zero-dechet.app
+          name: Install executables
+          command: npm install -g detox-cli
       - run:
-          name: Run Detox
-          working_directory: app
-          command: sudo detox test --configuration android.emu.release --cleanup
+          name: Build app for production
+          working_directory: /root/project/app
+          command: detox build --configuration android.emu.release
+          environment:
+            REACT_APP_API_ENTRYPOINT: https://zero-dechet-api.herokuapp.com
       - save_cache:
           paths:
             - ./app/build
@@ -318,22 +345,35 @@ workflows:
             - phpstan
             - behat
             - swagger_validator
+          filters:
+            branches:
+              only: master
       # Admin
-      - init-admin
+      - init-admin:
+          requires:
+            - deploy-api
+          filters:
+            branches:
+              only: master
       - deploy-admin:
           requires:
             - init-admin
-            - deploy-api
       # App
       - init-app
       - eslint:
           requires:
             - init-app
-      - detox:
-          requires:
-            - init-app
-      - deploy-app:
+#      - detox:
+#          requires:
+#            - init-app
+      - build-app:
           requires:
             - eslint
-            - detox
+#            - detox
             - deploy-api
+          filters:
+            branches:
+              only: master
+      - deploy-app:
+          requires:
+            - build-app
