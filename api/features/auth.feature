@@ -22,12 +22,13 @@ Feature: As a user, I can login to get resources
     Given the following user:
       | email           | plainPassword | active |
       | foo@example.com | p4ssw0rd      | true   |
-    And I log in with "foo@example.com" p4ssw0rd
+    When I log in with "foo@example.com" p4ssw0rd
     Then I get a valid token & user
+    And the user is "foo@example.com"
 
   Scenario: As a user, I cannot log in if my account is disabled
     Given the following user:
       | email           | plainPassword | active |
       | foo@example.com | p4ssw0rd      | false  |
-    And I log in with "foo@example.com" p4ssw0rd
+    When I log in with "foo@example.com" p4ssw0rd
     Then I am unauthorized to access this resource
