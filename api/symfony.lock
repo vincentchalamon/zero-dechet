@@ -287,6 +287,9 @@
     "phpstan/phpstan": {
         "version": "0.10.3"
     },
+    "phpstan/phpstan-symfony": {
+        "version": "0.11"
+    },
     "psr/cache": {
         "version": "1.0.1"
     },
@@ -538,6 +541,9 @@
     },
     "symfony/var-dumper": {
         "version": "v4.0.3"
+    },
+    "symfony/var-exporter": {
+        "version": "v4.2.8"
     },
     "symfony/web-link": {
         "version": "v4.2.1"

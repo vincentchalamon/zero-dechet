@@ -118,7 +118,7 @@ jobs:
       - run:
           name: PHPStan
           working_directory: api
-          command: bin/phpstan analyse -l 0 src
+          command: bin/phpstan analyse -l 6 src
 
   behat:
     docker:
