@@ -82,4 +82,12 @@ JSON
         $this->jsonContext->theResponseShouldBeInJson();
         $this->apiContext->validateItemJsonSchema('user');
     }
+
+    /**
+     * @Then the user is :email
+     */
+    public function theUserIsEmail($email)
+    {
+        $this->jsonContext->theJsonNodeShouldBeEqualTo('email', $email);
+    }
 }
